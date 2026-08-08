@@ -1,0 +1,11 @@
+{
+  "name": "battle-royale-arena-server",
+  "version": "20.0.0",
+  "private": true,
+  "scripts": {
+    "start": "node server.js"
+  },
+  "dependencies": {
+    "ws": "^8.18.0"
+  }
+}

@@ -1,0 +1,5 @@
+V17 BUILD VARIANT FIX
+
+AGP 8.6.1 + Gradle 8.7: compatible with Gradle 8.7 runtime.
+The previous AGP 8.7.3 required a newer Gradle plugin API and caused the no matching variant error when AndroidIDE was running Gradle 8.7.
+Java 17, compileSdk 34, targetSdk 34 retained.

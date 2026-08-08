@@ -1,0 +1,12 @@
+O‘ZBEKISTONDAGI HAYOT — REAL HAYOTGA YAQIN DETALLAR
+- Yagona oddiy valuta: UZS (so‘m)
+- Premium valuta: UC (nomi UC sifatida saqlanadi)
+- Shaharlar: Toshkent, Samarqand, Andijon
+- Kundalik ehtiyojlar: ochlik, chanqoq, energiya, tozalik, sog‘liq, kayfiyat
+- Transport: yoqilg‘i va texnik yeyilish
+- Uy: ijara va kommunal to‘lovlar
+- Shahar iqtisodiyoti: ish haqi, savdo, soliq, biznes
+- Dam olish: pullik xizmatlar
+- Real vaqt: holatlar server vaqtiga bog‘liq ravishda sekin kamayadi
+- Barcha balans va xarajatlar server-authoritative
+- Real pul bilan bog‘lanmagan; bu o‘yin simulyatsiyasi.

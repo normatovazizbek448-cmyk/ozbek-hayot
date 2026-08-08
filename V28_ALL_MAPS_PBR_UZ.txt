@@ -1,0 +1,25 @@
+V28 — BARCHA XARITALAR UCHUN PBR
+
+PBR pipeline quyidagi rejimlarga tayyorlandi:
+- Toshkent
+- Samarqand
+- Andijon
+- PUBG uslubidagi Battle Royale original xaritasi
+- Shahar xaritasi
+
+Umumiy PBR material kutubxonasi:
+grass, forest, rock, sand, mud, road, concrete, water, wood,
+metal, snow, asphalt.
+
+Har bir material:
+Base Color + Normal + Roughness + Metallic
+va AO uchun pipeline-ready.
+
+Mobil optimizatsiya:
+- 256x256 baseline teksturalar
+- Materiallar qayta ishlatiladi
+- PBR sozlamalari markazlashtirilgan
+
+Eslatma: mavjud xarita geometriyasi avtomatik ravishda fotorealistik 3D modelga
+aylanmaydi. Bu paket barcha xarita materiallari uchun PBR qatlamini tayyorlaydi;
+yuqori sifatli real assetlar va lightmap/IBL keyingi optimizatsiya bosqichidir.

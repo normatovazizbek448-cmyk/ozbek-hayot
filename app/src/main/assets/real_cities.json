@@ -1,0 +1,8 @@
+{
+  "provider": "OpenStreetMap",
+  "cities": {
+    "1": {"name":"Samarqand","lat":39.6542,"lon":66.9597,"zoom":14},
+    "2": {"name":"Andijon","lat":40.7821,"lon":72.3442,"zoom":13},
+    "3": {"name":"Toshkent","lat":41.3111,"lon":69.2797,"zoom":12}
+  }
+}

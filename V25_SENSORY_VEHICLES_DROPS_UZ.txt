@@ -1,0 +1,28 @@
+V25 — SENSOR, VEHICLE VA DROP TIZIMI
+
+DUSHMAN KO‘RINISHI:
+- Dushmanlar default holatda xaritada doimiy outline/marker sifatida ko‘rsatilmaydi.
+- Dushman o‘q uzganda yo‘nalish indikatori + quloqqa ovoz.
+- Yaqin dushman yurganda oyoq izlari/yo‘nalish indikatori.
+- Mashina yaqinlashganda motor ovozi va yo‘nalishdagi mashina belgisi.
+- Bu tizim playerning aniq koordinatasini oshkor qilmaslikka mo‘ljallangan.
+
+TRANSPORT:
+- SHAHAR: 100+ transport turi, 200+ skin.
+- BATTLE ROYALE: 50+ jangovar transport turi, 50+ skin.
+- BR transportlari original, real tarixiy transport estetikasidan ilhomlangan;
+  aniq tarixiy texnika nomlari/modeli asset bilan keyin belgilanadi.
+- Har bir transport skin drop orqali random olinadi.
+
+DROP:
+- Shahar kiyimlari: virtual shahar valyutasi orqali random drop.
+- BR kiyimlari: UC orqali random drop.
+- Shahar transport skinlari: CITY_COIN orqali random drop.
+- BR transport skinlari: UC orqali random drop.
+- Random drop faqat kolleksiya/ko‘rinishga ta’sir qiladi, gameplay kuchini oshirmaydi.
+
+MUHIM PRODUCTION TALABLARI:
+- Haqiqiy 60-player multiplayerda sensory eventlarni server-authoritative qilish.
+- Ovozlarni distance attenuation + stereo/panning bilan ishlatish.
+- Footstep va vehicle audio uchun real 3D audio engine kerak.
+- Real 3D vehicle/player modellari va skin assetlari alohida GLB/GLTF/texture fayllarida bo‘ladi.

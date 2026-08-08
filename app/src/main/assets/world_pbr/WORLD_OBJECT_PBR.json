@@ -1,0 +1,100 @@
+{
+  "version": "V30",
+  "objects": {
+    "mountain": {
+      "type": "terrain",
+      "materials": [
+        "mountain_rock",
+        "mountain_grass"
+      ],
+      "lod": [
+        0,
+        1,
+        2
+      ],
+      "collision": true
+    },
+    "lake": {
+      "type": "water",
+      "materials": [
+        "lake_water"
+      ],
+      "lod": [
+        0,
+        1
+      ],
+      "collision": "water"
+    },
+    "tree": {
+      "type": "vegetation",
+      "materials": [
+        "tree_bark",
+        "tree_leaf"
+      ],
+      "lod": [
+        0,
+        1,
+        2
+      ],
+      "collision": "trunk"
+    },
+    "house": {
+      "type": "building",
+      "materials": [
+        "house_wall",
+        "house_roof",
+        "concrete"
+      ],
+      "lod": [
+        0,
+        1,
+        2
+      ],
+      "collision": true
+    },
+    "road": {
+      "type": "road",
+      "materials": [
+        "road",
+        "asphalt"
+      ],
+      "lod": [
+        0,
+        1
+      ],
+      "collision": true
+    },
+    "asphalt": {
+      "type": "surface",
+      "materials": [
+        "asphalt"
+      ],
+      "lod": [
+        0,
+        1
+      ],
+      "collision": true
+    },
+    "soil": {
+      "type": "terrain_surface",
+      "materials": [
+        "soil",
+        "gravel"
+      ],
+      "lod": [
+        0,
+        1
+      ],
+      "collision": true
+    }
+  },
+  "render": {
+    "pbr": true,
+    "ibl": true,
+    "normalMaps": true,
+    "ao": true,
+    "mobileTextureSize": 512,
+    "lod": true,
+    "shadowCascades": 2
+  }
+}

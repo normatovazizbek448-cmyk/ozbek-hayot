@@ -1,0 +1,7 @@
+CITY HOME PURCHASE RULE
+
+Uy global inventorydan istalgan xaritaga ko'chirilmaydi.
+Uy sotib olish faqat o'yinchi hozir turgan shahar xaritasida amalga oshadi.
+Ruxsat etilgan shaharlar: Toshkent, Samarqand, Andijon.
+Sotib olingan uy shu city bilan serverda bog'lanadi va boshqa shahar xaritasida joylashtirib bo'lmaydi.
+TDM Arena va Battle Royale uy sotib olish xaritasi emas.

@@ -1,0 +1,16 @@
+V19 — REALISTIC WORLD UPGRADE
+
+Asos: V18 MAX 3D GRAPHICS.
+
+Yangilanish:
+- Odamlar uchun alohida anatomik/proportsional profil va mobilga mos materiallar.
+- Uylar: suvoq, tom, oyna, balkon va kontakt-soya uslubidagi material profillari.
+- Daraxtlar: qatlamli toj, konussimon tana va shamol animatsiyasi parametrlari.
+- Ko‘l: fizikaga o‘xshash suv materiali, to‘lqin, reflection va qirg‘oq foam parametrlari.
+- Transport: kuzov, oyna, g‘ildirak, chiroq va suspension parametrlari.
+- Three.js mavjud bo‘lsa MeshStandard/MeshPhysical material helperlar.
+- 2D/WebView fallback uchun atmosfera/vinyet qatlami.
+- Tashqi internet assetlari talab qilinmaydi.
+
+Eslatma:
+Bu versiya procedural/mobile-friendly realizmni kuchaytiradi. Haqiqiy fotorealistik character/car/house meshlar uchun alohida 3D asset fayllari (glTF/GLB) kerak bo‘ladi.

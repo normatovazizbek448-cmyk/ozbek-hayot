@@ -1,0 +1,10 @@
+OZBEKISTONDAGI HAYOT V23 — 100+ KIYIM + RAKETA DROP
+
+1) Battle Royale arena uchun 120 ta procedural kiyim varianti qo‘shildi.
+2) Kiyimlar menyusidan kiyim tanlanadi va tanlov localStorage’da saqlanadi.
+3) Har bir match boshlanishida o‘yinchi raketa bosqichiga kiradi.
+4) Raketa xarita ustidan to‘g‘ri yo‘nalishda uchadi.
+5) TUSHISH tugmasi bosilganda o‘yinchi o‘z tanlagan/joriy nuqtasiga tushadi.
+6) Render WebSocket serveri brState orqali BR holatini boshqa onlayn o‘yinchilarga uzatadi.
+7) Server limiti 60 o‘yinchi bo‘lib qoladi.
+8) Xarita PUBG uslubidagi original arena; PUBG brendi yoki xarita fayllari ko‘chirilmagan.

@@ -1,0 +1,6 @@
+OʻZBEKISTONDAGI HAYOT v12
+IN-WORLD KASB TANLASH
+
+O‘yinchi endi bosh menyuda kasb tanlamaydi.
+Avval world/shahar ichiga kiradi, keyin o‘sha world uchun mavjud kasblardan birini tanlaydi.
+Tanlangan kasb localStorage orqali saqlanadi va mijoz/NPS ish oqimiga uzatiladi.

@@ -1,0 +1,41 @@
+V20 — ONLINE 60 PLAYER + LIVE WORLD
+
+Asos: V19_REALISTIC_WORLD.
+
+ONLAYN:
+- Bitta match uchun maksimal 60 ta real internet o‘yinchi.
+- Client WebSocket orqali avtomatik ulanishga urinadi.
+- Ulanish bo‘lmasa offline/practice rejimiga tushadi.
+- Authoritative server: player position, HP, alive holati va squad holatini server tarqatadi.
+- Server snapshot har 1 soniyada.
+- Squad 4 kishigacha.
+- Match ID va player ID.
+
+MUHIM:
+Haqiqiy internet multiplayer ishlashi uchun serverni internetga deploy qilish kerak.
+Android/HTML clientning o‘zi 60 o‘yinchini internetga ulab bera olmaydi.
+GAME_SERVER_URL orqali server manzilini berish mumkin.
+
+QIZIQARLI GAMEPLAY:
+- Solo/Duo/Squad
+- Dinamik loot
+- Random events: airdrop, supply convoy, armored train, signal tower,
+  storm, fog, rain, forest fire, secret bunker, special crate.
+- Tirik xarita g‘oyasi uchun event broadcast mexanizmi.
+- XP/level, coin, streak progression.
+- Survival: hunger/thirst.
+- Risk/reward hududlar.
+- Baza, trophy va uzoq muddatli progress uchun kengaytirish nuqtalari.
+
+60 PLAYER SERVER:
+- MAX_PLAYERS=60.
+- Server to‘lib qolsa yangi ulanishga "full" javobi beradi.
+- Server /health endpoint orqali holatni ko‘rsatadi.
+
+KEYINGI ISHLAR:
+1) Serverni real hosting/VPSga joylash.
+2) Clientdagi GAME_SERVER_URL ni deploy qilingan WSS manziliga sozlash.
+3) Serverga authentication, anti-cheat, authoritative shooting/damage,
+   inventory, loot, zone va persistence qo‘shish.
+4) 3D multiplayer interpolation/prediction.
+5) Matchmaking va region serverlar.

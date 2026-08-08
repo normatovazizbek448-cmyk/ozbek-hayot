@@ -1,0 +1,34 @@
+{
+  "cities": {
+    "Toshkent": {
+      "presidentId": null,
+      "electionId": 1,
+      "electionEndsAt": 1786821743651,
+      "candidates": {},
+      "votes": {},
+      "budget": 50000000,
+      "taxRate": 5,
+      "history": []
+    },
+    "Samarqand": {
+      "presidentId": null,
+      "electionId": 0,
+      "electionEndsAt": 0,
+      "candidates": {},
+      "votes": {},
+      "budget": 50000000,
+      "taxRate": 5,
+      "history": []
+    },
+    "Andijon": {
+      "presidentId": null,
+      "electionId": 0,
+      "electionEndsAt": 0,
+      "candidates": {},
+      "votes": {},
+      "budget": 50000000,
+      "taxRate": 5,
+      "history": []
+    }
+  }
+}

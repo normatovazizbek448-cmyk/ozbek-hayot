@@ -1,0 +1,9 @@
+ASADBEK AI v10 — 50 NPS/NPC REAL WORKFLOW
+===========================================
+- 50 unique NPC profiles are created in every world.
+- Each NPC has a name, role, need/request and individual ID.
+- Jobs are now demand-driven: the player selects a profession, then a matching NPC customer request is found.
+- The work timer represents a service interaction, not just a generic salary button.
+- The customer rates the completed service from 3/5 to 5/5 and the average rating is persisted locally.
+- The NPS/NPC panel shows total people, active NPCs, current customer demand and average service rating.
+- The system is designed as a game simulation; it does not represent real people.

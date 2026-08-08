@@ -1,0 +1,16 @@
+ASADBEK AI v9 — BUG FIX REPORT
+=============================
+Static checks and fixes applied:
+1. Fixed a JavaScript syntax error in the OpenStreetMap bbox URL builder.
+2. Fixed multiplayer world/mode synchronization: top-level `worldId` and `mode` are now sent correctly.
+3. Fixed city traffic so it works in Samarqand, Andijon and Toshkent.
+4. Removed obsolete WORLD 4 execution branches.
+5. Fixed enterable buildings: buildings are now room shells with walls, floor, ceiling and a real doorway opening instead of a solid box.
+6. Added simple interior lighting for first-person entry.
+7. Removed a missing web-app manifest reference from the Android WebView page.
+8. Added graceful OSM iframe error text.
+9. ZIP and JavaScript integrity checked after modifications.
+
+Known limitation:
+- The 3D cities are still optimized game scenes, not 1:1 photogrammetry of every real building.
+- Online multiplayer still requires a reachable WebSocket server (prefer WSS).

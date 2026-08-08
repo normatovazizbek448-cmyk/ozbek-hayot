@@ -1,0 +1,16 @@
+OZBEKISTONDAGI_HAYOT — AndroidIDE build
+
+1. Bu loyiha Gradle 8.7 + Android Gradle Plugin 8.6.1 bilan tayyorlangan.
+2. Build uchun JDK 17 kerak. JDK 8 bilan AGP 8.6.1 ishlamaydi.
+3. AndroidIDE'da Gradle JDK sifatida JDK 17 ni tanlang.
+4. Keyin Sync/Build -> assembleDebug qiling.
+5. Agar "No matching variant" chiqsa va matnda "consumer ... Java 8" ko'rinsa,
+   AndroidIDE hali JDK 8 bilan build qilayotgan bo'ladi; loyiha fayllarini
+   almashtirish bu muammoni tuzatmaydi.
+
+Muhim:
+- compileSdk/targetSdk: 34
+- minSdk: 23
+- Java source/target: 17
+- Gradle: 8.7
+- Android Gradle Plugin: 8.6.1

@@ -1,0 +1,20 @@
+V18 — MAX 3D GRAPHICS
+
+Asos: OZBEKISTONDAGI_HAYOT_REALISTIC_CITY_EXPANSION
+
+Qo‘shildi:
+- ACES Filmic tone mapping + sRGB output
+- yuqoriroq adaptive devicePixelRatio (1.75 gacha)
+- physically-correct lighting
+- kuchaytirilgan sun + hemisphere + fill light
+- 2048x2048 soft shadows
+- exponential distance fog
+- procedural sky dome
+- terrain vertex-color variation
+- animatsiyalangan suv yuzasi
+- suv uchun yengil shore/foam effektlari
+- Q tugmasi: ULTRA 3D / PERFORMANCE rejimi
+
+Eslatma:
+Telefon GPU yuklamasini nazorat qilish uchun Ultra rejim 1.75x pixel ratio va 2048 shadow map bilan cheklanadi.
+Agar telefon qizisa yoki FPS tushsa, Q bosib PERFORMANCE rejimiga o‘ting.

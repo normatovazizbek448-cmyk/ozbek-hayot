@@ -1,0 +1,14 @@
+ASADBEK AI v8 — REAL MAPS
+==========================
+Real-world map support was added using OpenStreetMap.
+
+City anchors:
+1. Samarqand — Registon: 39.6542, 66.9597
+2. Andijon shahri: 40.7821, 72.3442
+3. Toshkent: 41.3111, 69.2797
+
+The REAL XARITA button opens an OpenStreetMap view centered on the selected city.
+This is a real geographic map. The 3D game world remains a lightweight optimized
+scene; it is NOT a 1:1 photogrammetry reconstruction of every building.
+
+Internet is required for live OSM tiles. OpenStreetMap attribution is displayed.

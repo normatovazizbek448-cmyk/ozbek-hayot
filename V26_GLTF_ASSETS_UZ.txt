@@ -1,0 +1,16 @@
+V26 — GLTF/GLB ASSET INTEGRATION
+
+4 ta mobilga mos, self-contained glTF 2.0 model:
+- models/city_sedan.gltf
+- models/city_suv.gltf
+- models/br_armored_scout.gltf
+- models/br_supply_truck.gltf
+
+Model katalogi index.html ga qo‘shildi.
+Three.js GLTFLoader mavjud bo‘lsa loadGLTFVehicle() orqali yuklash mumkin.
+
+Eslatma:
+Bu fayllar procedural low-poly placeholder/base meshlar. 100+ city vehicle va
+50+ BR vehicle uchun haqiqiy photorealistic assetlar alohida 3D modellashtirish/
+license-compliant asset pack talab qiladi. Skinlar ham alohida texture/material
+assetlar sifatida keyin qo‘shiladi.

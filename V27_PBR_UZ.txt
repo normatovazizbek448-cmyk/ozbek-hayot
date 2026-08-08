@@ -1,0 +1,27 @@
+V27 — PBR TRANSPORT ASSETLARI
+
+4 ta transportga PBR materiallar qo‘shildi:
+- Base Color
+- Metallic/Roughness
+- Normal map
+- Occlusion
+
+Assetlar:
+models/city_sedan.gltf
+models/city_suv.gltf
+models/br_armored_scout.gltf
+models/br_supply_truck.gltf
+
+Teksturalar:
+models/textures/*_baseColor.png
+models/textures/*_metallicRoughness.png
+models/textures/*_normal.png
+
+Mobil optimizatsiya:
+- 256x256 teksturalar
+- Embedded data URI
+- Low-poly geometriya
+- PBR workflow
+
+Eslatma: bu PBR material pipeline. Haqiqiy fotorealistik natija uchun keyinchalik
+yuqori sifatli UV unwrap, detailed normal/roughness map va real 3D assetlar kerak.

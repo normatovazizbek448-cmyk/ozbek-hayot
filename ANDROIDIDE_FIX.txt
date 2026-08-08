@@ -1,0 +1,9 @@
+OZBEKISTONDAGI_HAYOT v19 - AndroidIDE Gradle 8.7 / JDK 17 fix
+
+Muhim: AndroidIDE build muhitida Gradle 8.7 ishlayotganligi sababli eski AGP 4.2.2 ishlatilmasligi kerak.
+Bu loyiha AGP 8.6.1 + Gradle 8.7 + Java/JDK 17 uchun sozlangan.
+
+AndroidIDE'da Build qilishdan oldin Gradle JDK sifatida JDK 17 ni tanlang.
+AndroidIDE hujjatlariga ko'ra JDK 17 o'rnatish uchun terminalda: idesetup -c
+
+Agar JDK 17 tanlanmasa, AGP 8.6.1 Java 8 bilan ishlamaydi va 'No matching variant' xatosi chiqadi.

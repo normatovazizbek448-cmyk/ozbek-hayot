@@ -1,0 +1,32 @@
+{
+  "version": "V29",
+  "characters": [
+    {
+      "id": "player_male",
+      "pbrProfile": "human"
+    },
+    {
+      "id": "player_female",
+      "pbrProfile": "human"
+    }
+  ],
+  "materials": [
+    "skin",
+    "hair",
+    "shirt",
+    "pants",
+    "boots",
+    "armor",
+    "helmet",
+    "gloves"
+  ],
+  "maps": "all",
+  "features": [
+    "baseColor",
+    "normal",
+    "roughness",
+    "metallic",
+    "ao-ready"
+  ],
+  "textureResolution": "256x256 mobile baseline"
+}

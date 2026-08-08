@@ -1,0 +1,12 @@
+V22 — JAMOAVIY KUTISH MAYDONI / 60 PLAYER
+==========================================
+- Render WebSocket server: wss://ozbekistondagi-hayot-server.onrender.com/ws
+- 60-player lobby
+- 4 team selection
+- ready status
+- first player is host
+- host starts match
+- players spawn by team
+- lobby snapshot is broadcast every 1.5s
+- matchStart switches all connected clients into the 3D world
+- offline mode remains available

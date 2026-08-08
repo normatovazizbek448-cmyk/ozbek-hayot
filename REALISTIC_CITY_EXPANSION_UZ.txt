@@ -1,0 +1,20 @@
+REALISTIC CITY EXPANSION — O'ZBEKISTONDAGI HAYOT
+
+Asos: OZBEKISTONDAGI_HAYOT_BATTLE_ROYALE_BUGFIXED.zip
+
+Qo'shilgan:
+- Original, real-hayotga yaqin shahar tuzilishi: markaz, turar-joy, bozor, sanoat, park va chekka hudud.
+- Asfalt yo'llar, chorrahalar, piyodalar o'tish joylari, yo'l chiziqlari va ko'cha chiroqlari.
+- Ko'p turdagi binolar, derazalar, eshiklar va soyalar.
+- Park, ko'l, daraxtlar, suv havzasi va yashil hudud.
+- Harakatlanuvchi mashina, avtobus va yuk mashinalari.
+- Dinamik kun/tun sikli.
+- Ochiq, bulutli va yomg'irli ob-havo.
+- Xarita hududiga qarab HUD'da joy nomi.
+- Mavjud 45 qurol, HP, aptechka, loot, botlar, zona va UC tizimlari saqlangan.
+- Mavjud original real_cities.json (Toshkent, Samarqand, Andijon) saqlangan.
+
+Texnik tekshiruv:
+- HTML ichidagi 8 ta JavaScript blokining barchasi Node.js syntax-check'dan o'tdi.
+- Bu paket PUBG yoki boshqa o'yinning xaritasini 1:1 ko'chirmaydi; shaharlar real hayotdan ilhomlangan original xarita sifatida qurilgan.
+- Android buildni ushbu muhitda dependency interneti cheklangani sabab to'liq APK darajasida tasdiqlash imkoni bo'lmadi.

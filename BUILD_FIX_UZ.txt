@@ -1,0 +1,16 @@
+OZBEKISTONDAGI_HAYOT — TO'LIQ BUILD FIX
+
+Tuzatildi:
+- Android Gradle Plugin: 4.2.2 -> 8.6.1
+- Gradle wrapper: 6.7.1 -> 8.7
+- Java source/target: 1.8 -> 17
+- Android namespace qo'shildi: com.asadbekai.simulator
+- compileSdk/targetSdk 34 saqlandi
+- minSdk 23 saqlandi
+
+MUHIM:
+AndroidIDE/terminal build muhiti JDK 17 bilan ishlashi kerak.
+JDK 8 bilan AGP 8.6.1 build qilinmaydi.
+
+AndroidIDE'da Gradle JDK = JDK 17 qilib tanlang.
+Keyin Sync va Build/assembleDebug qiling.

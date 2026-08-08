@@ -1,0 +1,17 @@
+{
+  "version": 1,
+  "units": "meters",
+  "bones": {
+    "pelvis": {"height": 0.92},
+    "spine": {"length": 0.43},
+    "neck": {"length": 0.12},
+    "head": {"radius": 0.18},
+    "upperArm": {"length": 0.29},
+    "forearm": {"length": 0.25},
+    "hand": {"length": 0.10},
+    "thigh": {"length": 0.43},
+    "shin": {"length": 0.40},
+    "foot": {"length": 0.27}
+  },
+  "features": ["skeletal_rig", "foot_ik", "recoil", "ragdoll_ready", "capsule_collision", "surface_friction", "gravity"]
+}

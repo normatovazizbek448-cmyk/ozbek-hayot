@@ -1,0 +1,26 @@
+# Production checklist
+
+- [x] AAB publishing format
+- [x] targetSdk 36
+- [x] compileSdk 36
+- [x] AGP 8.13.2
+- [x] Gradle 8.13
+- [x] JDK 17 requirement
+- [x] Release signing required, secrets not bundled
+- [x] HTTPS/WSS only
+- [x] versionCode bumped to 18
+- [x] versionName 1.18.0
+- [ ] Create private upload keystore
+- [ ] Configure signing environment variables
+- [ ] Build `bundleRelease`
+- [ ] Test AAB on real Android devices
+- [ ] Verify production WebSocket server
+- [ ] Verify production database/backups
+- [ ] Create privacy policy URL
+- [ ] Complete Data Safety form
+- [ ] Complete content rating
+- [ ] Add screenshots/icon/store listing
+- [ ] If UC is sold for money: integrate/verify Google Play Billing
+- [ ] Internal testing
+- [ ] Closed testing
+- [ ] Production release

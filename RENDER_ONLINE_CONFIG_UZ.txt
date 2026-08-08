@@ -1,0 +1,15 @@
+O‘ZBEKISTONDAGI HAYOT — RENDER ONLINE CONFIG
+
+Production WebSocket server:
+wss://ozbekistondagi-hayot-server.onrender.com/ws
+
+HTTP health/page:
+https://ozbekistondagi-hayot-server.onrender.com
+
+Server: Node.js + ws
+Max players: 60
+
+V20 client has been configured to automatically connect to the Render WebSocket endpoint.
+The manual ONLINE panel also uses this endpoint by default.
+
+Render Free instance can sleep after inactivity; waking can take time.

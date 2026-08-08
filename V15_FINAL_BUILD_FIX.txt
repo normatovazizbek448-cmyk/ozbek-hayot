@@ -1,0 +1,30 @@
+OʻZBEKISTONDAGI HAYOT v15 — FINAL BUILD FIX
+
+Aniqlangan muammolar:
+1. AndroidIDE logida Gradle 8.7 ishlayotgani ko‘rindi.
+2. Oldingi v14 AGP 8.3.2 / Gradle 8.4 kombinatsiyasida edi.
+3. v14 styles.xml AppCompat theme'ni dependency'siz ishlatgan — bu keyingi bosqichda compile error berishi mumkin edi.
+4. settings.gradle'dagi FAIL_ON_PROJECT_REPOS bilan root build.gradle'dagi allprojects repositories bir-biriga zid edi.
+
+v15 tuzatishlari:
+- Android Gradle Plugin 8.5.2
+- Gradle 8.7
+- repositories faqat settings.gradle'da
+- AppCompat dependency talab qilmaydigan platform theme
+- compileSdk/targetSdk 34
+- versionCode 15 / versionName 1.15
+- WebView o‘yini va mavjud funksiyalar saqlandi
+- World ichida kasb tanlash saqlandi
+- 50 NPS, 3 world, xarita, multiplayer kodlari saqlandi.
+
+Tekshiruv:
+- ZIP integrity
+- Gradle konfiguratsiyasi
+- 8.7 ga bog‘lanishlar
+- JavaScript syntax
+- Android manifest/style consistency
+tekshirildi.
+
+Eslatma: bu muhit internetga chiqolmagani sababli Google Maven/Gradle serveridan
+dependency yuklab, real Android APK buildini shu yerning o‘zida bajara olmadim.
+AndroidIDE'da v15 ni YANGI papkaga ochib build qilish kerak.

@@ -1,0 +1,33 @@
+V30 — REAL 3D WORLD PBR
+
+Tog‘:
+- rock + grass PBR
+- LOD/collision pipeline
+
+Ko‘l:
+- water PBR
+- low roughness + reflection-ready
+
+Daraxt:
+- bark + leaf PBR
+- LOD + trunk collision
+
+Uy:
+- wall + roof + concrete PBR
+- LOD + collision
+
+Yo‘l/asfalt:
+- road + asphalt PBR
+- collision
+
+Tuproq:
+- soil + gravel PBR
+- terrain LOD
+
+Barcha materiallarda:
+Base Color + Normal + Roughness + Metallic.
+Renderer config IBL/AO/normal-map va mobile LOD uchun tayyor.
+
+Eslatma: bu paket real-time PBR material va world-object pipeline'ni beradi.
+Haqiqiy photorealistic 3D tog‘, uy, daraxt va terrain geometriyasi alohida
+3D model/terrain assetlar bilan almashtirilishi mumkin.

@@ -1,0 +1,37 @@
+{
+  "version": "V28",
+  "workflow": "PBR",
+  "maps": [
+    "Toshkent",
+    "Samarqand",
+    "Andijon",
+    "PUBG_Battle_Royale",
+    "Shahar",
+    "TDM_Arena_800x500m"
+  ],
+  "materials": [
+    "grass",
+    "forest",
+    "rock",
+    "sand",
+    "mud",
+    "road",
+    "concrete",
+    "water",
+    "wood",
+    "metal",
+    "snow",
+    "asphalt"
+  ],
+  "sourceMapFiles": [
+    "TDM_Arena_800x500m/TDM_Arena_800x500m.json"
+  ],
+  "resolution": "256x256 mobile baseline",
+  "features": [
+    "baseColor",
+    "normal",
+    "roughness",
+    "metallic",
+    "ambient-occlusion-ready"
+  ]
+}

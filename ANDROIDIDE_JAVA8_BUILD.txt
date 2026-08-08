@@ -1,0 +1,9 @@
+JAVA 8 BUILD CONFIG
+Gradle wrapper: 6.7.1
+Android Gradle Plugin: 4.2.2
+Java source/target: 1.8
+
+IMPORTANT: Do not use Gradle 8.7 for this project. The wrapper must be used.
+AGP 4.2.2 is intentionally selected because the build environment reports Java 8.
+If AndroidIDE ignores the wrapper and forces Gradle 8.7, this configuration cannot
+work with Java 8; AndroidIDE must be set to use the project's Gradle wrapper.

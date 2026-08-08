@@ -1,0 +1,19 @@
+/* Global shop/economy UI: outfits, car skins, cars, houses, water and food. */
+(function(){
+ const S={items:[],wallet:null,category:'outfit'};window.PlayerShop=S;const $=id=>document.getElementById(id);
+ const esc=s=>String(s??'').replace(/[&<>"']/g,c=>({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#39;'}[c]));
+ function send(type,data={}){const s=window.GameSocket;if(s&&s.readyState===1)s.send(JSON.stringify({type,...data}));else toast('Avval serverga ulaning.');}
+ function toast(t){const e=$('shopToast');if(e){e.textContent=t;e.classList.add('show');setTimeout(()=>e.classList.remove('show'),2200)}}
+ function currentCity(){try{const n=typeof window.cityName==='function'?window.cityName():'';return ['Toshkent','Samarqand','Andijon'].includes(n)?n:''}catch(e){return ''}}
+ function open(cat){S.category=cat||'outfit';$('shopPanel').classList.add('show');send('shopCatalog',{category:S.category});send('shopWallet',{});}
+ function card(i){const q={'COMMON':'Oddiy','UNCOMMON':'Yaxshi','RARE':'Noyob','EPIC':'Epik','LEGENDARY':'Afsonaviy','MYTHIC':'Mifiy'}[i.quality]||i.quality;return `<div class="shopItem"><div class="shopIcon">${i.type==='outfit'?'👕':i.type==='carSkin'?'🚘':i.type==='vehicle'?'🚗':i.type==='house'?'🏠':i.id==='water'?'💧':'🍲'}</div><div class="shopInfo"><b>${esc(i.name)}</b><small>${q} • Ko‘rinish darajasi: ${i.style}/6</small><div class="shopPrices">💰 ${i.price?i.price.toLocaleString('uz-UZ'):'—'} so‘m ${i.uc?`• 🔷 ${i.uc} UC`:''}</div></div><div class="shopBuy"><button data-id="${esc(i.id)}" data-c="money">SO‘M</button>${i.uc?`<button data-id="${esc(i.id)}" data-c="uc">UC</button>`:''}</div></div>`}
+ function render(){const e=$('shopList');if(e)e.innerHTML=S.items.map(card).join('')||'<small>Mahsulot topilmadi.</small>';document.querySelectorAll('#shopList button').forEach(b=>b.onclick=()=>{const item=S.items.find(x=>x.id===b.dataset.id);if(item?.type==='house'){const city=currentCity();if(!city){toast('Uy sotib olish uchun Toshkent, Samarqand yoki Andijon xaritasida bo‘ling.');return;}send('shopBuy',{itemId:b.dataset.id,currency:b.dataset.c,city});}else send('shopBuy',{itemId:b.dataset.id,currency:b.dataset.c});});const w=S.wallet;if(w){$('shopMoney').textContent=(w.money||0).toLocaleString('uz-UZ');$('shopUc').textContent=w.uc||0;$('shopWater').textContent=w.consumables?.water||0;$('shopFood').textContent=w.consumables?.food||0;$('shopHouseCount').textContent=w.houseCount||0;$('shopVehicleCount').textContent=w.vehicleCount||0;}}
+ window.addEventListener('profile-message',e=>{const m=e.detail||{};if(m.type==='shopCatalog'){S.items=m.items||[];render()}if(m.type==='shopWallet'){S.wallet=m.wallet;render()}if(m.type==='shopPurchase'||m.type==='shopHousePlaced'||m.type==='shopVehicleSkin'||m.type==='shopRentResult'||m.type==='shopUcExchangeResult'){if(m.wallet)S.wallet=m.wallet;render();toast(m.message||'Bajarildi.')}if(m.type==='shopError')toast(m.message)});
+ document.addEventListener('DOMContentLoaded',()=>{
+  $('shopOpen')?.addEventListener('click',()=>open('outfit'));$('shopClose')?.addEventListener('click',()=>$('shopPanel').classList.remove('show'));
+  document.querySelectorAll('[data-shop-cat]').forEach(b=>b.addEventListener('click',()=>open(b.dataset.shopCat)));
+  $('shopPlaceHouse')?.addEventListener('click',()=>{const city=currentCity();if(!city){toast('Uy faqat shahar xaritasi ichida joylashtiriladi.');return;}const id=prompt('Shu xaritada sotib olingan uy ID sini kiriting (masalan house_small):');if(id)send('shopPlaceHouse',{itemId:id,city});});
+  $('shopRentPay')?.addEventListener('click',()=>{const id=prompt('Ijara to‘lovi uchun uy ID (masalan house_small):','house_small');if(id)send('shopRentPay',{itemId:id})});
+ $('shopSkinApply')?.addEventListener('click',()=>{const v=prompt('Mashina ID:');const sk=prompt('Skin ID:');if(v&&sk)send('shopVehicleSkin',{vehicleId:v,skinId:sk})});
+ });
+})();

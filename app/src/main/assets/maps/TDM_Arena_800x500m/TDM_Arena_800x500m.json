@@ -1,0 +1,144 @@
+{
+  "version": "TDM-1.0",
+  "id": "TDM_Arena_800x500m",
+  "originalDesign": true,
+  "dimensionsMeters": {
+    "width": 800,
+    "length": 500,
+    "areaKm2": 0.4
+  },
+  "mode": "TEAM_DEATHMATCH",
+  "players": {
+    "max": 10,
+    "teams": 2,
+    "teamSize": 5
+  },
+  "rules": {
+    "killLimit": 50,
+    "timeLimitSeconds": 1200,
+    "respawnSeconds": 3,
+    "spawnProtectionSeconds": 2,
+    "tie": "DRAW"
+  },
+  "boundary": {
+    "minX": 0,
+    "maxX": 800,
+    "minZ": 0,
+    "maxZ": 500
+  },
+  "bases": {
+    "teamA": {
+      "spawnCenter": {
+        "x": 80,
+        "z": 250
+      },
+      "spawns": [
+        [
+          68,
+          225
+        ],
+        [
+          68,
+          250
+        ],
+        [
+          68,
+          275
+        ],
+        [
+          92,
+          235
+        ],
+        [
+          92,
+          265
+        ]
+      ]
+    },
+    "teamB": {
+      "spawnCenter": {
+        "x": 720,
+        "z": 250
+      },
+      "spawns": [
+        [
+          732,
+          225
+        ],
+        [
+          732,
+          250
+        ],
+        [
+          732,
+          275
+        ],
+        [
+          708,
+          235
+        ],
+        [
+          708,
+          265
+        ]
+      ]
+    }
+  },
+  "lanes": [
+    "left_flank",
+    "center",
+    "right_flank"
+  ],
+  "cover": [
+    "small_houses",
+    "ruins",
+    "concrete_walls",
+    "rocks",
+    "trees",
+    "bushes",
+    "transport_cover",
+    "hills"
+  ],
+  "surfaces": [
+    "asphalt",
+    "soil",
+    "gravel",
+    "concrete",
+    "water"
+  ],
+  "pbr": {
+    "enabled": true,
+    "pipeline": "WORLD_PBR_V30",
+    "textureRoot": "world_pbr/textures/",
+    "maps": [
+      "baseColor",
+      "normal",
+      "roughness",
+      "metallic"
+    ],
+    "mobileTextureSize": 512
+  },
+  "gltfPipeline": {
+    "compatible": true,
+    "loaderHook": "window.GLTFLoader",
+    "existingAssets": [
+      "models/city_sedan.gltf",
+      "models/city_suv.gltf",
+      "models/br_armored_scout.gltf",
+      "models/br_supply_truck.gltf"
+    ],
+    "fallback": "procedural_PBR"
+  },
+  "optimization": {
+    "lod": [
+      0,
+      1,
+      2
+    ],
+    "frustumCulling": true,
+    "textureCompression": "ETC2/ASTC-ready",
+    "objectPooling": true,
+    "drawCallBatching": "grouped static props",
+    "farObjects": "low-poly LOD"
+  }
+}

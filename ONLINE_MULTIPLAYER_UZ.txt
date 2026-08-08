@@ -1,0 +1,28 @@
+ASADBEK AI — ONLINE MULTIPLAYER
+=================================
+
+Ilova ichiga WebSocket multiplayer client qo‘shildi.
+Server namunasi: server/server.js
+Server package: server/package.json
+
+Serverni ishga tushirish:
+  cd server
+  npm install
+  npm start
+
+Keyin Android o‘yinidagi ONLINE tugmasiga:
+  ws://SERVER_IP:8080
+yoki HTTPS serverda:
+  wss://SERVER_HOST
+
+kiritiladi.
+
+Eslatma: haqiqiy internet multiplayer uchun server internetda ishlashi kerak.
+ZIPning o‘zi server hostingni avtomatik bajarmaydi.
+
+Real xarita:
+Hozirgi Samarqand, Andijon va Toshkent xaritalari real GPS/Google Maps
+ma'lumotlarining 1:1 nusxasi emas; ular o‘yin uchun yaratilgan 3D city
+scenes. Real ko‘chalarga aniq mos xarita kerak bo‘lsa, alohida GIS/OSM
+ma'lumotlarini olib, optimallashtirish va litsenziya talablarini hisobga
+olib import qilish kerak.

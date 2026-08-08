@@ -1,0 +1,10 @@
+O'ZBEKISTONDAGI HAYOT v16 - BUILD FIX
+
+Fixes:
+- Android Gradle Plugin upgraded to 8.7.3.
+- Gradle Wrapper upgraded to 8.9 to match AGP 8.7.x requirements.
+- Java 17 compile compatibility explicitly configured.
+- targetSdk remains 34 so no Android SDK 35 download is required.
+- Version code increased to 16.
+
+The previous "No matching variant" error was a Gradle/Android Gradle Plugin compatibility mismatch. This package aligns the AGP and Gradle versions.

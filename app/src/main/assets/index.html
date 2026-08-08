@@ -1,0 +1,3706 @@
+<!DOCTYPE html>
+<html lang="uz">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width,initial-scale=1,maximum-scale=1,user-scalable=no,viewport-fit=cover">
+<title>Oʻzbekistondagi Hayot — Normatov Asadbek</title>
+<style>
+*{margin:0;padding:0;box-sizing:border-box;user-select:none;-webkit-user-select:none}
+html,body{width:100%;height:100%;overflow:hidden;background:#000;font-family:Arial,sans-serif}
+canvas{display:block;touch-action:none}button{touch-action:manipulation}
+#brand{position:fixed;top:14px;left:50%;transform:translateX(-50%);z-index:20;color:white;font-weight:900;letter-spacing:3px;text-shadow:0 2px 8px #000}
+#hud{position:fixed;top:14px;left:14px;right:14px;z-index:20;display:flex;justify-content:space-between;pointer-events:none}
+.info{color:white;background:rgba(0,0,0,.42);backdrop-filter:blur(8px);border:1px solid rgba(255,255,255,.18);border-radius:12px;padding:8px 11px;font-size:12px;margin-bottom:4px}
+#controls{position:fixed;bottom:22px;left:18px;z-index:30;display:grid;grid-template-columns:58px 58px 58px;grid-template-rows:58px 58px;gap:7px}
+.ctrl{border:1px solid rgba(255,255,255,.25);border-radius:15px;background:rgba(0,0,0,.48);color:white;font-size:22px}
+#up{grid-column:2}#left{grid-column:1;grid-row:2}#down{grid-column:2;grid-row:2}#right{grid-column:3;grid-row:2}
+#actions{position:fixed;right:18px;bottom:24px;z-index:30;display:flex;flex-direction:column;gap:8px}
+.action{width:105px;padding:13px 8px;border-radius:14px;border:1px solid rgba(255,255,255,.25);background:rgba(0,0,0,.5);color:white;font-weight:bold}
+#start{position:fixed;inset:0;z-index:100;display:flex;align-items:center;justify-content:center;flex-direction:column;text-align:center;color:white;background:radial-gradient(circle at 50% 35%,#263c45,#050607 65%)}
+#start h1{font-size:38px;letter-spacing:3px}#start h2{margin-top:7px;font-size:14px;font-weight:normal;color:#aaa;letter-spacing:4px}
+#start p{max-width:350px;margin:22px 25px;color:#aaa;line-height:1.5}
+#start button{border:0;border-radius:30px;padding:16px 35px;font-size:17px;font-weight:900}
+#worldPanel{position:fixed;top:50%;left:50%;transform:translate(-50%,-50%);z-index:80;display:none;width:min(90vw,360px);padding:18px;border-radius:20px;background:rgba(5,8,10,.9);border:1px solid rgba(255,255,255,.2);color:white;text-align:center;backdrop-filter:blur(12px)}#worldPanel h3{margin-bottom:12px;letter-spacing:1px}.worldChoice{display:block;width:100%;margin:8px 0;padding:13px;border:1px solid rgba(255,255,255,.15);border-radius:12px;background:#15191c;color:white;font-weight:800}#message{position:fixed;left:50%;bottom:145px;transform:translateX(-50%);color:white;background:rgba(0,0,0,.55);padding:10px 16px;border-radius:20px;opacity:0;transition:.3s;z-index:40}
+#message.show{opacity:1}
+.hidden{display:none!important}
+
+#cityReference img{width:100%;border-radius:9px;display:block;margin-top:6px}
+
+#portraitOverlay{position:fixed;inset:0;z-index:9999;display:none;pointer-events:none;background:#08100d;color:#fff;
+align-items:center;justify-content:center;text-align:center;padding:24px;font:700 18px Arial}
+#portraitOverlay .rotateIcon{font-size:52px;display:block;margin-bottom:15px}
+@media (orientation:portrait) and (max-width:900px){#portraitOverlay{display:flex}}
+@media (orientation:landscape){#portraitOverlay{display:none}}
+
+#fallbackCanvas{
+ position:fixed;left:0;top:0;width:100%;height:100%;z-index:0;
+ display:none;touch-action:none;background:#87c9ee;
+}
+#gameError{
+ position:fixed;left:50%;top:50%;transform:translate(-50%,-50%);
+ z-index:10000;display:none;background:rgba(0,0,0,.82);color:#fff;
+ padding:18px 22px;border-radius:16px;font:600 15px Arial;text-align:center;
+ max-width:80%;
+}
+
+#fpHint{
+ position:fixed;left:50%;top:16px;transform:translateX(-50%);
+ z-index:50;padding:7px 12px;border-radius:12px;
+ background:rgba(0,0,0,.55);color:#fff;font:600 12px Arial;
+ pointer-events:none;display:none;
+}
+#crosshair{
+ position:fixed;left:50%;top:50%;transform:translate(-50%,-50%);
+ z-index:45;color:rgba(255,255,255,.85);font:24px Arial;
+ pointer-events:none;display:none;
+}
+
+#simPanel{
+ position:fixed;left:18px;bottom:18px;z-index:55;
+ background:rgba(0,0,0,.62);color:#fff;border:1px solid rgba(255,255,255,.18);
+ border-radius:14px;padding:10px 13px;font:600 12px Arial;pointer-events:none;
+ backdrop-filter:blur(5px)
+}
+#simPanel b{font-size:14px}
+#miniMap{
+ position:fixed;right:18px;bottom:18px;z-index:55;width:120px;height:90px;
+ border:1px solid rgba(255,255,255,.35);border-radius:12px;
+ background:rgba(0,0,0,.5);pointer-events:none
+}
+
+/* Android simulator controls */
+html,body{touch-action:none;overscroll-behavior:none;-webkit-tap-highlight-color:transparent}
+#controls,#actions{z-index:1000!important;pointer-events:auto!important;touch-action:none!important}
+#controls .ctrl,#actions .action{pointer-events:auto!important;touch-action:manipulation!important}
+.ctrl.pressed,.action.pressed{transform:scale(.94);filter:brightness(1.18)}
+#touchMoveArea{position:fixed;left:0;bottom:0;width:42vw;height:42vh;min-width:190px;min-height:150px;z-index:900;pointer-events:auto;touch-action:none;background:transparent}
+@media (orientation:landscape) and (max-height:520px){#controls{bottom:12px;left:12px;transform:scale(.88);transform-origin:bottom left}#actions{bottom:12px;right:12px;transform:scale(.9);transform-origin:bottom right}.info{padding:6px 9px}}
+
+#jobBtn{position:fixed;right:18px;bottom:200px;z-index:1000;width:105px;padding:13px 8px;border-radius:14px;border:1px solid rgba(255,255,255,.25);background:rgba(0,0,0,.5);color:#fff;font-weight:bold;pointer-events:auto;touch-action:manipulation}
+#jobPanel{position:fixed;left:50%;top:50%;transform:translate(-50%,-50%);z-index:1200;display:none;width:min(92vw,520px);max-height:82vh;overflow:auto;padding:18px;border-radius:20px;background:rgba(5,8,10,.96);border:1px solid rgba(255,255,255,.2);color:#fff;box-shadow:0 12px 40px rgba(0,0,0,.45)}
+#jobPanel h3{margin-bottom:8px;text-align:center}.jobBalance{text-align:center;margin:8px 0 14px;font-size:18px;font-weight:900}.jobGrid{display:grid;grid-template-columns:1fr 1fr;gap:8px}.jobCard{padding:10px;border:1px solid rgba(255,255,255,.14);border-radius:12px;background:#15191c;color:#fff;text-align:left}.jobCard b{display:block;margin-bottom:4px}.jobCard small{opacity:.75}.jobCard.selected{outline:2px solid #8ee3ff}.jobActions{display:flex;gap:8px;margin-top:12px}.jobActions button{flex:1;padding:12px;border:0;border-radius:12px;font-weight:900}.jobClose{background:#252a2e;color:#fff}.jobWork{background:#fff;color:#111}.jobWork:disabled{opacity:.45}.jobStatus{text-align:center;margin-top:8px;min-height:18px;font-size:12px;color:#aaa}
+#moneyInfo{margin-top:4px}
+@media(max-width:520px){.jobGrid{grid-template-columns:1fr}#jobBtn{bottom:185px;right:12px;transform:scale(.92)}}
+
+
+#npcDemandBtn{position:fixed;right:18px;bottom:270px;z-index:1000;width:105px;padding:13px 8px;border-radius:14px;border:1px solid rgba(255,255,255,.25);background:rgba(0,0,0,.58);color:#fff;font-weight:bold}
+#npcDemandPanel{position:fixed;left:50%;top:50%;transform:translate(-50%,-50%);z-index:1300;display:none;width:min(92vw,500px);max-height:82vh;overflow:auto;padding:18px;border-radius:20px;background:rgba(5,8,10,.97);border:1px solid rgba(255,255,255,.2);color:#fff;box-shadow:0 12px 40px rgba(0,0,0,.55)}
+#npcDemandPanel h3{text-align:center;margin-bottom:10px}
+.npcStat{display:flex;justify-content:space-between;padding:8px 10px;background:#14191c;border-radius:10px;margin:6px 0;font-size:12px}
+#customerCard{margin-top:10px;padding:12px;border-radius:13px;background:#171d20;border:1px solid rgba(255,255,255,.14)}
+#customerCard b{font-size:15px}
+.customerActions{display:flex;gap:8px;margin-top:10px}.customerActions button{flex:1;padding:12px;border:0;border-radius:11px;font-weight:900}
+#acceptCustomer{background:#fff;color:#111}#closeNpcPanel{background:#252a2e;color:#fff}
+#npsBadge{position:fixed;right:18px;top:86px;z-index:1000;color:#fff;background:rgba(0,0,0,.48);border:1px solid rgba(255,255,255,.18);border-radius:12px;padding:8px 10px;font:700 11px Arial}
+
+/* ===== PREMIUM START SCREEN v11 ===== */
+#start{
+  overflow:hidden;
+  padding:24px;
+  background:
+    radial-gradient(circle at 50% 25%,rgba(37,110,100,.55),transparent 32%),
+    radial-gradient(circle at 50% 85%,rgba(212,153,48,.22),transparent 38%),
+    linear-gradient(145deg,#06100f 0%,#101b1b 48%,#050707 100%);
+}
+#start:before{
+  content:"";
+  position:absolute;inset:-30%;
+  background:radial-gradient(circle,rgba(255,255,255,.08) 0 1px,transparent 1px);
+  background-size:30px 30px;opacity:.25;transform:rotate(10deg);
+}
+.premiumStartGlow{
+  position:absolute;width:360px;height:360px;border-radius:50%;
+  background:rgba(32,190,150,.12);filter:blur(45px);top:4%;left:50%;
+  transform:translateX(-50%);
+}
+.startLogo{
+  position:relative;z-index:2;width:min(82vw,430px);max-height:180px;
+  object-fit:contain;filter:drop-shadow(0 10px 25px rgba(0,0,0,.7));
+  animation:startLogoFloat 3.8s ease-in-out infinite;
+}
+.creatorName{
+  position:relative;z-index:2;margin-top:2px;color:#f5d27a;
+  font-size:18px;font-weight:800;letter-spacing:1px;
+  text-shadow:0 2px 8px #000;
+}
+.creatorBrand{
+  position:relative;z-index:2;margin-top:4px;color:#e9eeee;
+  font-size:12px;font-weight:900;letter-spacing:2px;
+}
+.startTag{
+  position:relative;z-index:2;margin-top:18px;color:#fff;
+  font-size:11px;font-weight:900;letter-spacing:1.8px;
+  max-width:520px;opacity:.92;
+}
+.startTeasers{
+  position:relative;z-index:2;display:flex;flex-wrap:wrap;justify-content:center;
+  gap:7px;margin:16px auto 10px;max-width:430px;
+}
+.startTeasers span{
+  padding:7px 10px;border:1px solid rgba(255,255,255,.18);
+  border-radius:20px;background:rgba(255,255,255,.07);
+  color:#fff;font-size:10px;font-weight:800;backdrop-filter:blur(8px);
+}
+.startQuestion{
+  position:relative;z-index:2;margin-top:7px;font-size:24px;font-weight:900;
+  color:#fff;text-shadow:0 3px 12px #000;
+}
+.startHint{
+  position:relative;z-index:2;margin:7px 18px 15px;max-width:430px;
+  color:#aeb9b8;font-size:12px;line-height:1.45;
+}
+#premiumStartBtn{
+  position:relative;z-index:2;min-width:min(78vw,300px);
+  padding:15px 28px;border:1px solid rgba(255,222,130,.65);
+  border-radius:18px;background:linear-gradient(180deg,#1e9d68,#087044);
+  color:#fff;box-shadow:0 8px 30px rgba(0,0,0,.42),0 0 24px rgba(27,180,115,.18);
+  cursor:pointer;transition:transform .18s,filter .18s;
+}
+#premiumStartBtn:active{transform:scale(.96);filter:brightness(1.15)}
+#premiumStartBtn span{display:block;font-size:17px;font-weight:1000;letter-spacing:1px}
+#premiumStartBtn small{display:block;margin-top:4px;font-size:9px;letter-spacing:1.5px;opacity:.72}
+.startFooter{
+  position:relative;z-index:2;margin-top:14px;color:#74807e;
+  font-size:10px;letter-spacing:1.2px;
+}
+@keyframes startLogoFloat{
+  0%,100%{transform:translateY(0) scale(1)}
+  50%{transform:translateY(-5px) scale(1.015)}
+}
+@media(max-height:650px){
+  .startLogo{width:min(68vw,330px);max-height:120px}
+  .startTag{margin-top:8px}.startTeasers{margin:9px auto 6px}
+  .startQuestion{font-size:20px}.startHint{margin-bottom:8px}
+}
+
+</style>
+
+<style>
+#jobSelectPanel{position:fixed;inset:0;z-index:5000;display:flex;align-items:center;justify-content:center;
+background:rgba(0,0,0,.58);backdrop-filter:blur(8px)}
+.jobCard{width:min(90vw,430px);max-height:78vh;overflow:auto;padding:22px;border-radius:24px;
+background:linear-gradient(145deg,rgba(18,27,27,.98),rgba(6,10,10,.98));
+border:1px solid rgba(255,220,130,.35);box-shadow:0 20px 70px rgba(0,0,0,.65)}
+.jobTitle{text-align:center;color:#f5d27a;font-size:22px;font-weight:1000;letter-spacing:1.5px}
+.jobSub{text-align:center;color:#aeb9b8;font-size:11px;margin:7px 0 15px}
+.jobOption{display:flex;align-items:center;gap:12px;padding:12px;margin:7px 0;border:1px solid rgba(255,255,255,.12);
+border-radius:15px;background:rgba(255,255,255,.055);color:#fff;cursor:pointer}
+.jobOption.selected{border-color:#f5d27a;background:rgba(245,210,122,.12)}
+.jobIcon{font-size:23px}.jobName{font-weight:900;font-size:13px}.jobNeed{font-size:10px;color:#9eaaa8;margin-top:2px}
+#jobConfirm{width:100%;margin-top:12px;padding:14px;border:0;border-radius:15px;background:#14865c;color:#fff;
+font-weight:1000;font-size:14px}
+</style>
+
+</head>
+<body><div id="simPanel"><b>OʻZBEKISTONDAGI HAYOT</b><br>FIRST PERSON • SAMARQAND / ANDIJON / TOSHKENT<br>W/S: yurish • A/D: burilish • Touch: qarash</div><canvas id="miniMap" width="240" height="180"></canvas><div id="fpHint">FIRST PERSON • Kamera personaj ko‘zi ichidan</div><div id="crosshair">+</div>
+<canvas id="fallbackCanvas"></canvas>
+<div id="gameError">3D kutubxonasi yuklanmadi. Zaxira rejim ishga tushirilmoqda...</div>
+<div id="portraitOverlay"><div><span class="rotateIcon">↻</span>Telefonni gorizontal holatga aylantiring<br><small style="opacity:.7">ASADBEK AI — Open World</small></div></div>
+
+<div id="start">
+  <div class="premiumStartGlow"></div>
+  <img class="startLogo" src="asadbek_premium_logo.png" alt="Oʻzbekistondagi Hayot">
+  <div class="creatorName">Normatov Asadbek</div>
+  <div class="creatorBrand">Asadbek | AI CREATOR</div>
+  <div class="startTag">OʻZBEKISTON. SENING HAYOTING. SENING TANLOVING.</div>
+
+  <div class="startTeasers">
+    <span>🏙️ 3 SHAHAR</span>
+    <span>👥 50 NPS</span>
+    <span>💼 40 KASB</span>
+    <span>🌐 ONLINE</span>
+  </div>
+
+  <div class="startQuestion">Bugun kim bo‘lasiz?</div>
+  <div class="startHint">Mijozlar sizni kutmoqda. Shahar esa sizning qarorlaringizni kutmoqda.</div>
+
+  <button id="premiumStartBtn" onclick="startGame()">
+    <span>HAYOTNI BOSHLASH</span>
+    <small>SHARHNI OCHING →</small>
+  </button>
+  <button id="tdmOpen" class="tdmStartButton">
+    <span>⚔️ TDM ARENA</span>
+    <small>5 VS 5 • 50 KILL • 20:00</small>
+  </button>
+  <div class="startFooter">Samarqand • Andijon • Toshkent</div>
+</div>
+
+
+<div id="jobSelectPanel" style="display:none">
+  <div class="jobCard">
+    <div class="jobTitle">KASB TANLASH</div>
+    <div class="jobSub">Siz tanlagan world ichida kasbingizni tanlang</div>
+    <div id="jobList"></div>
+    <button id="jobConfirm">KASBIMNI TANLADIM</button>
+  </div>
+</div>
+
+<div id="brand">OʻZBEKISTONDAGI HAYOT</div>
+
+<div id="hud">
+<div>
+<div class="info">MODE: <b id="mode">CAR</b></div>
+<div class="info">SPEED: <b id="speed">0</b> KM/H</div>
+</div>
+<div style="text-align:right">
+<div class="info"><b id="time">08:00</b></div>
+<div class="info">WEATHER: <b id="weather">CLEAR</b></div>
+</div>
+</div>
+
+<div id="controls">
+<button class="ctrl" id="up">▲</button>
+<button class="ctrl" id="left">◀</button>
+<button class="ctrl" id="down">▼</button>
+<button class="ctrl" id="right">▶</button>
+</div>
+
+<div id="actions">
+<button class="action" id="vehicleBtn">EXIT CAR</button>
+<button class="action" id="buildingBtn" style="display:none">KIRISH</button>
+<button class="action" id="weatherBtn">WEATHER</button>
+<button class="action" id="worldBtn">WORLD: 1</button>
+</div>
+
+<div id="touchMoveArea" aria-hidden="true"></div>
+
+<button class="action" id="jobBtn">KASBLAR</button>
+
+<div id="npsBadge">NPS / NPC: <span id="npsCount">50</span> • FAOL: <span id="activeNpcCount">0</span></div>
+<button id="npcDemandBtn">👥 MIJOZLAR</button>
+<div id="npcDemandPanel">
+  <h3>👥 NPS / NPC — MIJOZ TALABI</h3>
+  <div class="npcStat"><span>Shahardagi odamlar</span><b id="npcTotal">50</b></div>
+  <div class="npcStat"><span>Faol mijoz talablari</span><b id="npcDemandCount">0</b></div>
+  <div class="npcStat"><span>O‘rtacha xizmat bahosi</span><b id="npcAvgRating">—</b></div>
+  <div id="customerCard">
+    <b id="customerName">Mijoz topilmoqda...</b>
+    <div id="customerNeed" style="margin-top:6px;color:#aaa">Kasb tanlang va mos mijozni qabul qiling.</div>
+    <div id="customerPay" style="margin-top:7px;font-weight:800"></div>
+  </div>
+  <div class="customerActions">
+    <button id="closeNpcPanel">YOPISH</button>
+    <button id="acceptCustomer">MIJOZNI QABUL QILISH</button>
+  </div>
+  <div id="customerStatus" style="text-align:center;margin-top:9px;color:#aaa;font-size:12px;min-height:18px"></div>
+</div>
+
+<div id="jobPanel">
+  <h3>💼 OʻZBEKISTONDAGI HAYOT — KASBLAR</h3>
+  <div class="jobBalance">BALANS: <span id="jobBalance">0</span> so'm</div>
+  <div id="jobGrid" class="jobGrid"></div>
+  <div class="jobStatus" id="jobStatus">Kasb tanlang.</div>
+  <div class="jobActions"><button class="jobClose" id="jobClose">YOPISH</button><button class="jobWork" id="jobWork" disabled>ISHNI BOSHLASH</button></div>
+</div>
+
+
+<style>
+.tdmStartButton{position:relative;z-index:2;margin-top:9px;min-width:min(78vw,300px);padding:12px 24px;border:1px solid rgba(110,180,255,.55);border-radius:16px;background:linear-gradient(180deg,#1c5a8a,#123c62);color:#fff;box-shadow:0 8px 25px rgba(0,0,0,.35);font-weight:900}
+.tdmStartButton span{display:block;font-size:15px}.tdmStartButton small{display:block;margin-top:3px;font-size:9px;opacity:.72;letter-spacing:1px}
+#tdmOverlay{position:fixed;inset:0;z-index:30000;display:none;background:#071014;color:#fff;overflow:hidden}
+#tdmOverlay.show{display:block}
+#tdmArenaRoot{position:absolute;inset:0}
+#tdmCanvas{width:100%;height:100%;display:block}
+#tdmTop{position:absolute;top:10px;left:50%;transform:translateX(-50%);z-index:5;display:flex;align-items:center;gap:12px;padding:8px 12px;border-radius:14px;background:rgba(0,0,0,.55);backdrop-filter:blur(8px);font:900 14px Arial;pointer-events:none;white-space:nowrap}
+#tdmA{color:#62aaff}#tdmB{color:#ff626c}#tdmTimer{font-size:17px}
+#tdmCount{font-size:10px;color:#aaa}
+#tdmPanel{position:absolute;left:50%;top:50%;transform:translate(-50%,-50%);z-index:10;width:min(90vw,430px);padding:20px;border-radius:22px;background:rgba(4,9,11,.94);border:1px solid #ffffff24;text-align:center;box-shadow:0 20px 70px #000b}
+#tdmPanel h2{margin-bottom:5px}#tdmPanel p{color:#9aa7a8;font-size:11px;line-height:1.5}
+#tdmName,#tdmLoadout{width:100%;box-sizing:border-box;padding:12px;margin:7px 0;border-radius:11px;border:1px solid #ffffff22;background:#11191d;color:#fff}
+.tdmBtns{display:flex;gap:8px;margin-top:8px}.tdmBtns button{flex:1;padding:12px;border:0;border-radius:11px;font-weight:900}
+#tdmReady{background:#fff;color:#111}#tdmStart{background:#4cdb8c;color:#061008}#tdmClose{background:#252d31;color:#fff}
+#tdmStatus{min-height:18px;color:#7fd6ff;font-size:11px;margin-top:8px}
+#tdmRespawn{position:absolute;top:27%;left:50%;transform:translateX(-50%);z-index:7;display:none;padding:10px 15px;border-radius:15px;background:rgba(0,0,0,.72);font-weight:1000}
+#tdmRespawn.show{display:block}
+#tdmNotice{position:absolute;top:18%;left:50%;transform:translateX(-50%);z-index:8;opacity:0;transition:.2s;padding:9px 14px;border-radius:16px;background:rgba(0,0,0,.62);font-weight:900;pointer-events:none}
+#tdmNotice.show{opacity:1}
+#tdmResults{position:absolute;inset:0;z-index:20;display:none;align-items:center;justify-content:center;flex-direction:column;background:rgba(2,5,6,.86);text-align:center;font-weight:900;font-size:28px}
+#tdmResults.show{display:flex}.tdmResultTitle{margin-bottom:10px}.tdmResults button{margin-top:20px;padding:13px 20px;border:0;border-radius:12px;font-weight:900}
+#tdmControls{position:absolute;left:14px;bottom:14px;z-index:9;display:grid;grid-template-columns:54px 54px 54px;grid-template-rows:54px 54px;gap:6px}
+.tdmCtrl{border:1px solid #ffffff2b;border-radius:14px;background:#0009;color:#fff;font-size:20px;font-weight:900;touch-action:none}
+#tdmW{grid-column:2}#tdmAKey{grid-column:1;grid-row:2}#tdmS{grid-column:2;grid-row:2}#tdmD{grid-column:3;grid-row:2}
+#tdmActions{position:absolute;right:14px;bottom:18px;z-index:9;display:flex;flex-direction:column;gap:7px}
+#tdmActions button{width:92px;padding:12px 7px;border-radius:13px;border:1px solid #ffffff2b;background:#0009;color:#fff;font-weight:900;touch-action:none}
+@media(max-height:520px){#tdmTop{top:6px}.tdmCtrl{width:46px;height:46px}#tdmControls{grid-template-columns:46px 46px 46px;grid-template-rows:46px 46px}}
+#tdmTeamHub{position:absolute;inset:0;z-index:30;display:none;align-items:center;justify-content:center;padding:14px;background:radial-gradient(circle at 50% 20%,rgba(28,91,86,.4),rgba(2,6,8,.96) 70%);overflow:auto}
+#tdmTeamHub.show{display:flex}
+.teamHubCard{width:min(96vw,760px);max-height:92vh;overflow:auto;padding:16px;border-radius:24px;background:rgba(7,12,14,.96);border:1px solid rgba(255,255,255,.14);box-shadow:0 20px 80px #000b}
+.teamHubHead{display:flex;justify-content:space-between;gap:10px;align-items:center}.teamHubHead h2{margin:0;font-size:20px}.hubClose{border:0;border-radius:10px;padding:8px 12px;background:#252d31;color:#fff}
+.partyCode{display:flex;gap:8px;align-items:center;margin:10px 0}.partyCode b{font-size:17px;letter-spacing:2px}.partyCode button{border:0;border-radius:10px;padding:8px 10px;background:#1d3035;color:#fff}
+.partyCreate,.partyJoin{display:flex;gap:8px;margin:8px 0}.partyCreate button,.partyJoin button,.hubAction{flex:1;border:0;border-radius:11px;padding:11px;font-weight:900;background:#182226;color:#fff}.partyCreate button:first-child{background:#183b5d}.partyCreate button:last-child{background:#5b242a}.partyJoin input{flex:2;padding:11px;border-radius:11px;border:1px solid #ffffff22;background:#10181b;color:#fff}
+#tdmPartyMembers{display:grid;grid-template-columns:repeat(5,1fr);gap:8px;margin:12px 0}.partySlot{min-height:105px;padding:10px;border-radius:15px;background:#10181b;border:1px solid #ffffff12;text-align:center}.partyAvatar{font-size:28px}.partyMember b{display:block;font-size:11px;white-space:nowrap;overflow:hidden;text-overflow:ellipsis}.partyMember small{display:block;color:#9ca8a8;font-size:9px;margin-top:4px}.hubGrid{display:grid;grid-template-columns:repeat(4,1fr);gap:8px}.hubBox{padding:12px;border-radius:14px;background:#10181b;border:1px solid #ffffff12}.hubBox b{display:block;font-size:11px}.hubBox span{display:block;font-size:18px;font-weight:1000;margin-top:4px}.hubBox small{color:#889695}.hubControls{display:grid;grid-template-columns:1fr 1fr;gap:8px;margin-top:9px}.hubControls button,.hubControls select{width:100%;box-sizing:border-box;padding:11px;border:0;border-radius:11px;background:#1b2529;color:#fff;font-weight:900}.hubControls select{border:1px solid #ffffff16}.hubBottom{display:flex;gap:8px;margin-top:10px}.hubBottom button{flex:1;padding:12px;border:0;border-radius:12px;font-weight:1000}.hubBottom .go{background:#55d98a;color:#07110a}.hubBottom .ready{background:#fff;color:#111}.hubStatus{text-align:center;min-height:18px;color:#7fd6ff;font-size:11px;margin-top:8px}@media(max-width:600px){#tdmPartyMembers{grid-template-columns:repeat(2,1fr)}.hubGrid{grid-template-columns:repeat(2,1fr)}.teamHubCard{padding:13px}}
+</style>
+
+<div id="tdmOverlay">
+  <div id="tdmArenaRoot"></div>
+  <div id="tdmTop">
+    <span>🔵 TEAM A: <b id="tdmA">00</b></span>
+    <span>🔴 TEAM B: <b id="tdmB">00</b></span>
+    <span id="tdmTimer">20:00</span>
+    <span id="tdmCount">0/10</span>
+  </div>
+  <div id="tdmPanel">
+    <h2>TDM ARENA — 5 VS 5</h2>
+    <p>800 × 500 m • 50 KILL • 20:00 • 3s RESPAWN • 2s SPAWN PROTECTION</p>
+    <input id="tdmName" maxlength="18" placeholder="O‘yinchi nomi">
+    <select id="tdmLoadout"><option>AR-01</option><option>SMG-02</option><option>DMR-03</option></select>
+    <div class="tdmBtns"><button id="tdmReady">TAYYOR</button><button id="tdmStart">MATCH START</button><button id="tdmClose">YOPISH</button></div>
+    <div id="tdmStatus">Serverga ulanmoqda…</div>
+  </div>
+  <div id="tdmRespawn"></div><div id="tdmNotice"></div><div id="tdmResults"></div>
+  <div id="tdmTeamHub">
+   <div class="teamHubCard">
+    <div class="teamHubHead"><h2 id="tdmTeamHubTitle">🏕️ TEAM TAYYORLANISH HUDUDI</h2><button class="hubClose" id="tdmPartyClose">✕</button></div>
+    <p class="tdmStatusLine">Xaritadan tashqaridagi alohida jamoa hududi: kiyim, do‘stlar, UC/Drop, daraja va xarita tanlash shu yerda.</p>
+    <div class="partyCode"><span>TEAM KOD:</span><b id="tdmPartyCodeShow">—</b><button id="tdmPartyCodeCopy">📋 NUSXA</button></div>
+    <div class="partyCreate"><button id="tdmPartyCreateA">🔵 TEAM A XONA YARATISH</button><button id="tdmPartyCreateB">🔴 TEAM B XONA YARATISH</button></div>
+    <div class="partyJoin"><input id="tdmPartyCode" maxlength="14" placeholder="Do‘stingiz bergan TEAM kodini kiriting"><button id="tdmPartyJoin">DO‘STLAR XONASIGA KIRISH</button></div>
+    <div id="tdmPartyCount">0/5 O‘YINCHI</div>
+    <div id="tdmPartyMembers"></div>
+    <div class="hubGrid">
+      <div class="hubBox"><b>👕 KIYIM / SKIN</b><span id="tdmPartyOutfitValue">SET 01</span><small>Jamoada kiyimlarni solishtirish</small></div>
+      <div class="hubBox"><b>🏆 DARAJA</b><span id="tdmPartyLevelValue">LVL 1</span><small>Profil darajasi</small></div>
+      <div class="hubBox"><b>💎 UC</b><span id="tdmPartyUcValue">1200</span><small>Virtual balans</small></div>
+      <div class="hubBox"><b>🎁 DROP</b><span>DROP SHOP</span><small>Drop/bonuslarni boshqarish</small></div>
+    </div>
+    <div class="hubControls">
+      <button id="tdmPartyOutfit">👕 KIYIMNI ALMASHTIRISH</button>
+      <button id="tdmPartyExchange">💎 UC ↔ DROP ALMASHTIRISH</button>
+      <select id="tdmPartyMap"><option value="TDM_Arena_800x500m">TDM Arena 800×500</option><option value="TDM_Arena_Night">TDM Arena — Night</option><option value="TDM_Arena_Training">TDM Arena — Training</option></select>
+      <button id="tdmPartyInvite">👥 DO‘STNI TAKLIF QILISH</button>
+    </div>
+    <div id="tdmPartyExchangeStatus" class="hubStatus">UC/Drop almashinuvi server tasdig‘i bilan ishlaydi.</div>
+    <div id="tdmPartyStatus" class="hubStatus">5 kishilik jamoa xonasini yarating yoki kod orqali qo‘shiling.</div>
+    <div class="hubBottom"><button class="ready" id="tdmPartyReady">✅ TAYYORMAN</button><button class="go" id="tdmPartyToMatch">🚀 MATCHGA O‘TISH</button></div>
+   </div>
+  </div>
+  <div id="tdmControls">
+    <button class="tdmCtrl" id="tdmW">▲</button><button class="tdmCtrl" id="tdmAKey">◀</button>
+    <button class="tdmCtrl" id="tdmS">▼</button><button class="tdmCtrl" id="tdmD">▶</button>
+  </div>
+  <div id="tdmActions"><button id="tdmFire">🔫 FIRE</button><button id="tdmReload">↻ RELOAD</button></div>
+</div>
+<style>
+#teamLobby{
+ position:fixed;inset:0;z-index:10000;display:none;align-items:center;justify-content:center;
+ background:radial-gradient(circle at 50% 25%,rgba(32,120,105,.35),rgba(3,6,7,.97) 65%);
+ color:#fff;padding:18px;box-sizing:border-box
+}
+#teamLobby.show{display:flex}
+.lobbyCard{
+ width:min(94vw,560px);max-height:88vh;overflow:auto;padding:20px;border-radius:24px;
+ background:rgba(8,13,14,.96);border:1px solid rgba(255,255,255,.18);
+ box-shadow:0 20px 80px rgba(0,0,0,.7);backdrop-filter:blur(16px)
+}
+.lobbyTitle{text-align:center;font-size:25px;font-weight:1000;letter-spacing:1px}
+.lobbySub{text-align:center;color:#aeb9b8;font-size:12px;margin:6px 0 14px}
+#lobbyStatus{text-align:center;color:#8ee3ff;font-size:13px;min-height:20px;margin:8px 0}
+#lobbyCount{text-align:center;font-weight:900;margin:5px 0 12px}
+.lobbyTeams{display:grid;grid-template-columns:repeat(4,1fr);gap:8px}
+.lobbyTeam{
+ padding:11px 6px;border-radius:14px;border:1px solid rgba(255,255,255,.14);
+ background:#141a1c;color:#fff;font-weight:900
+}
+.lobbyTeam.selected{outline:2px solid #65e6a8;background:#18352d}
+.lobbyTeam small{display:block;color:#9aa6a5;font-size:9px;margin-top:4px}
+#lobbyPlayers{
+ margin-top:12px;max-height:180px;overflow:auto;border-radius:14px;
+ background:rgba(255,255,255,.04);border:1px solid rgba(255,255,255,.09)
+}
+.lobbyPlayer{
+ display:flex;justify-content:space-between;align-items:center;padding:8px 10px;
+ border-bottom:1px solid rgba(255,255,255,.06);font-size:12px
+}
+.lobbyPlayer:last-child{border-bottom:0}
+.readyDot{font-size:11px}.ready{color:#63e6a8}.notready{color:#ffca70}
+.lobbyActions{display:flex;gap:8px;margin-top:13px}
+.lobbyActions button{
+ flex:1;padding:13px;border:0;border-radius:13px;font-weight:1000
+}
+#lobbyReady{background:#fff;color:#111}
+#lobbyStart{background:#54d987;color:#07100a}
+#lobbyOffline{background:#252a2e;color:#fff}
+#lobbyHint{text-align:center;color:#7e8988;font-size:10px;margin-top:9px;line-height:1.4}
+@media(max-width:500px){.lobbyTeams{grid-template-columns:repeat(2,1fr)}.lobbyCard{padding:16px}}
+</style>
+<style>
+#onlineBtn{position:fixed;right:18px;bottom:340px;z-index:1001;width:105px;padding:13px 8px;border-radius:14px;border:1px solid rgba(255,255,255,.25);background:rgba(0,0,0,.58);color:#fff;font-weight:bold}
+#onlinePanel{position:fixed;left:50%;top:50%;transform:translate(-50%,-50%);z-index:2500;display:none;width:min(92vw,430px);padding:20px;border-radius:20px;background:rgba(5,8,10,.97);border:1px solid rgba(255,255,255,.2);color:#fff;box-shadow:0 12px 40px rgba(0,0,0,.55)}
+#onlinePanel h3{text-align:center;margin-bottom:12px}
+#onlinePanel input{width:100%;padding:12px;margin:6px 0;border-radius:10px;border:1px solid rgba(255,255,255,.2);background:#11171a;color:#fff;box-sizing:border-box}
+.onlineRow{display:flex;gap:8px;margin-top:8px}.onlineRow button{flex:1;padding:12px;border:0;border-radius:11px;font-weight:900}
+#onlineConnect{background:#52d66f;color:#07100a}.onlineClose{background:#252a2e;color:#fff}
+#onlineStatus{text-align:center;margin-top:10px;font-size:12px;color:#aaa;min-height:18px}
+#onlinePlayers{text-align:center;margin-top:6px;font-size:13px}
+.remoteLabel{position:fixed;z-index:46;color:#fff;background:rgba(0,0,0,.55);padding:3px 6px;border-radius:6px;font-size:10px;pointer-events:none}
+@media(max-height:600px){#onlineBtn{bottom:290px}}
+</style>
+<div id="teamLobby">
+ <div class="lobbyCard">
+  <div class="lobbyTitle">🏕️ JAMOAVIY KUTISH MAYDONI</div>
+  <div class="lobbySub">60 o‘yinchi shu joyda yig‘iladi. Jamoani tanlang, tayyor bo‘ling va xona egasi o‘yinni boshlaydi.</div>
+  <div id="lobbyStatus">Serverga ulanmoqda…</div>
+  <div id="lobbyCount">0 / 60 O‘YINCHI</div>
+  <div class="lobbyTeams">
+   <button class="lobbyTeam" data-team="1">🟢 1-JAMOA<small>Jamoa A</small></button>
+   <button class="lobbyTeam" data-team="2">🔵 2-JAMOA<small>Jamoa B</small></button>
+   <button class="lobbyTeam" data-team="3">🟠 3-JAMOA<small>Jamoa C</small></button>
+   <button class="lobbyTeam" data-team="4">🟣 4-JAMOA<small>Jamoa D</small></button>
+  </div>
+  <div id="lobbyPlayers"></div>
+  <div class="lobbyActions">
+   <button id="lobbyReady">✅ TAYYORMAN</button>
+   <button id="lobbyStart">🚀 O‘YINNI BOSHLASH</button>
+  </div>
+  <div class="lobbyActions">
+   <button id="lobbyOffline">OFFLINE O‘YNASH</button>
+  </div>
+  <div id="lobbyHint">Xona egasi — birinchi kirgan o‘yinchi. Boshqalar avtomatik ravishda shu kutish maydoniga qo‘shiladi.</div>
+ </div>
+</div>
+
+<button id="onlineBtn">ONLINE</button>
+<div id="onlinePanel">
+  <h3>🌐 ONLINE MULTIPLAYER</h3>
+  <input id="playerName" maxlength="18" placeholder="O‘yinchi nomi" value="Player">
+  <input id="serverUrl" placeholder="wss://server-manzili" value="">
+  <div class="onlineRow">
+    <button id="onlineConnect">ULANISH</button>
+    <button class="onlineClose" id="onlineClose">YOPISH</button>
+  </div>
+  <div id="onlineStatus">Server manzilini kiriting.</div>
+  <div id="onlinePlayers">O‘yinchilar: 0</div>
+</div>
+
+
+<style>
+#realMapBtn{position:fixed;right:18px;bottom:395px;z-index:1001;width:105px;padding:13px 8px;border-radius:14px;border:1px solid rgba(255,255,255,.25);background:rgba(0,0,0,.58);color:#fff;font-weight:bold}
+#realMapPanel{position:fixed;inset:4%;z-index:3000;display:none;background:rgba(5,8,10,.98);border:1px solid rgba(255,255,255,.2);border-radius:20px;color:#fff;overflow:hidden;box-shadow:0 15px 55px rgba(0,0,0,.7)}
+#realMapPanel .mapHead{height:52px;display:flex;align-items:center;justify-content:space-between;padding:0 14px;background:rgba(20,25,28,.98)}
+#realMapPanel .mapHead b{font-size:14px}
+#realMapPanel .mapClose{border:0;border-radius:10px;padding:9px 14px;background:#252a2e;color:#fff;font-weight:800}
+#osmFrame{width:100%;height:calc(100% - 92px);border:0;background:#ddd}
+#mapAttribution{height:40px;display:flex;align-items:center;padding:0 12px;font-size:11px;color:#aaa;background:#0b0e10}
+#mapAttribution a{color:#8ed0ff;margin-left:4px}
+@media(max-height:600px){#realMapBtn{bottom:340px}}
+</style>
+<button id="realMapBtn">🗺️ REAL XARITA</button>
+<div id="realMapPanel">
+  <div class="mapHead">
+    <b id="realMapTitle">REAL XARITA — OSM</b>
+    <button class="mapClose" id="realMapClose">YOPISH</button>
+  </div>
+  <iframe id="osmFrame" title="OpenStreetMap real xarita" loading="lazy"></iframe>
+  <div id="mapAttribution">Xarita ma'lumotlari © OpenStreetMap contributors
+    <a href="https://www.openstreetmap.org/copyright" target="_blank" rel="noopener">ODbL</a>
+  </div>
+</div>
+
+<div id="message"></div>
+<div id="worldPanel"><h3>WORLD TANLANG</h3><div style="font-size:11px;color:#aaa;margin-bottom:8px">Real xarita: OpenStreetMap koordinatalari • 3D shahar sahnasi o‘yin optimizatsiyasida</div><button class="worldChoice" onclick="selectWorld(1)">WORLD 1 — SAMARQAND • REGISTON</button><button class="worldChoice" onclick="selectWorld(2)">WORLD 2 — ANDIJON VILOYATI</button><button class="worldChoice" onclick="selectWorld(3)">WORLD 3 — TOSHKENT • O‘ZBEKISTON POYTAXTI</button><button class="worldChoice" onclick="closeWorldPanel()">YOPISH</button></div>
+
+<script src="./three.min.js">
+setInterval(()=>{if(gameStarted)updateNpcStats();},1000);
+</script>
+<script>
+let scene,camera,renderer,vehicle,player;
+window.scene=null;window.camera=null;window.vehicle=null;window.player=null;window.gameStarted=false;
+let mode="car",gameStarted=false,rain=false,worldClock=8,worldId=1;
+window.mode=mode; window.worldId=worldId;
+const keys={up:false,down:false,left:false,right:false};
+
+const PHYSICS={
+ mass:1450,gravity:9.81,engineForce:4300,brakeForce:8500,
+ airDrag:.55,rollingResistance:240,maxSpeed:13.8889,
+ wheelRadius:.34,suspensionStrength:85,suspensionDamping:12,
+ waterDrag:2.8
+};
+
+const physics={
+ speed:0,acceleration:0,verticalSpeed:0,
+ yawVelocity:0,pitch:0,roll:0,grounded:true,wheelRotation:0
+};
+
+function launchWorld(){
+ document.getElementById("start").classList.add("hidden");
+ const overlay=document.getElementById("portraitOverlay");
+ if(overlay) overlay.style.display="none";
+
+ if(typeof THREE==="undefined"){
+   startFallbackGame();
+   return;
+ }
+ try{
+   init(); window.scene=scene;window.camera=camera;window.renderer=renderer;window.vehicle=vehicle;window.player=player;window.gameStarted=true; gameStarted=true; animate();
+ }catch(err){
+   console.error(err);
+   startFallbackGame();
+ }
+}
+
+
+let fallbackStarted=false, fbCtx=null, fbCanvas=null;
+let fbCar={x:0,y:0,angle:0,speed:0};
+let fbNPCs=[];
+const fbKeys=keys;
+
+function startFallbackGame(){
+ fallbackStarted=true;
+ fbCanvas=document.getElementById("fallbackCanvas");
+ fbCtx=fbCanvas.getContext("2d");
+ fbCanvas.style.display="block";
+ document.getElementById("gameError").style.display="none";
+ resizeFallback();
+ fbNPCs=[];
+ for(let i=0;i<35;i++){
+   fbNPCs.push({
+     x:(Math.random()-.5)*900,y:(Math.random()-.5)*650,
+     vx:(Math.random()-.5)*.5,vy:(Math.random()-.5)*.5,
+     type:i%20
+   });
+ }
+ bindFallbackControls();
+ requestAnimationFrame(fallbackLoop);
+}
+
+function resizeFallback(){
+ if(!fbCanvas)return;
+ fbCanvas.width=Math.max(640,innerWidth);
+ fbCanvas.height=Math.max(360,innerHeight);
+}
+
+function bindFallbackControls(){
+ const bind=(id,key)=>{
+   const el=document.getElementById(id);
+   if(!el)return;
+   const down=e=>{e.preventDefault();fbKeys[key]=true};
+   const up=e=>{e.preventDefault();fbKeys[key]=false};
+   el.addEventListener("pointerdown",down);
+   el.addEventListener("pointerup",up);
+   el.addEventListener("pointercancel",up);
+   el.addEventListener("pointerleave",up);
+ };
+ bind("up","up");bind("down","down");bind("left","left");bind("right","right");
+ window.addEventListener("keydown",e=>{
+   if(e.key==="ArrowUp"||e.key==="w")fbKeys.up=true;
+   if(e.key==="ArrowDown"||e.key==="s")fbKeys.down=true;
+   if(e.key==="ArrowLeft"||e.key==="a")fbKeys.left=true;
+   if(e.key==="ArrowRight"||e.key==="d")fbKeys.right=true;
+ });
+ window.addEventListener("keyup",e=>{
+   if(e.key==="ArrowUp"||e.key==="w")fbKeys.up=false;
+   if(e.key==="ArrowDown"||e.key==="s")fbKeys.down=false;
+   if(e.key==="ArrowLeft"||e.key==="a")fbKeys.left=false;
+   if(e.key==="ArrowRight"||e.key==="d")fbKeys.right=false;
+ });
+}
+
+function fallbackLoop(){
+ if(!fallbackStarted)return;
+ updateFallback();
+ drawFallback();
+ requestAnimationFrame(fallbackLoop);
+}
+
+function updateFallback(){
+ if(fbKeys.up)fbCar.speed=Math.min(2.8,fbCar.speed+.055);
+ else if(fbKeys.down)fbCar.speed=Math.max(-1.1,fbCar.speed-.08);
+ else fbCar.speed*=.965;
+ if(fbKeys.left)fbCar.angle-=.035*Math.max(.3,Math.abs(fbCar.speed));
+ if(fbKeys.right)fbCar.angle+=.035*Math.max(.3,Math.abs(fbCar.speed));
+ fbCar.x+=Math.sin(fbCar.angle)*fbCar.speed;
+ fbCar.y-=Math.cos(fbCar.angle)*fbCar.speed;
+
+ for(const n of fbNPCs){
+   n.x+=n.vx;n.y+=n.vy;
+   if(Math.abs(n.x)>520)n.vx*=-1;
+   if(Math.abs(n.y)>380)n.vy*=-1;
+ }
+}
+
+function drawFallback(){
+ const c=fbCtx,w=fbCanvas.width,h=fbCanvas.height;
+ c.clearRect(0,0,w,h);
+ c.fillStyle="#78b8dc";c.fillRect(0,0,w,h);
+
+ // Grass/city ground
+ c.save();c.translate(w/2-fbCar.x,h/2-fbCar.y);
+ c.fillStyle="#477442";c.fillRect(-700,-500,1400,1000);
+
+ // Connected road grid
+ c.fillStyle="#4b4b4b";
+ for(const x of [-300,-150,0,150,300])c.fillRect(x-16,-500,32,1000);
+ for(const y of [-300,-150,0,150,300])c.fillRect(-700,y-16,1400,32);
+
+ // Road markings
+ c.strokeStyle="#d7d7a5";c.lineWidth=3;c.setLineDash([14,14]);
+ for(const x of [-300,-150,0,150,300]){c.beginPath();c.moveTo(x,-500);c.lineTo(x,500);c.stroke()}
+ for(const y of [-300,-150,0,150,300]){c.beginPath();c.moveTo(-700,y);c.lineTo(700,y);c.stroke()}
+ c.setLineDash([]);
+
+ // City blocks
+ const buildings=[
+  [-420,-350,100,65],[-260,-350,95,65],[260,-350,100,65],[420,-350,95,65],
+  [-420,350,100,65],[-260,350,95,65],[260,350,100,65],[420,350,95,65],
+  [-420,-100,95,65],[420,-100,95,65],[-420,100,95,65],[420,100,95,65]
+ ];
+ for(let i=0;i<buildings.length;i++){
+   const [x,y,bw,bh]=buildings[i];
+   c.fillStyle=["#c99d69","#d4b17f","#b98761","#c8c8b8"][i%4];
+   c.fillRect(x-bw/2,y-bh/2,bw,bh);
+   c.fillStyle="#6b4935";c.fillRect(x-7,y-bh/2,14,bh);
+   for(let yy=y-bh/2+12;yy<y+bh/2-8;yy+=18){
+     c.fillStyle="#79a9b8";c.fillRect(x-bw/2+9,yy,12,9);c.fillRect(x+bw/2-21,yy,12,9);
+   }
+ }
+
+ // Registan square
+ c.fillStyle="#c6a26e";c.fillRect(-105,-75,210,150);
+ c.strokeStyle="#e7d0a3";c.lineWidth=4;c.strokeRect(-105,-75,210,150);
+ for(const rx of [-72,0,72]){
+   c.fillStyle="#a77b4f";c.fillRect(rx-24,-68,48,52);
+   c.fillStyle="#6e4a36";c.fillRect(rx-15,-42,30,26);
+   c.fillStyle="#d4ad74";c.beginPath();c.arc(rx,-58,14,Math.PI,0);c.fill();
+ }
+
+ // Trees
+ for(let i=0;i<55;i++){
+   const tx=((i*137)%1000)-500,ty=((i*83)%760)-380;
+   if(Math.abs(tx)<125&&Math.abs(ty)<95)continue;
+   c.fillStyle="#6b4a31";c.fillRect(tx-3,ty,6,18);
+   c.fillStyle=["#2e6b3b","#3d7e45","#527f45","#6a914b"][i%4];
+   c.beginPath();c.arc(tx,ty-5,13+(i%3)*3,0,Math.PI*2);c.fill();
+ }
+
+ // NPCs
+ for(const n of fbNPCs){
+   c.fillStyle="#1e1e1e";c.beginPath();c.arc(n.x,n.y-7,5,0,Math.PI*2);c.fill();
+   c.fillStyle=["#2f6fbd","#c94b45","#4e8b52","#e0a62b","#8c5db7"][n.type%5];
+   c.fillRect(n.x-5,n.y,10,16);
+ }
+
+ // First-person cockpit
+ c.save();c.translate(w/2,h/2+55);c.rotate(fbCar.angle);
+ c.fillStyle="#263d5b";c.fillRect(-12,-23,24,46);
+ c.fillStyle="#a9c3d0";c.fillRect(-9,-16,18,12);
+ c.fillStyle="#111";c.fillRect(-15,-17,4,10);c.fillRect(11,-17,4,10);c.fillRect(-15,8,4,10);c.fillRect(11,8,4,10);
+ c.restore();
+
+ // First-person windshield / dashboard
+ c.fillStyle="rgba(15,18,22,.92)";
+ c.fillRect(0,h-92,w,92);
+ c.fillStyle="rgba(20,24,28,.85)";
+ c.beginPath();c.moveTo(0,0);c.lineTo(80,0);c.lineTo(170,125);c.lineTo(0,125);c.closePath();c.fill();
+ c.beginPath();c.moveTo(w,0);c.lineTo(w-80,0);c.lineTo(w-170,125);c.lineTo(w,125);c.closePath();c.fill();
+ c.fillStyle="#b8c2c8";c.fillRect(w/2-2,h-80,4,50);
+ c.fillStyle="#222";c.fillRect(w/2-125,h-45,250,38);
+ c.fillStyle="#7fd1e8";c.beginPath();c.arc(w/2,h-26,15,0,Math.PI*2);c.fill();
+
+ // HUD
+ c.fillStyle="rgba(0,0,0,.55)";c.fillRect(18,18,205,72);
+ c.fillStyle="#fff";c.font="bold 18px Arial";c.fillText("ASADBEK AI",32,45);
+ c.font="15px Arial";c.fillText("WORLD 1 • SAMARQAND",32,70);
+ c.fillText("SPEED: "+Math.round(Math.abs(fbCar.speed)*18)+" KM/H",32,88);
+}
+window.addEventListener("resize",resizeFallback);
+
+
+let firstPerson=true;
+let lookYaw=0, lookPitch=0;
+let lookPointerId=null, lookLastX=0, lookLastY=0;
+
+function enableFirstPerson(){
+ firstPerson=true;
+ const hint=document.getElementById("fpHint"), cross=document.getElementById("crosshair");
+ if(hint)hint.style.display="block";
+ if(cross)cross.style.display="block";
+ setTimeout(()=>{if(hint)hint.style.display="none"},2500);
+}
+
+function updateFirstPersonCamera(){
+ if(!firstPerson || typeof camera==="undefined")return;
+ const object=mode==="car"?vehicle:player;
+ if(!object)return;
+ const eyeY=mode==="car"?1.52:1.65;
+ const localOffset=mode==="car"?new THREE.Vector3(-.62,eyeY,.45):new THREE.Vector3(0,eyeY,0);
+ const worldOffset=localOffset.applyQuaternion(object.quaternion);
+ camera.position.copy(object.position).add(worldOffset);
+ if(mode==="walk")camera.position.y += (camera.userData.headBob||0);
+ camera.rotation.order="YXZ";
+ camera.rotation.y=(mode==="car"?object.rotation.y:object.rotation.y)+lookYaw;
+ camera.rotation.x=lookPitch;
+}
+
+function bindFirstPersonLook(){
+ const target=renderer && renderer.domElement;
+ if(!target)return;
+ target.addEventListener("pointerdown",e=>{
+   if(e.target.closest && (e.target.closest("#controls")||e.target.closest("#actions")||e.target.closest("button")))return;
+   lookPointerId=e.pointerId; lookLastX=e.clientX; lookLastY=e.clientY;
+   try{target.setPointerCapture(e.pointerId)}catch(_){}
+ });
+ target.addEventListener("pointermove",e=>{
+   if(lookPointerId!==e.pointerId)return;
+   const dx=e.clientX-lookLastX,dy=e.clientY-lookLastY;
+   lookLastX=e.clientX;lookLastY=e.clientY;
+   lookYaw-=dx*.0055;
+   lookPitch-=dy*.0035;
+   lookPitch=Math.max(-1.1,Math.min(1.1,lookPitch));
+ });
+ const end=e=>{if(lookPointerId===e.pointerId)lookPointerId=null};
+ target.addEventListener("pointerup",end);target.addEventListener("pointercancel",end);
+}
+
+
+function hidePlayerBodyForFirstPerson(){
+ if(typeof player==="undefined" || !player.traverse)return;
+ player.traverse(o=>{
+   if(o.isMesh)o.visible=false;
+ });
+}
+
+
+let simulatorMode="walk";
+function updateSimulatorMode(){
+ const mode=document.getElementById("mode");
+ if(mode)mode.textContent=simulatorMode==="car"?"MODE: CAR":"MODE: WALK";
+}
+
+
+function drawMiniMap(){
+ const c=document.getElementById("miniMap"); if(!c)return;
+ const x=c.getContext("2d"),w=c.width,h=c.height;
+ x.clearRect(0,0,w,h);
+ x.fillStyle="#355a38";x.fillRect(0,0,w,h);
+ x.strokeStyle="#777";x.lineWidth=7;
+ for(let p of [.25,.5,.75]){x.beginPath();x.moveTo(p*w,0);x.lineTo(p*w,h);x.stroke();x.beginPath();x.moveTo(0,p*h);x.lineTo(w,p*h);x.stroke()}
+ x.fillStyle="#c59d66";x.fillRect(w*.33,h*.34,w*.34,h*.32);
+ x.fillStyle="#9f754e";for(const px of [.39,.5,.61])x.fillRect(px*w,h*.38,w*.08,h*.15);
+ x.fillStyle="#e33";x.beginPath();x.arc(w/2,h/2,5,0,Math.PI*2);x.fill();
+}
+
+
+
+
+
+function init(){
+  window.scene=scene; window.camera=camera; window.renderer=renderer; window.vehicle=vehicle; window.player=player;
+
+ scene=new THREE.Scene();
+ // Cinematic sky colour + depth fog for a more natural outdoor look.
+ scene.background=new THREE.Color(0x8fcff2);
+ scene.fog=new THREE.FogExp2(0x8fcff2,0.00165);
+
+ renderer=new THREE.WebGLRenderer({
+   antialias:true,
+   preserveDrawingBuffer:false,
+   powerPreference:"high-performance",
+   alpha:false
+ });
+ renderer.setSize(innerWidth,innerHeight,false);
+ // High-quality mobile rendering without forcing an unsafe GPU load.
+ renderer.setPixelRatio(Math.min(devicePixelRatio,1.75));
+ renderer.outputEncoding=THREE.sRGBEncoding;
+ renderer.toneMapping=THREE.ACESFilmicToneMapping;
+ renderer.toneMappingExposure=1.12;
+ renderer.physicallyCorrectLights=true;
+ renderer.shadowMap.enabled=true;
+ renderer.shadowMap.type=THREE.PCFSoftShadowMap;
+ document.body.appendChild(renderer.domElement);
+
+ camera=new THREE.PerspectiveCamera(68,innerWidth/innerHeight,.1,1400);
+
+ const sun=new THREE.DirectionalLight(0xfff1cf,3.0);
+ sun.position.set(180,260,120);
+ sun.castShadow=true;
+ sun.shadow.mapSize.width=2048; sun.shadow.mapSize.height=2048;
+ sun.shadow.camera.left=-420; sun.shadow.camera.right=420;
+ sun.shadow.camera.top=420; sun.shadow.camera.bottom=-420;
+ sun.shadow.camera.near=1; sun.shadow.camera.far=900;
+ sun.shadow.bias=-0.00035;
+ scene.add(sun);
+
+ const fill=new THREE.HemisphereLight(0xbfe9ff,0x253a22,1.15);
+ scene.add(fill);
+
+ // Soft warm secondary light gives buildings and vegetation more depth.
+ const warm=new THREE.DirectionalLight(0xffd8a0,0.35);
+ warm.position.set(-180,90,-120);
+ scene.add(warm);
+
+ // Lightweight procedural sky dome.
+ const skyGeo=new THREE.SphereGeometry(850,32,16);
+ const skyMat=new THREE.MeshBasicMaterial({color:0x8fcff2,side:THREE.BackSide});
+ const skyDome=new THREE.Mesh(skyGeo,skyMat);
+ scene.add(skyDome);
+
+ buildWorld();
+ createVehicle(); createPlayer(); enableFirstPerson(); hidePlayerBodyForFirstPerson(); bindFirstPersonLook();
+}
+
+
+
+// ===== 50 TA NPS/NPC PROFIL — har biri alohida mijoz xulqi va ehtiyojiga ega =====
+const NPC_PROFILES = [
+{name:'Azizbek',gender:'erkak',job:'taksi',need:'shoshilinch yo‘l'},
+{name:'Madina',gender:'ayol',job:'shifokor',need:'ko‘rik'},
+{name:'Jasur',gender:'erkak',job:'mexanik',need:'avtomobil ta’miri'},
+{name:'Dilnoza',gender:'ayol',job:'kuryer',need:'yetkazib berish'},
+{name:'Sardor',gender:'erkak',job:'elektrik',need:'uy elektr muammosi'},
+{name:'Zarina',gender:'ayol',job:'grafik dizayner',need:'logo dizayni'},
+{name:'Bekzod',gender:'erkak',job:'santexnik',need:'suv quvuri'},
+{name:'Mohira',gender:'ayol',job:'oshpaz',need:'buyurtma taomi'},
+{name:'Akmal',gender:'erkak',job:'fotograf',need:'tadbir fotosurati'},
+{name:'Shahnoza',gender:'ayol',job:'tarjimon',need:'tarjima'},
+{name:'Oybek',gender:'erkak',job:'quruvchi',need:'ta’mirlash'},
+{name:'Gulnoza',gender:'ayol',job:'o‘qituvchi',need:'dars'},
+{name:'Rustam',gender:'erkak',job:'elektrik',need:'rozetka ta’miri'},
+{name:'Sevinch',gender:'ayol',job:'veterinar',need:'uy hayvoni ko‘rigi'},
+{name:'Ulug‘bek',gender:'erkak',job:'taksi',need:'aeroportga borish'},
+{name:'Malika',gender:'ayol',job:'konditer',need:'tort buyurtmasi'},
+{name:'Diyor',gender:'erkak',job:'mexanik',need:'moy almashtirish'},
+{name:'Nilufar',gender:'ayol',job:'hamshira',need:'uyga xizmat'},
+{name:'Kamron',gender:'erkak',job:'kuryer',need:'hujjat yetkazish'},
+{name:'Laylo',gender:'ayol',job:'fotograf',need:'portret'},
+{name:'Sherzod',gender:'erkak',job:'qo‘riqchi',need:'obyekt nazorati'},
+{name:'Feruza',gender:'ayol',job:'mehmonxona administratori',need:'xona bron qilish'},
+{name:'Temur',gender:'erkak',job:'arxitektor',need:'uy loyihasi'},
+{name:'Sabina',gender:'ayol',job:'jurnalist',need:'intervyu'},
+{name:'Otabek',gender:'erkak',job:'yuk mashinasi haydovchisi',need:'yuk tashish'},
+{name:'Dildora',gender:'ayol',job:'dorixona xodimi',need:'dori maslahat'},
+{name:'Sanjar',gender:'erkak',job:'payvandchi',need:'metall payvandlash'},
+{name:'Munisa',gender:'ayol',job:'bog‘bon',need:'bog‘ parvarishi'},
+{name:'Alisher',gender:'erkak',job:'dehqon',need:'hosil yig‘ish'},
+{name:'Shahzoda',gender:'ayol',job:'ofitsiant',need:'stol xizmati'},
+{name:'Farruh',gender:'erkak',job:'dasturchi',need:'ilova tuzatish'},
+{name:'Rayhona',gender:'ayol',job:'market menejeri',need:'do‘kon boshqaruvi'},
+{name:'Bobur',gender:'erkak',job:'politsiya xodimi',need:'xavfsizlik'},
+{name:'Nodira',gender:'ayol',job:'qutqaruvchi',need:'favqulodda yordam'},
+{name:'Murod',gender:'erkak',job:'o‘t o‘chiruvchi',need:'xavfsizlik'},
+{name:'Lola',gender:'ayol',job:'bog‘cha tarbiyachisi',need:'bola parvarishi'},
+{name:'Javohir',gender:'erkak',job:'universitet o‘qituvchisi',need:'konsultatsiya'},
+{name:'Shirin',gender:'ayol',job:'kutubxonachi',need:'kitob topish'},
+{name:'Davron',gender:'erkak',job:'nonvoy',need:'non buyurtmasi'},
+{name:'Umida',gender:'ayol',job:'qandolatchi',need:'shirinlik buyurtmasi'},
+{name:'Islom',gender:'erkak',job:'avtobus haydovchisi',need:'shahar qatnovi'},
+{name:'Maftuna',gender:'ayol',job:'turist gid',need:'shahar sayohati'},
+{name:'Kamola',gender:'ayol',job:'tarjimon',need:'hujjat tarjimasi'},
+{name:'Asad',gender:'erkak',job:'qo‘riqchi',need:'tungi navbatchilik'},
+{name:'Gulbahor',gender:'ayol',job:'shifokor',need:'maslahat'},
+{name:'Behruz',gender:'erkak',job:'quruvchi',need:'uy qurilishi'},
+{name:'Zuhra',gender:'ayol',job:'sotuvchi',need:'mahsulot tanlash'},
+{name:'Siroj',gender:'erkak',job:'kassir',need:'to‘lov xizmati'},
+{name:'Nargiza',gender:'ayol',job:'fotograf',need:'to‘y fotosurati'},
+{name:'Abror',gender:'erkak',job:'turist gid',need:'Registon sayohati'}
+];
+const NPC_DEMAND_KEYS = {
+  "taksi":"taksi", "avtobus":"avtobus", "yuk":"yuk mashinasi", "kuryer":"kuryer",
+  "politsiya":"politsiya", "qutqaruvchi":"qutqaruvchi", "o‘t o‘chiruvchi":"o‘t o‘chiruvchi",
+  "qo‘riqchi":"qo‘riqchi", "shifokor":"shifokor", "hamshira":"hamshira",
+  "dorixona":"dorixona", "veterinar":"veterinar", "o‘qituvchi":"o‘qituvchi",
+  "universitet":"universitet", "bog‘cha":"bog‘cha", "kutubxonachi":"kutubxonachi",
+  "dasturchi":"dasturchi", "grafik":"grafik", "elektrik":"elektrik", "mexanik":"mexanik",
+  "quruvchi":"quruvchi", "arxitektor":"arxitektor", "santexnik":"santexnik", "payvandchi":"payvandchi",
+  "dehqon":"dehqon", "bog‘bon":"bog‘bon", "fermer":"fermer", "veterinar yordamchisi":"veterinar",
+  "oshpaz":"oshpaz", "ofitsiant":"ofitsiant", "nonvoy":"nonvoy", "qandolatchi":"qandolatchi",
+  "sotuvchi":"sotuvchi", "kassir":"kassir", "market":"market", "mehmonxona":"mehmonxona",
+  "turist":"turist", "fotograf":"fotograf", "jurnalist":"jurnalist", "tarjimon":"tarjimon"
+};
+
+const NPC_TYPES = [
+ {shirt:0x2f6fbd,pants:0x263238,skin:0xb87855,hair:0x17120f,hat:0},
+ {shirt:0xc94b45,pants:0x35495e,skin:0xc58f68,hair:0x2b1b16,hat:1},
+ {shirt:0x4e8b52,pants:0x3d3d3d,skin:0xa96d4c,hair:0x171717,hat:0},
+ {shirt:0xe0a62b,pants:0x254d70,skin:0xc58f68,hair:0x5a3522,hat:2},
+ {shirt:0x8c5db7,pants:0x252525,skin:0xb87955,hair:0x241713,hat:0},
+ {shirt:0x3c8c9c,pants:0x7a5a3a,skin:0xa96848,hair:0x161616,hat:3},
+ {shirt:0x8b5a3c,pants:0x334a60,skin:0xc58f68,hair:0x3a241a,hat:0},
+ {shirt:0x505bba,pants:0x202020,skin:0xb87955,hair:0x111111,hat:4},
+ {shirt:0xd36c9c,pants:0x343434,skin:0xc58f68,hair:0x3b2418,hat:0},
+ {shirt:0x4d8b6b,pants:0x6b563d,skin:0xa96848,hair:0x26201b,hat:5},
+ {shirt:0x37474f,pants:0x1f2933,skin:0xc58f68,hair:0x151515,hat:6},
+ {shirt:0xf0c85a,pants:0x3b5d7a,skin:0xb87955,hair:0x5c3b20,hat:0},
+ {shirt:0x6f78a8,pants:0x5d4e45,skin:0xc58f68,hair:0x302019,hat:7},
+ {shirt:0x2f8a75,pants:0x242424,skin:0xa96848,hair:0x111111,hat:0},
+ {shirt:0xc27b3f,pants:0x344b3d,skin:0xb87955,hair:0x2b2018,hat:8},
+ {shirt:0x5b6e8c,pants:0x3c3c3c,skin:0xc58f68,hair:0x4a2c1d,hat:1},
+ {shirt:0x9a4d58,pants:0x2b3b4a,skin:0xb87955,hair:0x161616,hat:0},
+ {shirt:0x6b8e45,pants:0x765b42,skin:0xa96848,hair:0x251a16,hat:2},
+ {shirt:0x805b9e,pants:0x252d35,skin:0xc58f68,hair:0x3a241b,hat:5},
+ {shirt:0x3e7d8e,pants:0x4d4d4d,skin:0xb87955,hair:0x151515,hat:0}
+];
+
+function terrainHeight(x,z){
+ let h=0;
+
+ if(worldId===1){
+   h=Math.sin(x*.014)*1.4+Math.cos(z*.017)*1.1+
+     Math.sin((x+z)*.008)*1.8+
+     Math.sin(x*.045+z*.012)*.45;
+ }else if(worldId===2){
+   h=Math.sin(x*.010)*.7+Math.cos(z*.013)*.55+
+     Math.sin((x-z)*.006)*.8;
+ }else if(worldId===3){
+   h=Math.sin(x*.018)*3.2+Math.cos(z*.021)*2.8+
+     Math.sin((x+z)*.012)*4.0+
+     Math.sin(x*.045-z*.018)*1.2;
+   const d=Math.sqrt((x+130)**2+(z+160)**2);
+   if(d<170) h+=(170-d)*.30;
+   const valley=Math.exp(-(((x-70)**2)/(120**2)+((z+20)**2)/(170**2)))*-7;
+   h+=valley;
+ }else{
+   // Samarqand city: broad, mostly level urban ground.
+   h=Math.sin(x*.02)*.12+Math.cos(z*.018)*.12;
+ }
+ return Math.max(0,h);
+}
+
+
+let worldObjects=[];
+let npcs=[];
+let waterAreas=[];
+
+function clearWorldObjects(){
+ worldObjects.forEach(o=>{
+   scene.remove(o);
+   o.traverse(c=>{
+     if(c.geometry)c.geometry.dispose?.();
+     if(c.material){
+       if(Array.isArray(c.material))c.material.forEach(m=>m.dispose?.());
+       else c.material.dispose?.();
+     }
+   });
+ });
+ worldObjects=[];
+ npcs=[];
+ waterAreas=[];
+}
+
+function addWorldObject(o){
+ scene.add(o);
+ worldObjects.push(o);
+ return o;
+}
+
+function buildWorld(){
+ clearWorldObjects();
+ createTerrain();
+ createRoads();
+ createWorldWater();
+
+ if(worldId===1){
+   createSamarkandCity();
+ }else if(worldId===2){
+   createPlain();
+ }else if(worldId===3){
+   createMountains();
+   createForest();
+   createVillage();
+ }else{
+   createSamarkandCity();
+ }
+ createNPCs();
+}
+
+function createWorldWater(){
+ const areas = worldId===1 ? [] :
+   worldId===2 ? [{x:150,z:-130,w:90,d:70}] :
+                 [{x:135,z:-125,w:115,d:85}];
+
+ areas.forEach(a=>{
+   const water=new THREE.Mesh(
+     new THREE.PlaneGeometry(a.w,a.d),
+     new THREE.MeshStandardMaterial({
+       color:0x277da8,transparent:true,opacity:.86,roughness:.12,metalness:.25
+     })
+   );
+   water.rotation.x=-Math.PI/2;
+   water.position.set(a.x,1.0,a.z);
+   addWorldObject(water);
+   water.userData.isWater=true;
+   waterAreas.push(a);
+ });
+}
+
+
+function createCityRoad(x,z,w,d,rot=0){
+ const road=new THREE.Mesh(
+   new THREE.PlaneGeometry(w,d),
+   new THREE.MeshStandardMaterial({color:0x3b3b3b,roughness:.95})
+ );
+ road.rotation.x=-Math.PI/2;
+ road.rotation.z=rot;
+ road.position.set(x,.13,z);
+ addWorldObject(road);
+
+ // Lane markings
+ const count=Math.floor(d/12);
+ for(let i=-count;i<=count;i++){
+   const line=new THREE.Mesh(
+     new THREE.PlaneGeometry(.35,5),
+     new THREE.MeshBasicMaterial({color:0xf4f1d5})
+   );
+   line.rotation.x=-Math.PI/2;
+   line.rotation.z=rot;
+   const px=x + Math.sin(rot)*i*12;
+   const pz=z + Math.cos(rot)*i*12;
+   line.position.set(px,.15,pz);
+   addWorldObject(line);
+ }
+}
+
+function createBuilding(x,z,w,d,h,color=0xc9a06b){
+ const group=new THREE.Group();
+ const wallT=Math.max(.22,Math.min(.38,Math.min(w,d)*.035));
+ const doorW=Math.min(1.8,w*.28);
+ const doorH=Math.min(2.5,h*.55);
+ const mat=new THREE.MeshStandardMaterial({color,roughness:.88});
+ const roofMat=new THREE.MeshStandardMaterial({color:0x6e4632,roughness:.95});
+ const floorMat=new THREE.MeshStandardMaterial({color:0x6b6257,roughness:1});
+
+ // Floor and ceiling create an actual enterable room.
+ const floor=new THREE.Mesh(new THREE.BoxGeometry(w,d,.18),floorMat);
+ floor.position.y=.08; group.add(floor);
+ const ceiling=new THREE.Mesh(new THREE.BoxGeometry(w,d,.16),roofMat);
+ ceiling.position.y=h; group.add(ceiling);
+
+ // Back wall.
+ const back=new THREE.Mesh(new THREE.BoxGeometry(w, h, wallT),mat);
+ back.position.set(0,h/2,-d/2+wallT/2); group.add(back);
+
+ // Side walls.
+ for(const sx of [-1,1]){
+   const wall=new THREE.Mesh(new THREE.BoxGeometry(wallT,h,d),mat);
+   wall.position.set(sx*(w/2-wallT/2),h/2,0); group.add(wall);
+ }
+
+ // Front wall is split around the door, leaving a genuine opening.
+ const sideW=Math.max(.05,(w-doorW)/2);
+ for(const sx of [-1,1]){
+   const wall=new THREE.Mesh(new THREE.BoxGeometry(sideW,h,wallT),mat);
+   wall.position.set(sx*(doorW/2+sideW/2),h/2,d/2-wallT/2);
+   group.add(wall);
+ }
+ if(h>doorH){
+   const lintel=new THREE.Mesh(new THREE.BoxGeometry(doorW,h-doorH,wallT),mat);
+   lintel.position.set(0,doorH+(h-doorH)/2,d/2-wallT/2); group.add(lintel);
+ }
+
+ // Door marker sits just inside the opening and can be passed through.
+ const door=new THREE.Mesh(
+   new THREE.BoxGeometry(doorW*.92,doorH,.07),
+   new THREE.MeshStandardMaterial({color:0x1a1511,roughness:.75})
+ );
+ door.position.set(0,doorH/2,d/2+.03);
+ door.userData.isDoor=true; door.userData.building=group;
+ group.add(door);
+
+ // Small interior light makes first-person entry readable.
+ const lamp=new THREE.PointLight(0xffe1a8,1.15,Math.max(8,Math.min(18,w*.55)));
+ lamp.position.set(0,Math.min(h-1,Math.max(2.4,h*.72)),0);
+ group.add(lamp);
+
+ group.position.set(x,terrainHeight(x,z),z);
+ group.userData.isBuilding=true;
+ group.userData.enterable=true;
+ group.userData.door=door;
+ group.userData.doorWidth=doorW;
+ group.userData.bounds={w,d,h};
+ addWorldObject(group);
+ return group;
+}
+
+function createRegistanMadrasa(x,z,rot,mainColor){
+ const group=new THREE.Group();
+
+ const facade=new THREE.Mesh(
+   new THREE.BoxGeometry(30,15,4),
+   new THREE.MeshStandardMaterial({color:mainColor,roughness:.8})
+ );
+ facade.position.y=7.5;
+ group.add(facade);
+
+ // Central pishtaq, a simplified Registan-style monumental portal.
+ const portal=new THREE.Mesh(
+   new THREE.BoxGeometry(9,19,5),
+   new THREE.MeshStandardMaterial({color:0x2c6d78,roughness:.7})
+ );
+ portal.position.set(0,9.5,-1);
+ group.add(portal);
+
+ const arch=new THREE.Mesh(
+   new THREE.TorusGeometry(3.2,1.0,10,24,Math.PI),
+   new THREE.MeshStandardMaterial({color:0xe0bf55,roughness:.65})
+ );
+ arch.rotation.z=Math.PI;
+ arch.position.set(0,12,-3.7);
+ group.add(arch);
+
+ for(const sx of [-11,-7,7,11]){
+   const tower=new THREE.Mesh(
+     new THREE.CylinderGeometry(1.5,1.8,19,12),
+     new THREE.MeshStandardMaterial({color:0x3f6970,roughness:.8})
+   );
+   tower.position.set(sx,9.5,0);
+   group.add(tower);
+   const cap=new THREE.Mesh(
+     new THREE.ConeGeometry(1.8,2.8,12),
+     new THREE.MeshStandardMaterial({color:0x2d4f55,roughness:.8})
+   );
+   cap.position.set(sx,20.2,0);
+   group.add(cap);
+ }
+
+ group.position.set(x,terrainHeight(x,z),z);
+ group.rotation.y=rot;
+ group.userData.isRegistan=true;
+ group.traverse(o=>o.castShadow=true);
+ addWorldObject(group);
+}
+
+
+function createCityCar(x,z,rot=0){
+ const car=new THREE.Group();
+ const body=new THREE.Mesh(
+   new THREE.BoxGeometry(1.9,.55,3.7),
+   new THREE.MeshStandardMaterial({color:[0xffffff,0x20252b,0xb13b35,0x315b87,0xd6a12c][Math.floor(Math.random()*5)],roughness:.75})
+ );
+ body.position.y=.65;
+ car.add(body);
+ const cabin=new THREE.Mesh(
+   new THREE.BoxGeometry(1.55,.55,1.65),
+   new THREE.MeshStandardMaterial({color:0x252b31,metalness:.15,roughness:.45})
+ );
+ cabin.position.set(0,1.08,-.1);
+ car.add(cabin);
+ car.position.set(x,.1,z);
+ car.rotation.y=rot;
+ car.userData={traffic:true,speed:.025+Math.random()*.025,axis:Math.abs(Math.sin(rot))>.5?"x":"z"};
+ addWorldObject(car);
+ return car;
+}
+
+const cityTraffic=[];
+function createCityTraffic(){
+ cityTraffic.length=0;
+ for(let i=0;i<18;i++){
+   const lane=i%2?6:-6;
+   const vertical=i%4<2;
+   let car;
+   if(vertical) car=createCityCar(lane,-300+i*34,0);
+   else car=createCityCar(-300+i*34,lane,Math.PI/2);
+   cityTraffic.push(car);
+ }
+}
+
+function updateCityTraffic(){
+ if(worldId!==1 && worldId!==2 && worldId!==3)return;
+ for(const car of cityTraffic){
+   const u=car.userData;
+   if(u.axis==="z"){
+     car.position.z+=u.speed;
+     if(car.position.z>330)car.position.z=-330;
+   }else{
+     car.position.x+=u.speed;
+     if(car.position.x>330)car.position.x=-330;
+   }
+ }
+}
+
+
+function createCitySidewalk(x,z,w,d,rot=0){
+ const side=new THREE.Mesh(new THREE.PlaneGeometry(w,d),
+   new THREE.MeshStandardMaterial({color:0xb7b0a1,roughness:1}));
+ side.rotation.x=-Math.PI/2; side.rotation.z=rot; side.position.set(x,.20,z);
+ addWorldObject(side);
+}
+function createCrosswalk(x,z,rot=0){
+ for(let i=-4;i<=4;i++){
+   const stripe=new THREE.Mesh(new THREE.PlaneGeometry(1.2,7),
+     new THREE.MeshBasicMaterial({color:0xf4f4f0}));
+   stripe.rotation.x=-Math.PI/2; stripe.rotation.z=rot;
+   stripe.position.set(x+Math.cos(rot)*i*2.2,.22,z-Math.sin(rot)*i*2.2);
+   addWorldObject(stripe);
+ }
+}
+function createPark(x,z,w,d){
+ const ground=new THREE.Mesh(new THREE.PlaneGeometry(w,d),
+   new THREE.MeshStandardMaterial({color:0x477642,roughness:1}));
+ ground.rotation.x=-Math.PI/2; ground.position.set(x,.24,z); addWorldObject(ground);
+ for(let i=0;i<Math.floor(w*d/350);i++){
+   createTree(x-w/2+Math.random()*w,z-d/2+Math.random()*d);
+ }
+}
+function createParkedCar(x,z,rot=0){
+ const car=createCityCar(x,z,rot); car.userData.traffic=false;
+}
+
+
+function createRoadMarking(x,z,len,rot=0){
+ const m=new THREE.Mesh(new THREE.PlaneGeometry(0.35,len),
+   new THREE.MeshBasicMaterial({color:0xe5dfb0}));
+ m.rotation.x=-Math.PI/2;m.rotation.z=rot;m.position.set(x,.235,z);addWorldObject(m);
+}
+function createBench(x,z,rot=0){
+ const g=new THREE.Group();
+ const mat=new THREE.MeshStandardMaterial({color:0x6f4b2f,roughness:.9});
+ const seat=new THREE.Mesh(new THREE.BoxGeometry(2.4,.18,.55),mat);seat.position.y=.85;g.add(seat);
+ for(const sx of [-.9,.9]){
+   const leg=new THREE.Mesh(new THREE.BoxGeometry(.16,.8,.16),mat);leg.position.set(sx,.42,0);g.add(leg);
+ }
+ g.position.set(x,.25,z);g.rotation.y=rot;addWorldObject(g);
+}
+function createTrashBin(x,z){
+ const b=new THREE.Mesh(new THREE.CylinderGeometry(.28,.34,.8,10),
+   new THREE.MeshStandardMaterial({color:0x34403a,roughness:1}));
+ b.position.set(x,.65,z);addWorldObject(b);
+}
+function createStreetSign(x,z,rot=0){
+ const g=new THREE.Group();
+ const pole=new THREE.Mesh(new THREE.CylinderGeometry(.035,.035,2.5,8),
+   new THREE.MeshStandardMaterial({color:0x555555}));
+ pole.position.y=1.25;g.add(pole);
+ const sign=new THREE.Mesh(new THREE.BoxGeometry(1.5,.45,.06),
+   new THREE.MeshStandardMaterial({color:0x4c79a1}));
+ sign.position.set(0,2.25,0);g.add(sign);
+ g.position.set(x,.25,z);g.rotation.y=rot;addWorldObject(g);
+}
+function createMarketStall(x,z,rot=0){
+ const g=new THREE.Group();
+ const wood=new THREE.MeshStandardMaterial({color:0x815c38,roughness:1});
+ const cloth=new THREE.MeshStandardMaterial({color:0xb75d3d,roughness:.9});
+ const top=new THREE.Mesh(new THREE.BoxGeometry(3.2,.12,1.7),wood);top.position.y=1.6;g.add(top);
+ const roof=new THREE.Mesh(new THREE.ConeGeometry(2.0,.8,4),cloth);roof.position.y=2.05;roof.rotation.y=Math.PI/4;g.add(roof);
+ for(const sx of [-1.3,1.3])for(const sz of [-.65,.65]){
+   const p=new THREE.Mesh(new THREE.BoxGeometry(.12,1.6,.12),wood);p.position.set(sx,.8,sz);g.add(p)
+ }
+ g.position.set(x,.25,z);g.rotation.y=rot;addWorldObject(g);
+}
+function createFountain(x,z){
+ const g=new THREE.Group();
+ const base=new THREE.Mesh(new THREE.CylinderGeometry(3,3.2,.55,32),
+   new THREE.MeshStandardMaterial({color:0xb9b2a3,roughness:.8}));
+ base.position.y=.3;g.add(base);
+ const water=new THREE.Mesh(new THREE.CylinderGeometry(2.55,2.55,.08,32),
+   new THREE.MeshStandardMaterial({color:0x4d9bb5,roughness:.25,metalness:.05}));
+ water.position.y=.62;g.add(water);
+ const center=new THREE.Mesh(new THREE.CylinderGeometry(.45,.65,1.2,20),
+   new THREE.MeshStandardMaterial({color:0xa68d6d}));
+ center.position.y=1.15;g.add(center);
+ g.position.set(x,.25,z);addWorldObject(g);
+}
+function createRoofHouse(x,z,w,d,h,color){
+ const g=new THREE.Group();
+ const body=new THREE.Mesh(new THREE.BoxGeometry(w,h,d),
+   new THREE.MeshStandardMaterial({color,roughness:.9}));
+ body.position.y=h/2;g.add(body);
+ const roof=new THREE.Mesh(new THREE.ConeGeometry(Math.max(w,d)*.72,Math.max(w,d)*.45,4),
+   new THREE.MeshStandardMaterial({color:0x7a4b36,roughness:1}));
+ roof.rotation.y=Math.PI/4;roof.position.y=h+.15;g.add(roof);
+ for(let sx=-1;sx<=1;sx+=2){
+   const door=new THREE.Mesh(new THREE.BoxGeometry(.7,1.5,.06),
+     new THREE.MeshStandardMaterial({color:0x5c3a29}));
+   door.position.set(sx*w*.24,.8,d/2+.03);g.add(door);
+ }
+ g.position.set(x,.25,z);addWorldObject(g);
+}
+function populateSamarkandDetails(){
+ // Registan square furnishing
+ createFountain(0,72);
+ for(let i=0;i<10;i++)createBench(-65+i*14,70+(i%2)*8,(i%2)*Math.PI);
+ for(let i=0;i<14;i++)createTrashBin(-72+i*11,55+(i%3)*5);
+
+ // Traditional low-rise mahalla blocks around the main avenues.
+ const homes=[
+  [-285,-245,34,25,7],[-230,-245,30,22,8],[-175,-245,36,25,7],
+  [175,-245,36,25,8],[230,-245,30,22,7],[285,-245,34,25,8],
+  [-285,245,34,25,7],[-230,245,30,22,8],[-175,245,36,25,7],
+  [175,245,36,25,8],[230,245,30,22,7],[285,245,34,25,8],
+  [-285,-120,32,24,7],[-285,120,32,24,8],[285,-120,32,24,8],[285,120,32,24,7]
+ ];
+ homes.forEach((b,i)=>createRoofHouse(b[0],b[1],b[2],b[3],b[4],
+   [0xc5a477,0xd1b88a,0xb88c63,0xc9a16f][i%4]));
+
+ // Bazaars, signs, benches and trees.
+ createMarketStall(-82,118,.2);createMarketStall(82,118,-.2);
+ createMarketStall(-95,-112,0);createMarketStall(95,-112,0);
+ createStreetSign(-18,18,Math.PI/2);createStreetSign(18,-18,0);
+
+ for(let i=0;i<35;i++){
+   const x=-300+Math.random()*600,z=-300+Math.random()*600;
+   if(Math.abs(x)<115&&Math.abs(z)<95)continue;
+   if(Math.abs(x)<25||Math.abs(z)<25)continue;
+   createTree(x,z);
+ }
+}
+
+function createSamarkandCity(){
+ createCityRoad(0,0,20,680,0);
+ createCityRoad(0,0,20,680,Math.PI/2);
+ createCityRoad(-150,0,16,400,0);
+ createCityRoad(150,0,16,400,0);
+ createCityRoad(0,-150,16,400,Math.PI/2);
+ createCityRoad(0,150,16,400,Math.PI/2);
+ createCityRoad(-75,0,12,680,0);
+ createCityRoad(75,0,12,680,0);
+ createCityRoad(0,-75,12,680,Math.PI/2);
+ createCityRoad(0,75,12,680,Math.PI/2);
+
+ createCitySidewalk(-14,0,5,680,0); createCitySidewalk(14,0,5,680,0);
+ createCitySidewalk(0,-14,5,680,Math.PI/2); createCitySidewalk(0,14,5,680,Math.PI/2);
+ [[-150,-10,0],[150,10,0],[-10,-150,Math.PI/2],[10,150,Math.PI/2],
+  [-75,-10,0],[75,10,0],[-10,-75,Math.PI/2],[10,75,Math.PI/2]]
+  .forEach(v=>createCrosswalk(v[0],v[1],v[2]));
+
+ const square=new THREE.Mesh(new THREE.PlaneGeometry(155,115),
+   new THREE.MeshStandardMaterial({color:0xc8a56c,roughness:.9}));
+ square.rotation.x=-Math.PI/2; square.position.set(0,.25,0); addWorldObject(square);
+
+ createPark(-115,-55,75,55); createPark(115,-55,75,55);
+ createPark(-115,100,70,55); createPark(115,100,70,55);
+
+ createRegistanMadrasa(0,-48,0,0xb88b58);
+ createRegistanMadrasa(-52,5,Math.PI/2,0xa77d4f);
+ createRegistanMadrasa(52,5,-Math.PI/2,0xa77d4f);
+
+ const blocks=[
+  [-125,-135,42,30,13],[-55,-135,36,28,11],[55,-135,42,30,12],[125,-135,38,28,13],
+  [-125,-70,36,26,10],[125,-70,38,26,11],[-125,55,42,30,12],[125,55,42,30,12],
+  [-125,145,44,30,13],[-55,145,38,28,11],[55,145,42,30,12],[125,145,44,30,13],
+  [-210,-90,48,34,14],[210,-90,48,34,14],[-210,90,48,34,13],[210,90,48,34,14],
+  [-210,190,50,34,12],[210,190,50,34,13],[-210,-200,50,34,13],[210,-200,50,34,13]
+ ];
+ blocks.forEach((b,i)=>createBuilding(b[0],b[1],b[2],b[3],b[4],
+  [0xc9a06b,0xd1b07a,0xb9875e,0xc7b28e,0xb97855][i%5]));
+
+ for(let i=0;i<34;i++){
+  const side=i%2===0?-1:1, x=side*(250+Math.random()*55), z=-250+Math.random()*500;
+  createBuilding(x,z,28+Math.random()*18,22+Math.random()*14,8+Math.random()*8,
+    [0xc9a06b,0xd6b887,0xb98a62,0xc4c4b0][i%4]);
+ }
+ for(let i=-300;i<=300;i+=45){
+  createLamp(-11,i); createLamp(11,i); createLamp(i,-11); createLamp(i,11);
+ }
+ for(let i=0;i<30;i++){
+  const side=i%4,a=-260+Math.random()*520,b=(side<2?-22:22);
+  if(side<2)createParkedCar(a,b,side===0?0:Math.PI);
+  else createParkedCar(b,a,side===2?Math.PI/2:-Math.PI/2);
+ }
+ for(let i=0;i<90;i++){
+  const x=-315+Math.random()*630,z=-315+Math.random()*630;
+  if(Math.abs(x)<95&&Math.abs(z)<75)continue;
+  if(Math.abs(x%75)<13||Math.abs(z%75)<13)continue;
+  createTree(x,z);
+ }
+ createCityTraffic();
+ populateSamarkandDetails();
+}
+
+function createDesert(){
+ for(let i=0;i<55;i++){
+   const x=-330+Math.random()*660,z=-330+Math.random()*660;
+   const r=2+Math.random()*8,h=1+Math.random()*3;
+   const dune=new THREE.Mesh(
+     new THREE.SphereGeometry(r,12,7,0,Math.PI*2,0,Math.PI/2),
+     new THREE.MeshStandardMaterial({color:0xc99a55,roughness:1})
+   );
+   dune.scale.y=h/r;
+   dune.position.set(x,terrainHeight(x,z),z);
+   addWorldObject(dune);
+ }
+ for(let i=0;i<14;i++){
+   const x=-280+Math.random()*560,z=-280+Math.random()*560;
+   const rock=new THREE.Mesh(
+     new THREE.DodecahedronGeometry(2+Math.random()*4),
+     new THREE.MeshStandardMaterial({color:0x6e5b43,roughness:1})
+   );
+   rock.position.set(x,terrainHeight(x,z)+2,z);
+   rock.castShadow=true;
+   addWorldObject(rock);
+ }
+}
+
+function createPlain(){
+ for(let i=0;i<28;i++){
+   const x=-320+Math.random()*640,z=-320+Math.random()*640;
+   if(Math.abs(x)<28)continue;
+   const bush=new THREE.Mesh(
+     new THREE.SphereGeometry(1.5+Math.random()*2.5,10,8),
+     new THREE.MeshStandardMaterial({color:0x4f7f3a,roughness:1})
+   );
+   bush.position.set(x,terrainHeight(x,z)+1,z);
+   addWorldObject(bush);
+ }
+}
+
+function createTerrain(){
+ const geo=new THREE.PlaneGeometry(700,700,150,150);
+ const pos=geo.attributes.position;
+ for(let i=0;i<pos.count;i++){
+  const x=pos.getX(i),z=-pos.getY(i);
+  pos.setZ(i,terrainHeight(x,z));
+ }
+ geo.computeVertexNormals();
+
+ // Subtle procedural terrain colour variation: grass, dry soil and shaded patches.
+ const colors=[];
+ const colA=new THREE.Color(0x4f7f43), colB=new THREE.Color(0x668b4a), colC=new THREE.Color(0x8b7748);
+ for(let i=0;i<pos.count;i++){
+   const x=pos.getX(i), z=-pos.getY(i);
+   const n=(Math.sin(x*.025)*Math.cos(z*.021)+1)*0.5;
+   const c=n>.72?colB:(n<.22?colC:colA);
+   colors.push(c.r,c.g,c.b);
+ }
+ geo.setAttribute('color',new THREE.Float32BufferAttribute(colors,3));
+ const ground=new THREE.Mesh(geo,new THREE.MeshStandardMaterial({
+   vertexColors:true,roughness:.96,metalness:0
+ }));
+ ground.rotation.x=-Math.PI/2; ground.receiveShadow=true; addWorldObject(ground);
+}
+
+function createRoads(){createRoad(0,0,18,700);createRoad(-140,70,15,280);createRoad(100,-100,13,220)}
+function createRoad(x,z,w,l){
+ const road=new THREE.Mesh(new THREE.PlaneGeometry(w,l),new THREE.MeshStandardMaterial({color:0x303030,roughness:.95}));
+ road.rotation.x=-Math.PI/2;road.position.set(x,.12,z);addWorldObject(road);
+ for(let p=-l/2;p<l/2;p+=16){
+  const line=new THREE.Mesh(new THREE.PlaneGeometry(.45,7),new THREE.MeshBasicMaterial({color:0xffffff}));
+  line.rotation.x=-Math.PI/2;line.position.set(x,.14,z+p);addWorldObject(line);
+ }
+}
+
+const animatedWater=[];
+function createWater(){
+ const geo=new THREE.PlaneGeometry(150,100,48,32);
+ const mat=new THREE.MeshStandardMaterial({
+   color:0x2d91b8,transparent:true,opacity:.84,
+   roughness:.08,metalness:.18
+ });
+ const water=new THREE.Mesh(geo,mat);
+ water.rotation.x=-Math.PI/2;
+ water.position.set(110,1.2,-125);
+ water.userData.waterBase=water.position.y;
+ animatedWater.push(water);
+ addWorldObject(water);
+
+ // Shore foam bands add depth without heavy textures.
+ for(let i=0;i<4;i++){
+   const shore=new THREE.Mesh(
+     new THREE.RingGeometry(18+i*5,19+i*5,64),
+     new THREE.MeshBasicMaterial({color:0xc9eee9,transparent:true,opacity:.07})
+   );
+   shore.rotation.x=-Math.PI/2;
+   shore.scale.set(3.1,2.0,1);
+   shore.position.set(110,1.25,-125);
+   addWorldObject(shore);
+ }
+}
+function animateWater(t){
+ for(const w of animatedWater){
+   const p=w.geometry.attributes.position;
+   for(let i=0;i<p.count;i++){
+     const x=p.getX(i), y=p.getY(i);
+     p.setZ(i,Math.sin(x*.11+t*.0012)*.18+Math.cos(y*.14+t*.001)*.12);
+   }
+   p.needsUpdate=true;
+   w.geometry.computeVertexNormals();
+ }
+}
+
+function createMountains(){
+ for(let i=0;i<25;i++){
+  const h=25+Math.random()*70,r=18+Math.random()*28;
+  const m=new THREE.Mesh(new THREE.ConeGeometry(r,h,9),new THREE.MeshStandardMaterial({color:0x4d5d48,roughness:1}));
+  m.position.set(-220+Math.random()*440,h/2,-230+Math.random()*400);m.castShadow=true;addWorldObject(m);
+ }
+}
+
+function createTree(x,z){
+ const y=terrainHeight(x,z);
+ const type=Math.floor(Math.random()*5);
+ const group=new THREE.Group();
+
+ const trunkMat=new THREE.MeshStandardMaterial({
+   color:[0x6b4326,0x7a4d2b,0x5b3922,0x765238,0x68452c][type],
+   roughness:1
+ });
+ const leafMat=new THREE.MeshStandardMaterial({
+   color:[0x3e7b3b,0x4f8b43,0x2f6b35,0x5d9346,0x356f3d][type],
+   roughness:.95
+ });
+
+ const trunkH=2.8+Math.random()*2.6;
+ const trunkR=.25+Math.random()*.22;
+ const trunk=new THREE.Mesh(
+   new THREE.CylinderGeometry(trunkR,trunkR*1.25,trunkH,8),
+   trunkMat
+ );
+ trunk.position.y=trunkH/2;
+ group.add(trunk);
+
+ if(type===0){
+   // Rounded broadleaf tree
+   const crown=new THREE.Mesh(new THREE.SphereGeometry(2.2+Math.random()*.7,10,8),leafMat);
+   crown.scale.y=.8;
+   crown.position.y=trunkH+1.5;
+   group.add(crown);
+ }else if(type===1){
+   // Layered pine, not an oversized single cone
+   for(let i=0;i<3;i++){
+     const crown=new THREE.Mesh(
+       new THREE.ConeGeometry(1.9-i*.25,2.5,9),
+       leafMat
+     );
+     crown.position.y=trunkH+1+i*1.25;
+     group.add(crown);
+   }
+ }else if(type===2){
+   // Small fruit-like tree
+   for(let i=0;i<4;i++){
+     const crown=new THREE.Mesh(new THREE.SphereGeometry(1.15,9,7),leafMat);
+     crown.position.set((Math.random()-.5)*1.7,trunkH+1.2+(Math.random()-.5)*.7,(Math.random()-.5)*1.7);
+     group.add(crown);
+   }
+ }else if(type===3){
+   // Tall narrow tree
+   const crown=new THREE.Mesh(new THREE.SphereGeometry(1.6,10,8),leafMat);
+   crown.scale.set(.8,1.6,.8);
+   crown.position.y=trunkH+2;
+   group.add(crown);
+ }else{
+   // Wide flat canopy
+   const crown=new THREE.Mesh(new THREE.SphereGeometry(2.1,10,7),leafMat);
+   crown.scale.set(1.35,.65,1.15);
+   crown.position.y=trunkH+1.7;
+   group.add(crown);
+ }
+
+ group.position.set(x,y,z);
+ group.rotation.y=Math.random()*Math.PI*2;
+ group.scale.setScalar(.75+Math.random()*.65);
+ group.traverse(o=>o.castShadow=true);
+ addWorldObject(group);
+}
+
+function createForest(){
+ for(let i=0;i<150;i++){
+   const x=-330+Math.random()*660,z=-330+Math.random()*660;
+   if(Math.abs(x)<28&&Math.abs(z)<330)continue;
+   if(isInWater(x,z))continue;
+   createTree(x,z);
+ }
+}
+
+function createVillage(){
+ for(let i=0;i<18;i++){
+  const x=-180+Math.random()*360,z=-250+Math.random()*500;
+  if(Math.abs(x)<30)continue;
+  createHouse(x,z);
+ }
+}
+
+function createHouse(x,z){
+ const y=terrainHeight(x,z);
+ const body=new THREE.Mesh(new THREE.BoxGeometry(11,7,10),new THREE.MeshStandardMaterial({color:0xb58d66}));
+ body.position.set(x,y+3.5,z);body.castShadow=true;
+ const roof=new THREE.Mesh(new THREE.ConeGeometry(9,5,4),new THREE.MeshStandardMaterial({color:0x482b22}));
+ roof.position.set(x,y+9,z);roof.rotation.y=Math.PI/4;roof.castShadow=true;
+ addWorldObject(body); addWorldObject(roof);
+}
+
+
+function createNPCs(){
+ npcs.forEach(n=>scene.remove(n));
+ npcs=[];
+
+ const count=50; // Har bir worldda 50 ta noyob NPS/NPC profili
+ const shirtColors=[0x3a6ea5,0xb14f3f,0x4c7a45,0x7d5aa6,0xc18a3a,0x444444];
+
+ for(let i=0;i<count;i++){
+   let x,z;
+   do{
+     x=-280+Math.random()*560;
+     z=-280+Math.random()*560;
+   }while(Math.abs(x)<30 || isInWater(x,z));
+
+   const npc=new THREE.Group();
+   const type=NPC_TYPES[i%NPC_TYPES.length];
+   const profile=NPC_PROFILES[i];
+   const shirtMat=new THREE.MeshStandardMaterial({color:type.shirt});
+   const pantsMat=new THREE.MeshStandardMaterial({color:type.pants});
+   const skinMat=new THREE.MeshStandardMaterial({color:type.skin});
+
+   const torso=new THREE.Mesh(new THREE.CapsuleGeometry(.36,.62,6,10),shirtMat);
+   torso.position.y=1.28;
+
+   const head=new THREE.Mesh(new THREE.SphereGeometry(.30,16,12),skinMat);
+   head.position.y=2.03;
+
+   const hair=new THREE.Mesh(new THREE.SphereGeometry(.285,14,8,0,Math.PI*2,0,Math.PI*.58),
+     new THREE.MeshStandardMaterial({color:type.hair}));
+   hair.position.y=2.13;
+
+   if(type.hat){
+     const hatColors=[0x20252b,0x263d6b,0xd18b28,0x3d7a4f,0x8c3b3b,0x5b4934,0x303030,0x5a4a8a,0x34495e];
+     const hat=new THREE.Mesh(
+       new THREE.CylinderGeometry(.33,.36,.16,12),
+       new THREE.MeshStandardMaterial({color:hatColors[type.hat-1]})
+     );
+     hat.position.y=2.40;
+     npc.add(hat);
+   }
+
+   const leftLeg=new THREE.Mesh(new THREE.CapsuleGeometry(.10,.58,5,8),pantsMat);
+   const rightLeg=leftLeg.clone();
+   leftLeg.position.set(-.19,.50,0);
+   rightLeg.position.set(.19,.50,0);
+
+   const leftArm=new THREE.Mesh(new THREE.CapsuleGeometry(.105,.50,5,8),shirtMat);
+   const rightArm=leftArm.clone();
+   leftArm.position.set(-.48,1.30,0);
+   rightArm.position.set(.48,1.30,0);
+
+   npc.add(torso,head,hair,leftLeg,rightLeg,leftArm,rightArm);
+
+   npc.position.set(x,terrainHeight(x,z),z);
+   npc.userData={
+     npcId:i+1, profile, customerJob:profile.job,
+     speed:.025+Math.random()*.035,
+     direction:Math.random()*Math.PI*2,
+     turnTimer:1.5+Math.random()*5,
+     radius:.75,
+     phase:Math.random()*Math.PI*2,
+     leftLeg,rightLeg,leftArm,rightArm,
+     walkPhase:0,
+     pause:Math.random()<.18 ? 1+Math.random()*3 : 0,
+     state:"walk",
+     homeDoor:null,
+     doorTimer:0
+   };
+
+   npc.traverse(o=>o.castShadow=true);
+   addWorldObject(npc);
+   npcs.push(npc);
+ }
+
+ if(worldId===3){
+   const doors=[];
+   worldObjects.forEach(o=>{
+     if(o.userData && o.userData.isBuilding && o.userData.door) doors.push(o);
+   });
+   npcs.forEach((npc,i)=>{
+     if(doors.length){
+       const b=doors[i%doors.length];
+       npc.userData.homeDoor=b;
+       if(i%3===0) npc.userData.state="goHome";
+     }
+   });
+ }
+}
+
+function isInWater(x,z){
+ return waterAreas.some(a=>
+   Math.abs(x-a.x)<a.w/2 &&
+   Math.abs(z-a.z)<a.d/2
+ );
+}
+
+function updateNPCs(){
+ for(const npc of npcs){
+   const u=npc.userData;
+
+   // Injured NPCs remain safely represented as a fall/knockdown state.
+   if(u.injured){
+     u.injuryTimer-=.016;
+     npc.rotation.x=THREE.MathUtils.lerp(npc.rotation.x,-1.15,.08);
+     npc.position.y=terrainHeight(npc.position.x,npc.position.z)+.05;
+     if(u.injuryTimer<=0){
+       u.injured=false;
+       npc.rotation.x=0;
+       u.state="walk";
+       u.speed=.025+Math.random()*.035;
+     }
+     continue;
+   }
+
+   // Home/door behavior in the city.
+   if(false && u.homeDoor && (u.state==="goHome" || u.state==="inside")){
+     const building=u.homeDoor.userData.building;
+     const doorWorld=new THREE.Vector3();
+     u.homeDoor.getWorldPosition(doorWorld);
+     const dx=doorWorld.x-npc.position.x;
+     const dz=doorWorld.z-npc.position.z;
+     const d=Math.hypot(dx,dz);
+
+     if(u.state==="goHome" && d>2.2){
+       u.direction=Math.atan2(dx,dz);
+       npc.position.x+=Math.sin(u.direction)*u.speed;
+       npc.position.z+=Math.cos(u.direction)*u.speed;
+       npc.position.y=terrainHeight(npc.position.x,npc.position.z);
+       u.walkPhase+=u.speed*8;
+     }else if(u.state==="goHome"){
+       // Door transition: hide briefly inside, then return later.
+       u.state="inside";
+       u.doorTimer=3+Math.random()*5;
+       npc.visible=false;
+     }else{
+       u.doorTimer-=.016;
+       if(u.doorTimer<=0){
+         npc.visible=true;
+         npc.position.set(doorWorld.x,terrainHeight(doorWorld.x,doorWorld.z),doorWorld.z+2.2);
+         u.state="walk";
+         u.turnTimer=1;
+       }
+     }
+     continue;
+   }
+
+   u.turnTimer-=.016;
+
+   if(vehicle && mode==="car"){
+     const dx=vehicle.position.x-npc.position.x;
+     const dz=vehicle.position.z-npc.position.z;
+     const d=Math.hypot(dx,dz);
+     if(d<10){
+       u.direction=Math.atan2(-dx,-dz);
+       u.speed=.055;
+       u.pause=0;
+     }
+   }
+
+   if(u.pause>0){
+     u.pause-=.016;
+     u.walkPhase+=.01;
+     u.leftArm.rotation.x*=.92;
+     u.rightArm.rotation.x*=.92;
+     u.leftLeg.rotation.x*=.92;
+     u.rightLeg.rotation.x*=.92;
+   }else{
+     if(u.turnTimer<=0){
+       u.direction+=(Math.random()-.5)*1.1;
+       u.turnTimer=2+Math.random()*5;
+     }
+
+     const nx=npc.position.x+Math.sin(u.direction)*u.speed;
+     const nz=npc.position.z+Math.cos(u.direction)*u.speed;
+
+     if(Math.abs(nx)>330||Math.abs(nz)>330||isInWater(nx,nz)){
+       u.direction+=Math.PI*(.7+Math.random()*.5);
+     }else{
+       npc.position.x=nx;
+       npc.position.z=nz;
+       npc.position.y=terrainHeight(nx,nz);
+       u.walkPhase+=u.speed*8;
+       const swing=Math.sin(u.walkPhase)*.55;
+       u.leftLeg.rotation.x=swing;
+       u.rightLeg.rotation.x=-swing;
+       u.leftArm.rotation.x=-swing*.65;
+       u.rightArm.rotation.x=swing*.65;
+       npc.rotation.y=u.direction;
+     }
+   }
+
+   for(const other of npcs){
+     if(other===npc || !other.visible)continue;
+     const dx=npc.position.x-other.position.x;
+     const dz=npc.position.z-other.position.z;
+     const d=Math.hypot(dx,dz);
+     if(d>0&&d<1.35){
+       npc.position.x+=(dx/d)*.012;
+       npc.position.z+=(dz/d)*.012;
+     }
+   }
+ }
+}
+
+function resolveVehicleWorldCollisions(){
+ if(mode!=="car")return;
+
+ const x=vehicle.position.x,z=vehicle.position.z;
+
+ // Keep vehicle inside world bounds.
+ vehicle.position.x=THREE.MathUtils.clamp(x,-340,340);
+ vehicle.position.z=THREE.MathUtils.clamp(z,-340,340);
+
+ // Water slows vehicle strongly and adds resistance.
+ if(isInWater(vehicle.position.x,vehicle.position.z)){
+   // Water behaves like a shallow basin: strong drag and a hard speed limit.
+   physics.speed*=.91;
+   physics.speed=THREE.MathUtils.clamp(physics.speed,-2.5,4.2);
+ }
+
+ // NPC avoidance/collision.
+ for(const npc of npcs){
+   const dx=vehicle.position.x-npc.position.x;
+   const dz=vehicle.position.z-npc.position.z;
+   const d=Math.hypot(dx,dz);
+   if(d<2.4 && !npc.userData.injured){
+     const nx=dx/(d||1), nz=dz/(d||1);
+     vehicle.position.x=npc.position.x+nx*2.4;
+     vehicle.position.z=npc.position.z+nz*2.4;
+
+     // Non-graphic game injury state: the pedestrian falls and stays down briefly.
+     if(Math.abs(physics.speed)>1.2){
+       npc.userData.injured=true;
+       npc.userData.injuryTimer=2.5;
+       npc.userData.state="injured";
+       npc.userData.speed=0;
+       npc.rotation.x=-.15;
+       physics.speed*=.45;
+       showMessage("NPC yiqildi — ehtiyot bo‘ling");
+     }else{
+       physics.speed*=.25;
+     }
+     physics.yawVelocity+=(Math.random()-.5)*.012;
+   }
+ }
+}
+
+function createVehicle(){
+ vehicle=new THREE.Group();
+ const body=new THREE.Mesh(new THREE.BoxGeometry(3.3,1.15,5.5),new THREE.MeshStandardMaterial({color:0x111111,metalness:.65,roughness:.25}));
+ body.position.y=1.25;body.castShadow=true;vehicle.add(body);
+
+ const cabin=new THREE.Mesh(new THREE.BoxGeometry(2.5,1,2.6),new THREE.MeshStandardMaterial({color:0x17242a,metalness:.5,roughness:.15}));
+ cabin.position.set(0,2,-.2);vehicle.add(cabin);
+
+ const wheelGeo=new THREE.CylinderGeometry(.67,.67,.5,20);
+ const wheelMat=new THREE.MeshStandardMaterial({color:0x080808});
+ [[-1.7,.7,1.8],[1.7,.7,1.8],[-1.7,.7,-1.8],[1.7,.7,-1.8]].forEach(p=>{
+  const w=new THREE.Mesh(wheelGeo,wheelMat);
+  w.rotation.z=Math.PI/2;w.position.set(...p);w.castShadow=true;
+  w.userData.wheel=true;vehicle.add(w);
+ });
+ // First-person cockpit: dashboard, steering wheel and windshield frame.
+ const dash=new THREE.Mesh(new THREE.BoxGeometry(2.8,.38,.75),new THREE.MeshStandardMaterial({color:0x15191d,roughness:.65}));
+ dash.position.set(0,1.55,.85); vehicle.add(dash);
+ const windshield=new THREE.Mesh(new THREE.BoxGeometry(2.65,1.25,.08),new THREE.MeshStandardMaterial({color:0x496b78,transparent:true,opacity:.22,roughness:.05}));
+ windshield.position.set(0,2.18,-.62); vehicle.add(windshield);
+ const wheel=new THREE.Mesh(new THREE.TorusGeometry(.38,.07,10,28),new THREE.MeshStandardMaterial({color:0x111111,roughness:.5}));
+ wheel.position.set(-.62,1.65,.18); wheel.rotation.x=Math.PI/2; wheel.rotation.z=.12; vehicle.add(wheel);
+ const hub=new THREE.Mesh(new THREE.CylinderGeometry(.08,.08,.08,12),new THREE.MeshStandardMaterial({color:0x777777,metalness:.7}));
+ hub.rotation.x=Math.PI/2;hub.position.set(-.62,1.65,.18);vehicle.add(hub);
+ const pillarL=new THREE.Mesh(new THREE.BoxGeometry(.08,1.45,.12),new THREE.MeshStandardMaterial({color:0x15191d}));
+ pillarL.position.set(-1.3,2.12,-.62);pillarL.rotation.z=-.08;vehicle.add(pillarL);
+ const pillarR=pillarL.clone();pillarR.position.x=1.3;pillarR.rotation.z=.08;vehicle.add(pillarR);
+ vehicle.position.set(0,terrainHeight(0,80),80);
+ scene.add(vehicle);
+}
+
+function createPlayer(){
+ player=new THREE.Group();
+
+ const skin=0xc58f68;
+ const shirtMat=new THREE.MeshStandardMaterial({color:0x2d5f8c});
+ const pantsMat=new THREE.MeshStandardMaterial({color:0x26313a});
+ const skinMat=new THREE.MeshStandardMaterial({color:skin});
+
+ const torso=new THREE.Mesh(new THREE.BoxGeometry(.75,1.05,.42),shirtMat);
+ torso.position.y=1.35;
+
+ const head=new THREE.Mesh(new THREE.SphereGeometry(.29,16,12),skinMat);
+ head.position.y=2.12;
+
+ const leftLeg=new THREE.Mesh(new THREE.BoxGeometry(.20,.85,.24),pantsMat);
+ const rightLeg=leftLeg.clone();
+ leftLeg.position.set(-.20,.55,0);
+ rightLeg.position.set(.20,.55,0);
+
+ const leftArm=new THREE.Mesh(new THREE.CapsuleGeometry(.12,.58,5,8),shirtMat);
+ const rightArm=leftArm.clone();
+ leftArm.position.set(-.52,1.38,0);
+ rightArm.position.set(.52,1.38,0);
+
+ player.add(torso,head,leftLeg,rightLeg,leftArm,rightArm);
+ player.userData={leftLeg,rightLeg,leftArm,rightArm,walkPhase:0};
+
+ player.position.set(0,terrainHeight(0,80),72);
+ player.visible=false;
+ scene.add(player);
+}
+
+function getSlope(){
+ const x=vehicle.position.x,z=vehicle.position.z;
+ return (terrainHeight(x,z-4)-terrainHeight(x,z+4))/8;
+}
+
+function calculateEngineForce(){
+ let force=0;
+ if(keys.up)force+=PHYSICS.engineForce;
+ if(keys.down)force-=PHYSICS.brakeForce;
+ return force;
+}
+
+function updateRealPhysics(){
+ if(mode!=="car")return;
+
+ const slope=getSlope();
+ const engineForce=calculateEngineForce();
+ const gravityForce=PHYSICS.mass*PHYSICS.gravity*slope;
+ let rollingForce=Math.abs(physics.speed)<.2?0:PHYSICS.rollingResistance;
+ const drag=PHYSICS.airDrag*physics.speed*Math.abs(physics.speed);
+
+ let totalForce=engineForce-drag-rollingForce*Math.sign(physics.speed)-gravityForce;
+ physics.acceleration=totalForce/PHYSICS.mass;
+ physics.speed+=physics.acceleration*.045;
+ physics.speed=THREE.MathUtils.clamp(physics.speed,-12,PHYSICS.maxSpeed);
+
+ if(!keys.up&&!keys.down)physics.speed*=.994;
+
+ let steering=0;
+ if(keys.left)steering=1;
+ if(keys.right)steering=-1;
+
+ const speedFactor=1-Math.min(Math.abs(physics.speed)/PHYSICS.maxSpeed,.75);
+ physics.yawVelocity+=steering*.022*speedFactor*(0.35+Math.min(Math.abs(physics.speed)/6,1));
+ physics.yawVelocity*=.88;
+ vehicle.rotation.y+=physics.yawVelocity;
+
+ vehicle.translateZ(-physics.speed*.045);
+
+ const x=vehicle.position.x,z=vehicle.position.z;
+ const ground=terrainHeight(x,z);
+ const heightDifference=vehicle.position.y-ground;
+ const springForce=-heightDifference*PHYSICS.suspensionStrength;
+ const dampingForce=-physics.verticalSpeed*PHYSICS.suspensionDamping;
+ const verticalAcceleration=(springForce+dampingForce)/PHYSICS.mass;
+
+ physics.verticalSpeed+=verticalAcceleration*.08;
+ physics.verticalSpeed-=PHYSICS.gravity*.08;
+ vehicle.position.y+=physics.verticalSpeed*.08;
+
+ if(vehicle.position.y<=ground){
+  vehicle.position.y=ground;
+  physics.verticalSpeed=0;
+  physics.grounded=true;
+ }else physics.grounded=false;
+
+ const slopeAngle=Math.atan(slope);
+ physics.pitch=THREE.MathUtils.lerp(physics.pitch,slopeAngle,.08);
+ vehicle.rotation.x=physics.pitch;
+
+ const targetRoll=-steering*Math.min(Math.abs(physics.speed)/30,.35);
+ physics.roll=THREE.MathUtils.lerp(physics.roll,targetRoll,.08);
+ vehicle.rotation.z=physics.roll;
+
+ physics.wheelRotation+=physics.speed/PHYSICS.wheelRadius*.08;
+ vehicle.traverse(o=>{
+  if(o.userData&&o.userData.wheel)o.rotation.x=physics.wheelRotation;
+ });
+
+ const distance=Math.sqrt((x-110)**2+(z+125)**2);
+ if(distance<75)physics.speed*=1-PHYSICS.waterDrag*.008;
+
+ document.getElementById("speed").innerText=Math.min(50,Math.round(Math.abs(physics.speed)*3.6));
+}
+
+function updateWalk(){
+ if(mode!=="walk")return;
+ let move=0;
+ if(keys.up)move=.38;
+ if(keys.down)move=-.25;
+ player.translateZ(-move);
+ if(keys.left)player.rotation.y+=.055;
+ if(keys.right)player.rotation.y-=.055;
+ player.position.y=terrainHeight(player.position.x,player.position.z);
+ player.userData.walkPhase += Math.abs(move)*9;
+ camera.userData.headBob = Math.abs(move)>0 ? Math.sin(player.userData.walkPhase)*.035 : THREE.MathUtils.lerp(camera.userData.headBob||0,0,.18);
+
+ if(worldId===3){
+   worldObjects.forEach(o=>{
+     if(!o.userData || !o.userData.isBuilding)return;
+     const dx=player.position.x-o.position.x;
+     const dz=player.position.z-o.position.z;
+     const b=o.userData.bounds;
+     const inside=Math.abs(dx)<b.w/2 && Math.abs(dz)<b.d/2;
+     if(inside){
+       const door=o.userData.door;
+       const dw=new THREE.Vector3();
+       door.getWorldPosition(dw);
+       if(Math.hypot(player.position.x-dw.x,player.position.z-dw.z)>2.0){
+         // Push the player back toward the nearest building edge.
+         const ex=b.w/2-Math.abs(dx);
+         const ez=b.d/2-Math.abs(dz);
+         if(ex<ez) player.position.x=o.position.x+Math.sign(dx||1)*b.w/2;
+         else player.position.z=o.position.z+Math.sign(dz||1)*b.d/2;
+       }
+     }
+   });
+ }
+ document.getElementById("speed").innerText=Math.round(Math.abs(move)*10);
+}
+
+function updateCamera(){
+ const object=mode==="car"?vehicle:player;
+ const offset=new THREE.Vector3(0,mode==="car"?5.8:3.4,mode==="car"?11:6);
+ offset.applyQuaternion(object.quaternion);
+ camera.position.lerp(object.position.clone().add(offset),.09);
+ const target=object.position.clone();target.y+=mode==="car"?1.5:1.2;
+ camera.lookAt(target);
+}
+
+function updateTime(){
+ worldClock+=.006;if(worldClock>=24)worldClock=0;
+ const hour=Math.floor(worldClock),minute=Math.floor((worldClock-hour)*60);
+ document.getElementById("time").innerText=String(hour).padStart(2,"0")+":"+String(minute).padStart(2,"0");
+ const night=hour>=20||hour<6;
+ scene.background=new THREE.Color(night?0x06101e:0x87c9ee);
+ scene.fog.color=new THREE.Color(night?0x06101e:0x87c9ee);
+}
+
+let rainGroup=null;
+function toggleWeather(){
+ rain=!rain;
+ document.getElementById("weather").innerText=rain?"RAIN":"CLEAR";
+ if(rain)createRain();else removeRain();
+}
+function createRain(){
+ if(rainGroup)return;
+ const positions=[];
+ for(let i=0;i<1600;i++)positions.push((Math.random()-.5)*180,Math.random()*100,(Math.random()-.5)*180);
+ const geo=new THREE.BufferGeometry();
+ geo.setAttribute("position",new THREE.Float32BufferAttribute(positions,3));
+ rainGroup=new THREE.Points(geo,new THREE.PointsMaterial({color:0xaaccff,size:.16,transparent:true,opacity:.7}));
+ scene.add(rainGroup);
+}
+function updateRain(){
+ if(!rainGroup)return;
+ const p=rainGroup.geometry.attributes.position;
+ for(let i=0;i<p.count;i++){let y=p.getY(i)-1.3;if(y<0)y=100;p.setY(i,y)}
+ p.needsUpdate=true;
+}
+function removeRain(){
+ if(!rainGroup)return;
+ scene.remove(rainGroup);rainGroup.geometry.dispose();rainGroup.material.dispose();rainGroup=null;
+}
+
+
+function openWorldPanel(){
+ document.getElementById("worldPanel").style.display="block";
+}
+function closeWorldPanel(){
+ document.getElementById("worldPanel").style.display="none";
+}
+function selectWorld(id){
+  worldId=id;
+ closeWorldPanel();
+
+ // Reset player/vehicle and rebuild the environment.
+ vehicle.position.set(0,terrainHeight(0,80),80);
+ vehicle.rotation.set(0,0,0);
+ player.position.set(0,terrainHeight(0,80),72);
+ player.rotation.set(0,0,0);
+ physics.speed=0;
+ physics.verticalSpeed=0;
+ physics.yawVelocity=0;
+
+ buildWorld();
+ document.getElementById("worldBtn").innerText="WORLD: "+id;
+ showMessage(
+   id===1?"Samarqand — Registon shahri yuklandi":
+   id===2?"Tekislik olami yuklandi":
+   id===3?"Tog‘ va o‘rmon olami yuklandi":
+   "Samarqand — Registon olami yuklandi"
+ );
+}
+function toggleVehicle(){
+ if(mode==="car"){
+  mode="walk";player.visible=true;
+  player.position.copy(vehicle.position);player.rotation.copy(vehicle.rotation);player.position.z+=4;
+  document.getElementById("mode").innerText="WALK";
+  document.getElementById("vehicleBtn").innerText="ENTER CAR";
+  showMessage("Mashinadan tushdingiz");
+ }else{
+  const dx=player.position.x-vehicle.position.x,dz=player.position.z-vehicle.position.z;
+  if(Math.hypot(dx,dz)<8){
+   mode="car";player.visible=false;
+   document.getElementById("mode").innerText="CAR";
+   document.getElementById("vehicleBtn").innerText="EXIT CAR";
+   showMessage("Mashinaga o'tirdingiz");
+  }else showMessage("Mashinaga yaqinlashing");
+ }
+}
+
+function showMessage(text){
+ const m=document.getElementById("message");
+ m.innerText=text;m.classList.add("show");
+ setTimeout(()=>m.classList.remove("show"),1800);
+}
+
+document.addEventListener("keydown",e=>{
+ if(e.key==="w"||e.key==="ArrowUp")keys.up=true;
+ if(e.key==="s"||e.key==="ArrowDown")keys.down=true;
+ if(e.key==="a"||e.key==="ArrowLeft")keys.left=true;
+ if(e.key==="d"||e.key==="ArrowRight")keys.right=true;
+ if(e.key==="e"||e.key==="E"){
+   if(mode==="walk" && typeof nearestBuildingDoor==="function" && nearestBuildingDoor()) interactBuilding();
+   else toggleVehicle();
+ }
+ if(e.key==="r")toggleWeather();
+ if(e.key==="Enter"){ e.preventDefault(); if(mode==="walk" && typeof nearestBuildingDoor==="function" && nearestBuildingDoor()) interactBuilding(); else toggleVehicle(); }
+});
+document.addEventListener("keyup",e=>{
+ if(e.key==="w"||e.key==="ArrowUp")keys.up=false;
+ if(e.key==="s"||e.key==="ArrowDown")keys.down=false;
+ if(e.key==="a"||e.key==="ArrowLeft")keys.left=false;
+ if(e.key==="d"||e.key==="ArrowRight")keys.right=false;
+});
+
+function bindButton(id,key){
+ const b=document.getElementById(id);
+ if(!b)return;
+ const press=e=>{e.preventDefault();e.stopPropagation();keys[key]=true;b.classList.add("pressed");try{b.setPointerCapture?.(e.pointerId)}catch(_){} };
+ const release=e=>{e.preventDefault();e.stopPropagation();keys[key]=false;b.classList.remove("pressed");};
+ if(window.PointerEvent){
+   b.addEventListener("pointerdown",press,{passive:false});
+   b.addEventListener("pointerup",release,{passive:false});
+   b.addEventListener("pointercancel",release,{passive:false});
+   b.addEventListener("pointerleave",release,{passive:false});
+ }
+ b.addEventListener("touchstart",press,{passive:false});
+ b.addEventListener("touchend",release,{passive:false});
+ b.addEventListener("touchcancel",release,{passive:false});
+}
+bindButton("up","up");bindButton("down","down");bindButton("left","left");bindButton("right","right");
+
+(function bindVirtualDrag(){
+ const area=document.getElementById("touchMoveArea"); if(!area)return;
+ let pid=null,sx=0,sy=0;
+ const reset=()=>{pid=null;keys.up=keys.down=keys.left=keys.right=false;};
+ area.addEventListener("pointerdown",e=>{e.preventDefault();e.stopPropagation();pid=e.pointerId;sx=e.clientX;sy=e.clientY;try{area.setPointerCapture(e.pointerId)}catch(_){}},{passive:false});
+ area.addEventListener("pointermove",e=>{if(pid!==e.pointerId)return;e.preventDefault();const dx=e.clientX-sx,dy=e.clientY-sy,d=14;keys.up=dy<-d;keys.down=dy>d;keys.left=dx<-d;keys.right=dx>d;},{passive:false});
+ ["pointerup","pointercancel","pointerleave"].forEach(t=>area.addEventListener(t,e=>{if(pid===e.pointerId){e.preventDefault();reset();}},{passive:false}));
+})();
+window.addEventListener("blur",()=>{keys.up=keys.down=keys.left=keys.right=false});
+document.addEventListener("visibilitychange",()=>{if(document.hidden)keys.up=keys.down=keys.left=keys.right=false});
+
+document.getElementById("vehicleBtn").onclick=toggleVehicle;
+document.getElementById("weatherBtn").onclick=toggleWeather;
+document.getElementById("worldBtn").onclick=openWorldPanel;
+
+function animate(){
+ if(!gameStarted)return;
+ requestAnimationFrame(animate);
+ updateRealPhysics();
+ resolveVehicleWorldCollisions();
+ updateWalk();
+ updateNPCs();
+ updateCamera();
+ updateTime();
+ updateRain();
+ updateCityTraffic();
+ updateFirstPersonCamera();
+ animateWater(performance.now());
+ drawMiniMap();
+ renderer.render(scene,camera);
+}
+
+
+
+// ===== V18 MAX 3D QUALITY =====
+let ultraQuality=true;
+function applyGraphicsQuality(){
+ if(!renderer)return;
+ const ratio=ultraQuality ? Math.min(window.devicePixelRatio||1,1.75) : Math.min(window.devicePixelRatio||1,1.05);
+ renderer.setPixelRatio(ratio);
+ renderer.toneMappingExposure=ultraQuality?1.12:1.0;
+ if(typeof sun!=="undefined" && sun.shadow){
+   sun.shadow.mapSize.width=ultraQuality?2048:1024;
+   sun.shadow.mapSize.height=ultraQuality?2048:1024;
+   sun.shadow.map?.dispose?.();
+ }
+}
+window.addEventListener("keydown",e=>{
+ if(e.key.toLowerCase()==="q" && renderer){
+   ultraQuality=!ultraQuality;
+   applyGraphicsQuality();
+   const msg=document.getElementById("mode");
+   if(msg)msg.textContent=(msg.textContent||"")+" • "+(ultraQuality?"ULTRA 3D":"PERFORMANCE");
+ }
+});
+
+window.addEventListener("resize",()=>{
+ if(!camera||!renderer)return;
+ camera.aspect=innerWidth/innerHeight;
+ camera.updateProjectionMatrix();
+ renderer.setSize(innerWidth,innerHeight,false);
+});
+window.addEventListener("load",()=>{try{screen.orientation?.lock?.("landscape").catch(()=>{});}catch(_){}});
+
+// ===== ASADBEK AI: 40 KASB VA MAOSH TIZIMI =====
+const JOBS = [
+ {n:"Taksi haydovchisi",s:350000},{n:"Avtobus haydovchisi",s:420000},{n:"Yuk mashinasi haydovchisi",s:500000},{n:"Kuryer",s:280000},
+ {n:"Politsiya xodimi",s:520000},{n:"Qutqaruvchi",s:560000},{n:"O‘t o‘chiruvchi",s:580000},{n:"Qo‘riqchi",s:300000},
+ {n:"Shifokor",s:750000},{n:"Hamshira",s:520000},{n:"Dorixona xodimi",s:430000},{n:"Veterinar",s:480000},
+ {n:"O‘qituvchi",s:500000},{n:"Universitet o‘qituvchisi",s:680000},{n:"Bog‘cha tarbiyachisi",s:420000},{n:"Kutubxonachi",s:360000},
+ {n:"Dasturchi",s:900000},{n:"Grafik dizayner",s:650000},{n:"Elektrik",s:470000},{n:"Mexanik",s:520000},
+ {n:"Quruvchi",s:450000},{n:"Arxitektor",s:700000},{n:"Santexnik",s:430000},{n:"Payvandchi",s:490000},
+ {n:"Dehqon",s:380000},{n:"Bog‘bon",s:340000},{n:"Fermer",s:460000},{n:"Veterinar yordamchisi",s:360000},
+ {n:"Oshpaz",s:440000},{n:"Ofitsiant",s:300000},{n:"Nonvoy",s:390000},{n:"Qandolatchi",s:410000},
+ {n:"Do‘kon sotuvchisi",s:320000},{n:"Kassir",s:330000},{n:"Market menejeri",s:550000},{n:"Mehmonxona administratori",s:500000},
+ {n:"Turist gid",s:480000},{n:"Fotograf",s:460000},{n:"Jurnalist",s:570000},{n:"Tarjimon",s:610000}
+];
+let jobMoney=0;
+let selectedJob=-1, working=false, workTimer=null;
+const moneyEl=()=>document.getElementById('jobBalance');
+function formatSom(n){return Math.round(n).toLocaleString('uz-UZ');}
+function saveJobMoney(){if(moneyEl()) moneyEl().textContent=formatSom(jobMoney);}
+
+// ===== REAL WORKFLOW: MIJOZ TALABI + XIZMAT NPS/NPC =====
+let activeCustomer=null;
+let customerDemandOpen=false;
+let totalServiceRatings=Number(localStorage.getItem('asadbek_service_ratings')||0);
+let ratingSum=Number(localStorage.getItem('asadbek_service_rating_sum')||0);
+
+function jobKeyFor(j){
+  const n=j.n.toLowerCase();
+  if(n.includes('taksi'))return 'taksi';
+  if(n.includes('avtobus'))return 'avtobus';
+  if(n.includes('yuk mashinasi'))return 'yuk mashinasi';
+  if(n.includes('kuryer'))return 'kuryer';
+  if(n.includes('politsiya'))return 'politsiya';
+  if(n.includes('qutqaruvchi'))return 'qutqaruvchi';
+  if(n.includes('o‘t o‘chiruvchi'))return 'o‘t o‘chiruvchi';
+  if(n.includes('qo‘riqchi'))return 'qo‘riqchi';
+  if(n.includes('shifokor'))return 'shifokor';
+  if(n.includes('hamshira'))return 'hamshira';
+  if(n.includes('dorixona'))return 'dorixona';
+  if(n.includes('veterinar'))return 'veterinar';
+  if(n.includes('universitet'))return 'universitet';
+  if(n.includes('bog‘cha'))return 'bog‘cha';
+  if(n.includes('o‘qituvchi'))return 'o‘qituvchi';
+  if(n.includes('kutubxonachi'))return 'kutubxonachi';
+  if(n.includes('grafik'))return 'grafik';
+  if(n.includes('dasturchi'))return 'dasturchi';
+  if(n.includes('elektrik'))return 'elektrik';
+  if(n.includes('mexanik'))return 'mexanik';
+  if(n.includes('quruvchi'))return 'quruvchi';
+  if(n.includes('arxitektor'))return 'arxitektor';
+  if(n.includes('santexnik'))return 'santexnik';
+  if(n.includes('payvandchi'))return 'payvandchi';
+  if(n.includes('dehqon'))return 'dehqon';
+  if(n.includes('bog‘bon'))return 'bog‘bon';
+  if(n.includes('fermer'))return 'fermer';
+  if(n.includes('oshpaz'))return 'oshpaz';
+  if(n.includes('ofitsiant'))return 'ofitsiant';
+  if(n.includes('nonvoy'))return 'nonvoy';
+  if(n.includes('qandolatchi'))return 'qandolatchi';
+  if(n.includes('sotuvchi'))return 'sotuvchi';
+  if(n.includes('kassir'))return 'kassir';
+  if(n.includes('market'))return 'market';
+  if(n.includes('mehmonxona'))return 'mehmonxona';
+  if(n.includes('turist gid'))return 'turist';
+  if(n.includes('fotograf'))return 'fotograf';
+  if(n.includes('jurnalist'))return 'jurnalist';
+  if(n.includes('tarjimon'))return 'tarjimon';
+  return n;
+}
+function findCustomerForJob(job){
+  const key=jobKeyFor(job);
+  const candidates=npcs.filter(n=>{
+    const p=n.userData.profile;
+    return n.visible && !n.userData.injured && p && (p.job===key || p.job.includes(key) || key.includes(p.job));
+  });
+  if(!candidates.length)return null;
+  return candidates[Math.floor(Math.random()*candidates.length)];
+}
+function updateNpcStats(){
+  const total=document.getElementById('npcTotal'); if(total)total.textContent='50';
+  const active=document.getElementById('activeNpcCount'); if(active)active.textContent=String(npcs.filter(n=>n.visible&&!n.userData.injured).length);
+  const dc=document.getElementById('npcDemandCount'); if(dc)dc.textContent=activeCustomer?'1':'0';
+  const avg=document.getElementById('npcAvgRating');
+  if(avg)avg.textContent=totalServiceRatings?(ratingSum/totalServiceRatings).toFixed(1)+' / 5':'—';
+}
+function createCustomerDemand(jobIndex){
+  const j=JOBS[jobIndex];
+  const npc=findCustomerForJob(j);
+  const status=document.getElementById('customerStatus');
+  if(!npc){
+    activeCustomer=null;
+    if(status)status.textContent='Hozir bu kasb uchun mos mijoz topilmadi. Keyinroq qayta urinib ko‘ring.';
+    return false;
+  }
+  activeCustomer=npc;
+  npc.userData.state='customer';
+  npc.userData.customerWaiting=true;
+  npc.userData.customerTimer=0;
+  const p=npc.userData.profile;
+  document.getElementById('customerName').textContent='👤 '+p.name+' • NPS #'+npc.userData.npcId;
+  document.getElementById('customerNeed').textContent='Talab: '+p.need+' • Kasb: '+j.n;
+  document.getElementById('customerPay').textContent='Xizmat haqi: '+formatSom(j.s)+' so‘m';
+  if(status)status.textContent='Mijoz sizning xizmatingizni kutmoqda.';
+  updateNpcStats();
+  return true;
+}
+function finishCustomerService(job){
+  if(!activeCustomer)return;
+  const npc=activeCustomer, p=npc.userData.profile;
+  const quality=0.70+Math.random()*.30;
+  const rating=Math.max(3,Math.min(5,Math.round(quality*5)));
+  totalServiceRatings++; ratingSum+=rating;
+  localStorage.setItem('asadbek_service_ratings',String(totalServiceRatings));
+  localStorage.setItem('asadbek_service_rating_sum',String(ratingSum));
+  npc.userData.customerWaiting=false; npc.userData.state='walk';
+  activeCustomer=null;
+  const status=document.getElementById('customerStatus');
+  if(status)status.textContent=p.name+' xizmatni '+rating+'/5 baholadi. Rahmat!';
+  updateNpcStats();
+  showMessage('Mijoz '+p.name+' xizmatni '+rating+'/5 baholadi');
+}
+
+function renderJobs(){
+ const grid=document.getElementById('jobGrid'); if(!grid)return; grid.innerHTML='';
+ JOBS.forEach((j,i)=>{
+   const b=document.createElement('button'); b.className='jobCard'+(i===selectedJob?' selected':'');
+   b.innerHTML='<b>'+j.n+'</b><small>Maosh: '+formatSom(j.s)+' so‘m / ish</small>';
+   b.addEventListener('click',()=>selectJob(i),{passive:true}); grid.appendChild(b);
+ });
+ saveJobMoney();
+}
+function selectJob(i){
+ if(working)return; selectedJob=i;
+ document.querySelectorAll('.jobCard').forEach((e,k)=>e.classList.toggle('selected',k===i));
+ const st=document.getElementById('jobStatus');
+ if(st)st.textContent=JOBS[i].n+' tanlandi. Avval mos mijoz talabini qabul qiling.';
+ const bw=document.getElementById('jobWork'); if(bw)bw.disabled=!createCustomerDemand(i);
+}
+function openJobPanel(){
+ document.getElementById('jobPanel').style.display='block'; renderJobs();
+}
+function closeJobPanel(){document.getElementById('jobPanel').style.display='none';}
+function startJob(){
+ if(selectedJob<0||working)return;
+ if(!activeCustomer){
+   const ok=createCustomerDemand(selectedJob);
+   if(!ok)return;
+ }
+ working=true; const j=JOBS[selectedJob]; const bw=document.getElementById('jobWork'), st=document.getElementById('jobStatus');
+ bw.disabled=true; let left=15;
+ st.textContent='Mijoz bilan ish jarayoni: '+left+' soniya';
+ workTimer=setInterval(()=>{left--; st.textContent='Mijoz '+activeCustomer?.userData?.profile?.name+' bilan ish: '+left+' soniya'; if(left<=0){
+   clearInterval(workTimer); workTimer=null; working=false; if(window.GameSocket&&window.GameSocket.readyState===1)window.GameSocket.send(JSON.stringify({type:'cityJobPayout',amount:j.s}));
+   st.textContent='Ish tugadi! +'+formatSom(j.s)+' so‘m. Mijoz bahosi kutilmoqda.';
+   finishCustomerService(j);
+   bw.disabled=false;
+   showMessage(j.n+' • mijoz xizmati yakunlandi • +'+formatSom(j.s)+' so‘m');
+ }},1000);
+}
+document.getElementById('buildingBtn')?.addEventListener('click',interactBuilding);
+document.getElementById('jobBtn').addEventListener('click',openJobPanel);
+document.getElementById('jobClose').addEventListener('click',closeJobPanel);
+document.getElementById('jobWork').addEventListener('click',startJob);
+
+document.getElementById('npcDemandBtn')?.addEventListener('click',()=>{
+  document.getElementById('npcDemandPanel').style.display='block';
+  updateNpcStats();
+});
+document.getElementById('closeNpcPanel')?.addEventListener('click',()=>{
+  document.getElementById('npcDemandPanel').style.display='none';
+});
+document.getElementById('acceptCustomer')?.addEventListener('click',()=>{
+  if(selectedJob<0){document.getElementById('customerStatus').textContent='Avval KASBLAR bo‘limidan kasb tanlang.';return;}
+  if(!activeCustomer)createCustomerDemand(selectedJob);
+  if(activeCustomer){
+    document.getElementById('customerStatus').textContent='Mijoz qabul qilindi. KASBLAR → ISHNI BOSHLASH tugmasini bosing.';
+    closeJobPanel();
+  }
+});
+
+
+
+/* ===== ASADBEK AI v4 CITY/INTERIOR PATCH ===== */
+const CITY_NAMES={1:"SAMARQAND",2:"ANDIJON VILOYATI",3:"TOSHKENT — O‘ZBEKISTON POYTAXTI"};
+const CITY_COLORS={1:0xc9a06b,2:0xc7a16f,3:0xb9a9a0};
+
+function urbanTerrainHeight(x,z){ return 0; }
+terrainHeight=urbanTerrainHeight;
+
+function addInteriorFurniture(group,w,d,h,seed){
+  const wood=new THREE.MeshStandardMaterial({color:0x6b4932,roughness:.9});
+  const cloth=new THREE.MeshStandardMaterial({color:[0x2f6fbd,0x7a4f35,0x4e7b52,0x8b5a8c][seed%4],roughness:.9});
+  const mk=(geo,mat,x,y,z)=>{const m=new THREE.Mesh(geo,mat);m.position.set(x,y,z);m.castShadow=true;m.receiveShadow=true;group.add(m);return m;};
+  mk(new THREE.BoxGeometry(Math.min(1.8,w*.22),.08,Math.min(1.2,d*.16)),wood,0,.78,0);
+  mk(new THREE.BoxGeometry(.12,.72,.12),wood,-.7,.36,-.35);
+  mk(new THREE.BoxGeometry(.12,.72,.12),wood,.7,.36,-.35);
+  mk(new THREE.BoxGeometry(.9,.7,.9),cloth,Math.min(w*.22,1.2),.35,-Math.min(d*.2,1.4));
+  mk(new THREE.BoxGeometry(.8,.08,.45),wood,-Math.min(w*.22,1.2),.78,Math.min(d*.2,1.4));
+  const lamp=mk(new THREE.SphereGeometry(.16,10,8),new THREE.MeshBasicMaterial({color:0xffe5a6}),0,h-.55,0);
+  lamp.userData.interiorLamp=true;
+}
+
+function makeEnterableShell(group,w,d,h,color,seed=0){
+  /* Replace a solid building body with four walls, leaving a usable front door. */
+  const wallMat=new THREE.MeshStandardMaterial({color,roughness:.9});
+  const trimMat=new THREE.MeshStandardMaterial({color:0x6e4632,roughness:.95});
+  const t=.55, doorW=Math.min(1.8,w*.26), doorH=Math.min(2.5,h*.55);
+  const add=(geo,mat,x,y,z)=>{const m=new THREE.Mesh(geo,mat);m.position.set(x,y,z);m.castShadow=true;m.receiveShadow=true;group.add(m);return m;};
+  add(new THREE.BoxGeometry(t,h,d),wallMat,-w/2+t/2,h/2,0);
+  add(new THREE.BoxGeometry(t,h,d),wallMat,w/2-t/2,h/2,0);
+  add(new THREE.BoxGeometry(w,h,.55),wallMat,0,h/2,-d/2+.275);
+  const sideW=(w-doorW)/2;
+  add(new THREE.BoxGeometry(sideW,h,.55),wallMat,-(doorW/2+sideW/2),h/2,d/2-.275);
+  add(new THREE.BoxGeometry(sideW,h,.55),wallMat,(doorW/2+sideW/2),h/2,d/2-.275);
+  add(new THREE.BoxGeometry(doorW,.55,.55),wallMat,0,doorH+.275,d/2-.275);
+  const floor=add(new THREE.BoxGeometry(w-.4,.18,d-.4),new THREE.MeshStandardMaterial({color:0x9b7652,roughness:1}),0,.05,0);
+  floor.receiveShadow=true;
+  add(new THREE.BoxGeometry(w+.5,.35,d+.5),trimMat,0,h+.18,0);
+  /* Door frame + open passage. */
+  add(new THREE.BoxGeometry(.16,doorH,.18),trimMat,-doorW/2,doorH/2,d/2+.08);
+  add(new THREE.BoxGeometry(.16,doorH,.18),trimMat,doorW/2,doorH/2,d/2+.08);
+  const sign=add(new THREE.BoxGeometry(Math.min(2.2,w*.35),.28,.12),new THREE.MeshBasicMaterial({color:0xf1d28b}),0,doorH+.48,d/2+.1);
+  sign.userData.isBuildingSign=true;
+  group.userData.doorWidth=doorW;
+  group.userData.doorHeight=doorH;
+  group.userData.bounds={w,d,h};
+  group.userData.isBuilding=true;
+  group.userData.enterable=true;
+  group.userData.doorWorldFront=true;
+  addInteriorFurniture(group,w,d,h,seed);
+}
+
+function createBuilding(x,z,w,d,h,color=0xc9a06b){
+ const group=new THREE.Group();
+ makeEnterableShell(group,w,d,h,color,Math.abs(Math.floor(x+z))%17);
+ group.position.set(x,terrainHeight(x,z),z);
+ addWorldObject(group);
+ return group;
+}
+
+function createRoofHouse(x,z,w,d,h,color){
+ const g=new THREE.Group();
+ makeEnterableShell(g,w,d,h,color,Math.abs(Math.floor(x-z))%17);
+ /* Simple sloped-looking roof cap. */
+ const roof=new THREE.Mesh(new THREE.ConeGeometry(Math.max(w,d)*.72,Math.max(w,d)*.45,4),
+   new THREE.MeshStandardMaterial({color:0x7a4b36,roughness:1}));
+ roof.rotation.y=Math.PI/4;roof.position.y=h+.42;roof.castShadow=true;g.add(roof);
+ g.position.set(x,terrainHeight(x,z),z);
+ addWorldObject(g);
+ return g;
+}
+
+function createUrbanGround(){
+ const ground=new THREE.Mesh(new THREE.PlaneGeometry(720,720),
+   new THREE.MeshStandardMaterial({color:0x4e793c,roughness:1}));
+ ground.rotation.x=-Math.PI/2;ground.receiveShadow=true;addWorldObject(ground);
+}
+
+function createUrbanRoad(x,z,w,l,rot=0){
+ const road=new THREE.Mesh(new THREE.PlaneGeometry(w,l),
+   new THREE.MeshStandardMaterial({color:0x303030,roughness:.95}));
+ road.rotation.x=-Math.PI/2;road.rotation.z=rot;road.position.set(x,.12,z);addWorldObject(road);
+ for(let p=-l/2+8;p<l/2;p+=18){
+   const line=new THREE.Mesh(new THREE.PlaneGeometry(.38,7),new THREE.MeshBasicMaterial({color:0xf4f1d5}));
+   line.rotation.x=-Math.PI/2;line.rotation.z=rot;
+   line.position.set(x+Math.sin(rot)*p,.15,z+Math.cos(rot)*p);addWorldObject(line);
+ }
+}
+
+function createCityBlockBuildings(city){
+ const layouts=[
+  [-235,-235,42,30,10],[-165,-235,36,28,9],[-95,-235,42,30,12],[95,-235,42,30,11],[165,-235,36,28,9],[235,-235,42,30,12],
+  [-235,235,42,30,11],[-165,235,36,28,9],[-95,235,42,30,10],[95,235,42,30,12],[165,235,36,28,9],[235,235,42,30,11],
+  [-245,-120,44,30,12],[245,-120,44,30,13],[-245,120,44,30,11],[245,120,44,30,12],
+  [-120,-155,38,28,10],[120,-155,38,28,10],[-120,155,38,28,11],[120,155,38,28,12]
+ ];
+ layouts.forEach((b,i)=>createBuilding(b[0],b[1],b[2],b[3],b[4],[CITY_COLORS[city],0xd1b07a,0xb9875e,0xc7b28e][i%4]));
+}
+
+function createCityMonument(city){
+ if(city===2){
+   const base=new THREE.Mesh(new THREE.CylinderGeometry(16,20,3,32),new THREE.MeshStandardMaterial({color:0xd0aa70,roughness:.9}));
+   base.position.set(0,1.5,-65);addWorldObject(base);
+   const tower=new THREE.Mesh(new THREE.CylinderGeometry(5,7,22,20),new THREE.MeshStandardMaterial({color:0xb86f43,roughness:.8}));
+   tower.position.set(0,13,-65);addWorldObject(tower);
+   const cap=new THREE.Mesh(new THREE.ConeGeometry(7,7,20),new THREE.MeshStandardMaterial({color:0x2e6f73,roughness:.7}));
+   cap.position.set(0,27,-65);addWorldObject(cap);
+ }else if(city===3){
+   const base=new THREE.Mesh(new THREE.CylinderGeometry(13,18,3,32),new THREE.MeshStandardMaterial({color:0xc7c1b4,roughness:.85}));
+   base.position.set(0,1.5,-80);addWorldObject(base);
+   const tower=new THREE.Mesh(new THREE.CylinderGeometry(4.5,6,48,24),new THREE.MeshStandardMaterial({color:0x9aa0a6,metalness:.45,roughness:.5}));
+   tower.position.set(0,26,-80);addWorldObject(tower);
+   const crown=new THREE.Mesh(new THREE.SphereGeometry(8,18,12),new THREE.MeshStandardMaterial({color:0x6e7780,metalness:.55,roughness:.35}));
+   crown.position.set(0,48,-80);addWorldObject(crown);
+ }else{
+   const signBase=new THREE.Mesh(new THREE.BoxGeometry(20,1,3),new THREE.MeshStandardMaterial({color:0xd1b477,roughness:.8}));
+   signBase.position.set(0,.6,82);addWorldObject(signBase);
+ }
+}
+
+function createAndijanCity(){
+ createUrbanRoad(0,0,20,700,0);createUrbanRoad(0,0,20,700,Math.PI/2);
+ createUrbanRoad(-150,0,15,420,0);createUrbanRoad(150,0,15,420,0);
+ createUrbanRoad(0,-150,15,420,Math.PI/2);createUrbanRoad(0,150,15,420,Math.PI/2);
+ createCityBlockBuildings(2);createCityMonument(2);
+ createPark(-115,-55,75,55);createPark(115,80,75,55);
+ for(let i=0;i<28;i++)createTree(-300+Math.random()*600,-300+Math.random()*600);
+}
+
+function createTashkentCity(){
+ createUrbanRoad(0,0,24,700,0);createUrbanRoad(0,0,24,700,Math.PI/2);
+ createUrbanRoad(-180,0,17,520,0);createUrbanRoad(180,0,17,520,0);
+ createUrbanRoad(0,-180,17,520,Math.PI/2);createUrbanRoad(0,180,17,520,Math.PI/2);
+ createUrbanRoad(-90,0,13,700,0);createUrbanRoad(90,0,13,700,0);
+ createUrbanRoad(0,-90,13,700,Math.PI/2);createUrbanRoad(0,90,13,700,Math.PI/2);
+ createCityBlockBuildings(3);createCityMonument(3);
+ createPark(-120,-70,85,60);createPark(120,-70,85,60);createPark(-120,110,85,60);createPark(120,110,85,60);
+ for(let i=0;i<38;i++)createTree(-310+Math.random()*620,-310+Math.random()*620);
+}
+
+function buildWorld(){
+ clearWorldObjects();
+ createUrbanGround();
+ if(worldId===1){
+   createSamarkandCity();
+ }else if(worldId===2){
+   createAndijanCity();
+ }else{
+   createTashkentCity();
+ }
+ createNPCs();
+}
+
+function cityName(){return CITY_NAMES[worldId]||CITY_NAMES[1];}
+
+function resolvePlayerBuildingCollisions(prevX,prevZ){
+ if(mode!=="walk" || !player)return;
+ for(const o of worldObjects){
+   if(!o.userData?.isBuilding || !o.userData?.enterable)continue;
+   const b=o.userData.bounds;if(!b)continue;
+   const dx=player.position.x-o.position.x, dz=player.position.z-o.position.z;
+   const px=prevX-o.position.x,pz=prevZ-o.position.z;
+   const inside= Math.abs(dx)<b.w/2 && Math.abs(dz)<b.d/2;
+   const prevInside= Math.abs(px)<b.w/2 && Math.abs(pz)<b.d/2;
+   const doorW=(o.userData.doorWidth||1.6)+.7;
+   const atFrontDoor=Math.abs(dx)<doorW/2 && dz>b.d/2-1.6;
+   if(inside && !prevInside && !atFrontDoor){
+     if(Math.abs(px)>=b.w/2) player.position.x=o.position.x+Math.sign(px||1)*(b.w/2+.18);
+     else if(Math.abs(pz)>=b.d/2) player.position.z=o.position.z+Math.sign(pz||1)*(b.d/2+.18);
+     else player.position.z=o.position.z+b.d/2+.18;
+   }
+   if(!inside && prevInside){
+     const exitingDoor=Math.abs(px)<doorW/2 && pz>b.d/2-1.8 && dz>=b.d/2-1.2;
+     if(!exitingDoor){
+       if(Math.abs(dx)>b.w/2) player.position.x=o.position.x+Math.sign(dx||1)*(b.w/2+.18);
+       else player.position.z=o.position.z+Math.sign(dz||1)*(b.d/2+.18);
+     }
+   }
+   if(inside){
+     const minX=o.position.x-b.w/2+.7,maxX=o.position.x+b.w/2-.7;
+     const minZ=o.position.z-b.d/2+.7,maxZ=o.position.z+b.d/2-.7;
+     player.position.x=THREE.MathUtils.clamp(player.position.x,minX,maxX);
+     player.position.z=THREE.MathUtils.clamp(player.position.z,minZ,maxZ);
+   }
+ }
+}
+
+function nearestBuildingDoor(){
+ if(mode!=="walk"||!player)return null;
+ let best=null,bd=3.2;
+ for(const o of worldObjects){
+   if(!o.userData?.isBuilding||!o.userData?.enterable)continue;
+   const d=o.userData.bounds?.d||0;
+   const p=o.position;
+   const dx=player.position.x-p.x,dz=player.position.z-(p.z+d/2);
+   const dist=Math.hypot(dx,dz);
+   if(dist<bd && Math.abs(dx)<(o.userData.doorWidth||1.8)){
+     best=o;bd=dist;
+   }
+ }
+ return best;
+}
+
+function updateBuildingInteraction(){
+ const btn=document.getElementById("buildingBtn");if(!btn)return;
+ const b=nearestBuildingDoor();
+ if(b){
+   btn.style.display="block";
+   btn.textContent="KIRISH";
+ }else{
+   btn.style.display="none";
+ }
+}
+
+function interactBuilding(){
+ const b=nearestBuildingDoor();
+ if(!b){showMessage("Bino eshigiga yaqinlashing");return;}
+ player.position.z=b.position.z+b.userData.bounds.d/2+0.7;
+ player.position.y=terrainHeight(player.position.x,player.position.z);
+ showMessage("Bino ichiga kirdingiz");
+}
+
+function setFirstPersonBodyHidden(){
+ if(!player||!player.traverse)return;
+ player.traverse(o=>{if(o.isMesh)o.visible=false;});
+}
+
+function updateWalk(){
+ if(mode!=="walk")return;
+ const prevX=player.position.x,prevZ=player.position.z;
+ let move=0;
+ if(keys.up)move=.38;
+ if(keys.down)move=-.25;
+ player.translateZ(-move);
+ if(keys.left)player.rotation.y+=.055;
+ if(keys.right)player.rotation.y-=.055;
+ player.position.y=terrainHeight(player.position.x,player.position.z);
+ resolvePlayerBuildingCollisions(prevX,prevZ);
+ player.userData.walkPhase += Math.abs(move)*9;
+ camera.userData.headBob = Math.abs(move)>0 ? Math.sin(player.userData.walkPhase)*.035 : THREE.MathUtils.lerp(camera.userData.headBob||0,0,.18);
+ setFirstPersonBodyHidden();
+ updateBuildingInteraction();
+ document.getElementById("speed").innerText=Math.round(Math.abs(move)*10);
+}
+
+function updateFirstPersonCamera(){
+ if(!firstPerson || typeof camera==="undefined")return;
+ const object=mode==="car"?vehicle:player;if(!object)return;
+ const eyeY=mode==="car"?1.52:1.65;
+ const localOffset=mode==="car"?new THREE.Vector3(-.62,eyeY,.45):new THREE.Vector3(0,eyeY,0);
+ const worldOffset=localOffset.applyQuaternion(object.quaternion);
+ camera.position.copy(object.position).add(worldOffset);
+ if(mode==="walk")camera.position.y+=(camera.userData.headBob||0);
+ camera.rotation.order="YXZ";
+ camera.rotation.y=(mode==="car"?object.rotation.y:object.rotation.y)+lookYaw;
+ camera.rotation.x=lookPitch;
+}
+
+function updateCamera(){ updateFirstPersonCamera(); }
+
+function selectWorld(id){
+ id=Number(id);if(!CITY_NAMES[id])id=1;
+ worldId=id;closeWorldPanel(); if(window.GameSocket&&window.GameSocket.readyState===1)window.GameSocket.send(JSON.stringify({type:"cityChange",world:id}));
+ if(vehicle){vehicle.position.set(0,terrainHeight(0,80),80);vehicle.rotation.set(0,0,0);}
+ if(player){player.position.set(0,terrainHeight(0,80),72);player.rotation.set(0,0,0);}
+ physics.speed=0;physics.verticalSpeed=0;physics.yawVelocity=0;
+ if(scene)buildWorld();
+ const label="WORLD: "+id;
+ const wb=document.getElementById("worldBtn");if(wb)wb.innerText=label;
+ showMessage(cityName()+" yuklandi");
+}
+
+function toggleVehicle(){
+ if(mode==="car"){
+  mode="walk";player.visible=false;
+  player.position.copy(vehicle.position);player.rotation.copy(vehicle.rotation);player.position.z+=4;
+  document.getElementById("mode").innerText="WALK";
+  document.getElementById("vehicleBtn").innerText="ENTER CAR";
+  setFirstPersonBodyHidden();showMessage("Mashinadan tushdingiz — FIRST PERSON");
+ }else{
+  const dx=player.position.x-vehicle.position.x,dz=player.position.z-vehicle.position.z;
+  if(Math.hypot(dx,dz)<8){
+   mode="car";player.visible=false;
+   document.getElementById("mode").innerText="CAR";
+   document.getElementById("vehicleBtn").innerText="EXIT CAR";
+   showMessage("Mashinaga o'tirdingiz");
+  }else showMessage("Mashinaga yaqinlashing");
+ }
+}
+
+function startGame(){
+ document.getElementById("start").classList.add("hidden");
+ const overlay=document.getElementById("portraitOverlay");if(overlay)overlay.style.display="none";
+ if(typeof THREE==="undefined"){startFallbackGame();return;}
+ try{init();window.scene=scene;window.camera=camera;window.renderer=renderer;window.vehicle=vehicle;window.player=player;window.gameStarted=true;gameStarted=true;animate();}
+ catch(err){console.error(err);showMessage("3D ishga tushmadi — zaxira rejim");startFallbackGame();}
+}
+
+window.addEventListener("load",()=>{try{screen.orientation?.lock?.("landscape").catch(()=>{});}catch(_){}});
+/* ===== END PATCH ===== */
+
+</script>
+
+<script>if('serviceWorker' in navigator && location.protocol !== 'file:'){navigator.serviceWorker.register('./sw.js').catch(()=>{});}</script>
+
+<style>
+#asadbek-premium-logo{
+ position:fixed; top:14px; right:14px; width:min(180px,26vw);
+ z-index:2147483647; pointer-events:none;
+ filter:drop-shadow(0 3px 8px rgba(0,0,0,.45));
+}
+</style>
+<img id="asadbek-premium-logo" src="asadbek_premium_logo.png" alt="O'zbekistonda Hayoti">
+
+
+<script>
+/* ASADBEK AI — V22 unified online lobby + multiplayer layer. */
+(function(){
+  let socket=null, online=false, clientId=null, hostId=null, lastSend=0;
+  const remotePlayers=new Map();
+  const $=id=>document.getElementById(id);
+  const lobby=$('teamLobby');
+
+  function lobbyStatus(s){if($('lobbyStatus'))$('lobbyStatus').textContent=s}
+  function renderLobby(list,host){
+    hostId=host||hostId;
+    const arr=list||[];
+    $('lobbyCount').textContent=arr.length+' / 60 O‘YINCHI';
+    $('lobbyPlayers').innerHTML=arr.map(p=>{
+      const isHost=p.id===hostId;
+      return '<div class="lobbyPlayer"><span>'+escapeHtml(p.name||'Player')+
+        (isHost?' 👑':'')+' • J'+(p.team||1)+'</span><span class="readyDot '+(p.ready?'ready':'notready')+'">'+
+        (p.ready?'● TAYYOR':'○ KUTYAPTI')+'</span></div>';
+    }).join('');
+    document.querySelectorAll('.lobbyTeam').forEach(b=>{
+      b.classList.toggle('selected',Number(b.dataset.team)===(currentTeam()));
+    });
+    $('lobbyStart').style.display=(clientId===hostId?'block':'none');
+  }
+  function escapeHtml(s){return String(s).replace(/[&<>"']/g,c=>({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#39;'}[c]))}
+  function currentTeam(){return Number(localStorage.getItem('asadbek_team')||1)}
+  function setTeam(t){
+    localStorage.setItem('asadbek_team',String(t));
+    document.querySelectorAll('.lobbyTeam').forEach(b=>b.classList.toggle('selected',Number(b.dataset.team)===t));
+    if(socket&&socket.readyState===1)socket.send(JSON.stringify({type:'team',team:t}));
+  }
+
+  function makeRemote(id,name){
+    if(typeof THREE==='undefined'||!window.scene)return null;
+    const g=new THREE.Group();
+    const body=new THREE.Mesh(new THREE.CapsuleGeometry(.22,.65,4,8),
+      new THREE.MeshStandardMaterial({color:0x27a8ff,roughness:.75}));
+    body.position.y=.65;g.add(body);
+    const head=new THREE.Mesh(new THREE.SphereGeometry(.18,10,10),
+      new THREE.MeshStandardMaterial({color:0xf0c7a0}));
+    head.position.y=1.12;g.add(head);
+    g.userData.playerId=id;g.userData.playerName=name||'Player';
+    window.scene.add(g);return g;
+  }
+  function updateRemotes(players){
+    const incoming=new Set();
+    (players||[]).forEach(p=>{
+      if(p.id===clientId)return;
+      incoming.add(p.id);
+      let rp=remotePlayers.get(p.id);
+      if(!rp){rp={mesh:makeRemote(p.id,p.name),name:p.name};remotePlayers.set(p.id,rp)}
+      if(rp.mesh) {
+        rp.mesh.position.set(Number(p.x)||0,Number(p.y)||0,Number(p.z)||0);
+        rp.mesh.rotation.y=Number(p.yaw)||0;
+      }
+    });
+    [...remotePlayers.keys()].forEach(id=>{
+      if(!incoming.has(id)){
+        const rp=remotePlayers.get(id);if(rp?.mesh&&window.scene)window.scene.remove(rp.mesh);
+        remotePlayers.delete(id);
+      }
+    });
+    const e=$('onlinePlayers');if(e)e.textContent='O‘yinchilar: '+(players||[]).length;
+  }
+
+  function connect(name){
+    const url=localStorage.getItem('asadbek_server_url')||'wss://ozbekistondagi-hayot-server.onrender.com/ws';
+    if(socket){try{socket.close()}catch(e){}}
+    try{socket=new WebSocket(url);window.GameSocket=socket}catch(e){lobbyStatus('Server manzili noto‘g‘ri.');return}
+    lobbyStatus('Serverga ulanmoqda…');
+    socket.onopen=()=>{
+      online=true;
+      localStorage.setItem('asadbek_server_url',url);
+      socket.send(JSON.stringify({type:'join',name:(name||'Player').slice(0,18),team:currentTeam(),world:window.worldId||1}));
+      lobbyStatus('🟢 SERVERGA ULANDI — jamoadoshlarni kuting');
+      window.dispatchEvent(new CustomEvent('online-status',{detail:{online:true}}));
+    };
+    socket.onmessage=ev=>{
+      let m;try{m=JSON.parse(ev.data)}catch(e){return}
+      window.dispatchEvent(new CustomEvent('profile-message',{detail:m}));
+      if(m.type==='shopUcExchangeResult'){if(m.wallet&&window.PlayerShop)window.PlayerShop.wallet=m.wallet;saveUC(m.wallet?.uc||0);banner(m.message||'UC yangilandi')}
+      if(m.type==='shopWallet'&&m.wallet){if(window.PlayerShop)window.PlayerShop.wallet=m.wallet;saveUC(m.wallet.uc||0)}
+      if(m.type==='cityJobPayoutResult'&&m.wallet){jobMoney=m.wallet.money||0;saveJobMoney();}
+      if(m.type==='welcome'){
+        clientId=m.id;hostId=m.hostId;
+        renderLobby([],hostId);
+      }
+      if(m.type==='lobby'){
+        hostId=m.hostId||hostId;
+        renderLobby(m.players||[],hostId);
+        lobbyStatus('🏕️ Kutish maydoni • '+(m.matchId||''));
+      }
+      if(m.type==='matchStart'){
+        lobbyStatus('🚀 O‘YIN BOSHLANDI!');
+        if(m.players) updateRemotes(m.players);
+        setTimeout(()=>{
+          lobby.classList.remove('show');
+          launchWorld();
+          const me=(m.players||[]).find(p=>p.id===clientId);
+          if(me&&window.player){
+            window.player.position.set(me.x,me.y,me.z);
+            if(window.vehicle)window.vehicle.position.set(me.x,me.y,me.z);
+          }
+        },250);
+      }
+      if(m.type==='snapshot'){
+        updateRemotes(m.players||[]);
+      }
+      if(m.type==='brSnapshot' && window.updateBRRemotes){ window.updateBRRemotes(m.players||[]); }
+      if(m.type==='playerState'){
+        updateRemotes(m.player?[m.player]:[]);
+      }
+      if(m.type==='event' && m.event && m.event.kind==='brDrop' && window.brArena){
+        window.brArena.remoteDrop=m.event;
+      }
+      if(m.type==='full') lobbyStatus('❌ Server to‘la: 60/60');
+      if(m.type==='notice') lobbyStatus('ℹ️ '+(m.message||''));
+    };
+    socket.onclose=()=>{online=false;lobbyStatus('🔴 Ulanish uzildi.');};
+    socket.onerror=()=>{online=false;lobbyStatus('❌ Serverga ulanishda xato.');};
+  }
+
+  function openLobby(){
+    $('start').classList.add('hidden');
+    lobby.classList.add('show');
+    const name=localStorage.getItem('asadbek_name')||'Player';
+    connect(name);
+  }
+
+  window.startGame=openLobby;
+  window.GameOnline={
+    connect,send(type,data){if(socket&&socket.readyState===1)socket.send(JSON.stringify({type,...data}))},
+    isOnline:()=>online,
+    id:()=>clientId
+  };
+
+  function startOffline(){
+    lobby.classList.remove('show');
+    launchWorld();
+  }
+
+  window.addEventListener('load',()=>{
+    $('lobbyOffline').onclick=startOffline;
+    $('lobbyReady').onclick=()=>{
+      if(socket&&socket.readyState===1){
+        socket.send(JSON.stringify({type:'ready',ready:true}));
+        $('lobbyReady').textContent='✅ TAYYOR';
+      }
+    };
+    $('lobbyStart').onclick=()=>{
+      if(socket&&socket.readyState===1)socket.send(JSON.stringify({type:'startMatch'}));
+    };
+    document.querySelectorAll('.lobbyTeam').forEach(b=>{
+      b.onclick=()=>setTeam(Number(b.dataset.team));
+    });
+    const saved=localStorage.getItem('asadbek_team')||'1';
+    document.querySelectorAll('.lobbyTeam').forEach(b=>b.classList.toggle('selected',b.dataset.team==saved));
+    const nameInput=$('playerName');
+    if(nameInput)nameInput.addEventListener('change',()=>localStorage.setItem('asadbek_name',nameInput.value));
+    setInterval(()=>{
+      if(!online||!socket||socket.readyState!==1||!window.player||!window.gameStarted)return;
+      const now=performance.now();if(now-lastSend<100)return;lastSend=now;
+      socket.send(JSON.stringify({
+        type:'state',x:window.player.position.x,y:window.player.position.y,
+        z:window.player.position.z,yaw:window.camera?window.camera.rotation.y:0,
+        mode:window.mode||'walk'
+      }));
+    },50);
+  });
+})();
+</script>
+
+
+<script>
+/* ===== REAL UZBEKISTAN MAPS / OPENSTREETMAP =====
+   The 3D gameplay remains lightweight, while this panel provides real-world
+   road/place data for the selected city. Coordinates are city-center anchors.
+*/
+const REAL_CITY_DATA={
+  1:{name:"Samarqand — Registon",lat:39.6542,lon:66.9597,zoom:14},
+  2:{name:"Andijon viloyati — Andijon shahri",lat:40.7821,lon:72.3442,zoom:13},
+  3:{name:"Toshkent — O‘zbekiston poytaxti",lat:41.3111,lon:69.2797,zoom:12}
+};
+function osmEmbedUrl(c){
+  const d=0.035;
+  const left=c.lon-d,right=c.lon+d,bottom=c.lat-d,top=c.lat+d;
+  const marker=c.lat+','+c.lon;
+  return 'https://www.openstreetmap.org/export/embed.html?bbox='+
+    encodeURIComponent(left+','+bottom+','+right+','+top)+
+    '&layer=mapnik&marker='+encodeURIComponent(marker);
+}
+function openRealMap(){
+  const c=REAL_CITY_DATA[window.worldId||worldId]||REAL_CITY_DATA[1];
+  const frame=document.getElementById('osmFrame');
+  const title=document.getElementById('realMapTitle');
+  if(frame) frame.src=osmEmbedUrl(c);
+  if(title) title.textContent='REAL XARITA — '+c.name;
+  if(frame) frame.onerror=()=>{ if(title) title.textContent='REAL XARITA — '+c.name+' (internetni tekshiring)'; };
+  document.getElementById('realMapPanel').style.display='block';
+}
+function closeRealMap(){
+  document.getElementById('realMapPanel').style.display='none';
+}
+window.addEventListener('load',()=>{
+  const b=document.getElementById('realMapBtn');
+  const c=document.getElementById('realMapClose');
+  if(b)b.onclick=openRealMap;
+  if(c)c.onclick=closeRealMap;
+});
+</script>
+
+
+<script>
+/* ===== IN-WORLD CAREER SELECTION ===== */
+const WORLD_JOBS={
+  1:[
+    ["🚕","Taksi haydovchisi","Yo‘lovchilar sizni kutmoqda"],
+    ["🍽️","Oshpaz","Restoranga mijozlar kelmoqda"],
+    ["📷","Fotograf","Sayyohlar xizmat kutmoqda"],
+    ["🧑‍⚕️","Shifokor","Bemorlar navbatda"],
+    ["🔧","Mexanik","Avtomobil egalari yordam kutmoqda"],
+    ["📦","Kuryer","Buyurtmalar yetkazilishi kerak"]
+  ],
+  2:[
+    ["🚕","Taksi haydovchisi","Yo‘lovchi va buyurtmalar mavjud"],
+    ["🔌","Elektrik","Uy va biznes mijozlari yordam kutmoqda"],
+    ["🧱","Quruvchi","Qurilish buyurtmalari mavjud"],
+    ["🛍️","Sotuvchi","Do‘kon mijozlari xizmat kutmoqda"],
+    ["🚑","Tibbiyot xodimi","Bemorlar yordam kutmoqda"],
+    ["📦","Kuryer","Mahalliy yetkazmalar mavjud"]
+  ],
+  3:[
+    ["🚕","Taksi haydovchisi","Shahar bo‘ylab yo‘lovchilar"],
+    ["💻","Dasturchi","Biznes mijozlar IT xizmat kutmoqda"],
+    ["🧑‍💼","Biznes menejer","Kompaniya mijozlari bilan ishlang"],
+    ["☕","Barista","Kafelarda mijozlar kutmoqda"],
+    ["🔧","Mexanik","Servis mijozlari navbatda"],
+    ["📦","Kuryer","Ko‘plab shahar buyurtmalari mavjud"]
+  ]
+};
+let selectedJob=null;
+function openWorldJobSelect(){
+  const world=window.worldId||1;
+  const list=document.getElementById("jobList");
+  list.innerHTML="";
+  (WORLD_JOBS[world]||WORLD_JOBS[1]).forEach((j,i)=>{
+    const d=document.createElement("div");
+    d.className="jobOption";
+    d.innerHTML='<div class="jobIcon">'+j[0]+'</div><div><div class="jobName">'+j[1]+'</div><div class="jobNeed">'+j[2]+'</div></div>';
+    d.onclick=()=>{
+      selectedJob=j[1];
+      document.querySelectorAll(".jobOption").forEach(x=>x.classList.remove("selected"));
+      d.classList.add("selected");
+    };
+    list.appendChild(d);
+  });
+  document.getElementById("jobSelectPanel").style.display="flex";
+}
+document.addEventListener("DOMContentLoaded",()=>{
+  document.getElementById("jobConfirm").onclick=()=>{
+    if(!selectedJob){alert("Avval kasbni tanlang.");return;}
+    window.playerJob=selectedJob;
+    localStorage.setItem("playerJob",selectedJob);
+    document.getElementById("jobSelectPanel").style.display="none";
+    if(typeof showMessage==="function") showMessage("Kasbingiz: "+selectedJob);
+  };
+});
+</script>
+
+
+<script>
+(function(){
+  const oldStart=window.startGame;
+  if(typeof oldStart==="function"){
+    window.startGame=function(){
+      oldStart.apply(this,arguments);
+      setTimeout(openWorldJobSelect,900);
+    };
+  }
+})();
+</script>
+
+\n<style>\n/* ===== BATTLE ROYALE ARENA ===== */\n#brBtn{position:fixed;right:18px;bottom:455px;z-index:1002;width:118px;padding:13px 8px;border-radius:14px;border:1px solid rgba(255,220,130,.45);background:linear-gradient(180deg,#2b6b55,#123c30);color:#fff;font-weight:900;box-shadow:0 8px 22px rgba(0,0,0,.35)}\n#brOverlay{position:fixed;inset:0;z-index:10000;display:none;background:#101616;color:#fff;overflow:hidden;font-family:Arial,sans-serif}\n#brCanvas{position:absolute;inset:0;width:100%;height:100%;touch-action:none}\n#brHud{position:absolute;left:12px;right:12px;top:10px;display:flex;justify-content:space-between;gap:8px;pointer-events:none;z-index:3}\n.brBox{background:rgba(0,0,0,.55);border:1px solid rgba(255,255,255,.18);border-radius:12px;padding:7px 10px;font-size:12px;backdrop-filter:blur(5px)}\n#brHealthBar{width:150px;height:9px;background:#3b2020;border-radius:8px;overflow:hidden;margin-top:5px}.brHealthFill{height:100%;width:100%;background:#43d17d;transition:width .15s}\n#brWeapon{font-weight:900;font-size:14px}#brAmmo{margin-top:2px;color:#ddd}\n#brRightHud{display:flex;gap:7px;align-items:flex-start}\n#brClose{pointer-events:auto;border:0;border-radius:10px;padding:8px 10px;background:#252a2e;color:#fff;font-weight:900}\n#brControls{position:absolute;inset:0;pointer-events:none;z-index:4}\n#brStick{position:absolute;left:24px;bottom:24px;width:125px;height:125px;border-radius:50%;background:rgba(255,255,255,.08);border:1px solid rgba(255,255,255,.18);pointer-events:auto;touch-action:none}\n#brKnob{position:absolute;width:54px;height:54px;left:35px;top:35px;border-radius:50%;background:rgba(255,255,255,.25);border:1px solid rgba(255,255,255,.3)}\n.brAction{position:absolute;right:22px;width:82px;height:52px;border:1px solid rgba(255,255,255,.22);border-radius:15px;background:rgba(0,0,0,.55);color:#fff;font-weight:900;pointer-events:auto;touch-action:manipulation}\n#brFire{bottom:34px;background:rgba(165,50,40,.72)}#brHeal{bottom:96px}#brSwitch{bottom:158px}\n#brLoot{position:absolute;left:50%;bottom:22px;transform:translateX(-50%);z-index:5;display:none;gap:7px;max-width:85vw;flex-wrap:wrap;justify-content:center}\n.brLootBtn{padding:10px 12px;border:1px solid rgba(255,255,255,.22);border-radius:12px;background:rgba(0,0,0,.72);color:#fff;font-weight:800}\n#brStartPanel{position:absolute;inset:0;display:flex;align-items:center;justify-content:center;z-index:10;background:radial-gradient(circle at 50% 30%,rgba(39,90,72,.65),rgba(5,8,8,.97) 65%)}\n#brStartCard{width:min(92vw,520px);max-height:88vh;overflow:auto;padding:22px;border-radius:24px;background:rgba(12,18,18,.94);border:1px solid rgba(255,220,130,.3);box-shadow:0 20px 70px #000;text-align:center}\n#brStartCard h2{font-size:26px;margin-bottom:6px}#brStartCard p{color:#aeb9b8;font-size:12px;line-height:1.5;margin:8px 0 14px}\n#brStats{display:grid;grid-template-columns:repeat(3,1fr);gap:7px;margin:12px 0}.brStat{padding:10px;border-radius:12px;background:#171f1f;border:1px solid rgba(255,255,255,.1)}.brStat b{display:block;font-size:16px}.brStat small{color:#aaa}\n#brStartActions{display:flex;gap:8px}.brStartAction{flex:1;padding:13px;border:0;border-radius:13px;font-weight:900}.brPrimary{background:#fff;color:#111}.brSecondary{background:#252a2e;color:#fff}\n#brShop{display:none;margin-top:12px;text-align:left}.brShopRow{display:flex;justify-content:space-between;align-items:center;gap:8px;padding:9px;border-radius:11px;background:#151b1b;margin:5px 0}.brShopRow button{padding:7px 9px;border:0;border-radius:9px;font-weight:900}\n#brBanner{position:absolute;left:50%;top:18%;transform:translateX(-50%);z-index:6;font-size:20px;font-weight:1000;text-shadow:0 3px 12px #000;opacity:0;transition:opacity .2s;pointer-events:none;text-align:center}
+#brWardrobe{display:none;margin-top:12px;text-align:left;max-height:36vh;overflow:auto;padding:5px}
+.brWardGrid{display:grid;grid-template-columns:repeat(3,1fr);gap:6px}
+.brOutfit{border:1px solid rgba(255,255,255,.12);border-radius:10px;background:#151c1c;color:#fff;padding:8px 5px;font-size:9px;text-align:center;font-weight:800}
+.brOutfit.selected{outline:2px solid #55df9a;background:#19382d}
+.brOutfitSwatch{width:26px;height:26px;border-radius:50%;margin:0 auto 5px;border:2px solid rgba(255,255,255,.22)}
+#brWardrobeBtn{width:100%;margin-top:9px;padding:11px;border:0;border-radius:12px;background:#242c2c;color:#fff;font-weight:900}
+#brDropPanel{position:absolute;inset:0;z-index:9;display:none;background:linear-gradient(180deg,rgba(10,18,24,.32),rgba(3,8,10,.86));pointer-events:none}
+#brDropTop{position:absolute;top:12%;left:50%;transform:translateX(-50%);text-align:center;text-shadow:0 3px 12px #000}
+#brDropTop b{font-size:22px}#brDropTop small{display:block;color:#d9e4e3;margin-top:5px}
+#brDropRocket{position:absolute;width:82px;height:22px;border-radius:18px 7px 7px 18px;background:linear-gradient(180deg,#eee,#888);box-shadow:0 0 16px rgba(255,190,80,.55);transform-origin:center}
+#brDropRocket:before{content:"";position:absolute;right:-28px;top:4px;border-width:7px 28px 7px 0;border-style:solid;border-color:transparent #ffb74a transparent transparent;filter:drop-shadow(0 0 8px #ff7a00)}
+#brDropRocket:after{content:"";position:absolute;left:12px;top:5px;width:12px;height:12px;border-radius:50%;background:#65b6d8;box-shadow:20px 0 #65b6d8}
+#brDropBtn{position:absolute;right:22px;bottom:34px;width:112px;padding:15px;border:0;border-radius:15px;background:#e5b84e;color:#111;font-weight:1000;pointer-events:auto;display:none}
+#brDropHint{position:absolute;left:50%;bottom:32px;transform:translateX(-50%);padding:8px 12px;border-radius:10px;background:rgba(0,0,0,.5);font-size:11px;display:none}
+\n#brDamage{position:absolute;inset:0;pointer-events:none;z-index:2;background:rgba(210,25,25,0);transition:background .08s}\n@media(max-height:600px){#brStick{width:105px;height:105px}#brKnob{left:28px;top:28px}.brAction{height:44px}.brBox{font-size:10px}}\n</style>\n\n<button id="brBtn">🎯 BR ARENA</button>\n<div id="brOverlay">\n <canvas id="brCanvas"></canvas><div id="brDamage"></div>\n <div id="brHud"><div class="brBox"><div id="brHealthText">HP 100/100</div><div id="brHealthBar"><div class="brHealthFill" id="brHealthFill"></div></div><div id="brMedText">🩹 Aptechka: 3</div></div><div class="brBox"><div id="brWeapon">QF-AR 01</div><div id="brAmmo">30 / 120</div></div><div id="brRightHud"><div class="brBox">👥 <span id="brAlive">50</span></div><button id="brClose">CHIQISH</button></div></div>\n <div id="brWorldInfo">📍 YANGI SHAHAR • MARKAZ</div><div id="brWeather">☀️ OCHIQ • 12:00</div>
+ <div id="brBanner"></div><div id="brLoot"></div>\n <div id="brControls"><div id="brStick"><div id="brKnob"></div></div><button class="brAction" id="brFire">🔫 OTISH</button><button class="brAction" id="brHeal">🩹 DAVOLANISH</button><button class="brAction" id="brSwitch">🔄 QUROL</button></div><div id="brDropPanel"><div id="brDropTop"><b>🚀 RAKETA UCHISHI</b><small>Xarita ustidan to‘g‘ri yo‘nalishda uchamiz. Istalgan joyda TUSHISH tugmasini bosing.</small></div><div id="brDropRocket"></div><button id="brDropBtn">🪂 TUSHISH</button><div id="brDropHint">Raketaning yo‘nalishi bo‘ylab xarita ostida siz tanlagan nuqtaga tushasiz.</div></div>\n <div id="brStartPanel"><div id="brStartCard"><h2>🎯 BATTLE ROYALE ARENA</h2><p>PUBG uslubidagi alohida battle-royale arena. Bu xarita original: o‘rmon, ko‘l, qoyalar va binolar bor. 60 onlayn ishtirokchi, 45 qurol, loot, aptechka, zarar va effektlar mavjud.</p><div id="brStats"><div class="brStat"><b>60</b><small>Onlayn ishtirokchi</small></div><div class="brStat"><b>45</b><small>Qurol</small></div><div class="brStat"><b id="brUcStart">0 UC</b><small>UC balans</small></div></div><div id="brStartActions"><button class="brStartAction brPrimary" id="brEnter">ARENA'GA KIRISH</button><button class="brStartAction brSecondary" id="brExchange">💰 UC ALMASHTIRISH</button></div><button id="brWardrobeBtn">👕 50+ BR KIYIMLAR</button><button id="brOutfitDropBtn" style="width:100%;margin-top:7px;padding:11px;border:0;border-radius:12px;background:#d8ad42;color:#111;font-weight:1000">🎁 BR DROP • 30 UC</button><div id="brWardrobe"></div><div id="brShop"></div></div></div>\n</div>\n\n<script>
+(function(){
+'use strict';
+const canvas=document.getElementById('brCanvas'),ctx=canvas.getContext('2d');
+const overlay=document.getElementById('brOverlay');
+
+/* V24 COSMETIC SYSTEM — 50 BR outfits */
+const OUTFITS = Array.from({length:50},(_,i)=>{
+  const colors=['#2b2f3a','#394b59','#5b3b2e','#254b3a','#6b2538','#7a5b20','#3d2b56','#6c6c6c','#163a5c','#4a3a2a'];
+  const accents=['#d6b35a','#7ad7c2','#e6e6e6','#e36b5f','#8fb7ff','#f2d36b','#c88cff','#ff9b6b','#64d5ff','#a7e36f'];
+  const acc=['Kaska','Niqob','Shlem','Qora qalpoq','Taktik niqob'];
+  return {id:i+1,name:'BR '+String(i+1).padStart(2,'0'),color:colors[i%colors.length],accent:accents[(i*3)%accents.length],accessory:acc[i%acc.length]};
+});
+function currentOutfit(){
+  const id=Math.max(1,Math.min(OUTFITS.length,Number(localStorage.getItem('br_outfit')||1)));
+  return OUTFITS[id-1];
+}
+const WEAPONS=[
+ ['QF-AR 01','AR',30,120,34,0.11,18,24],['QF-AR 02','AR',30,120,38,0.10,19,25],['QF-AR 03','AR',40,160,32,0.095,20,26],['Viper-5','AR',30,150,41,0.085,18,25],['Ranger-7','AR',35,140,35,0.10,22,28],['Falcon-AR','AR',30,120,45,0.12,21,27],
+ ['Storm-416','AR',40,160,36,0.085,20,27],['Nomad-74','AR',30,150,44,0.11,23,29],['Tigris-39','AR',30,120,39,0.105,22,28],['Atlas-556','AR',35,140,48,0.10,21,27],
+ ['Raptor-S','SMG',25,150,58,0.065,13,18],['Vector-X','SMG',30,180,55,0.055,12,17],['Pulse-9','SMG',30,180,62,0.06,11,16],['Mako-9','SMG',20,160,65,0.055,12,17],['Frost-9','SMG',25,150,60,0.07,13,18],['Kite-45','SMG',25,125,52,0.075,15,19],
+ ['Longbow-1','DMR',10,80,18,0.35,42,58],['Scout-8','DMR',20,100,20,0.24,36,50],['Eagle-7','DMR',15,90,22,0.28,44,62],['Saber-16','DMR',20,100,19,0.22,39,54],['Marks-12','DMR',10,80,16,0.31,48,65],
+ ['Bolt-X','SNIPER',5,45,7,0.85,90,125],['Ghost-98','SNIPER',5,40,6,0.95,105,145],['Hawk-50','SNIPER',7,49,8,0.80,100,135],['Polar-7','SNIPER',5,35,5,1.05,115,150],['Desert-Eye','SNIPER',6,42,7,0.9,98,132],
+ ['Mammoth-12','SHOTGUN',8,48,1.0,0.8,12,20],['Riot-8','SHOTGUN',6,42,1.2,0.72,14,22],['Thunder-6','SHOTGUN',10,50,0.95,0.9,13,21],['Breaker-12','SHOTGUN',8,48,1.05,0.82,15,23],['Cobra-8','SHOTGUN',6,42,1.35,0.7,13,20],
+ ['Pike-45','PISTOL',12,96,28,0.28,20,28],['Nova-9','PISTOL',15,120,32,0.22,18,26],['Echo-7','PISTOL',12,96,36,0.20,17,24],['Delta-45','PISTOL',10,90,30,0.25,21,29],['Swift-9','PISTOL',18,126,38,0.19,16,23],
+ ['Iron-SMG','SMG',20,140,50,0.07,14,19],['Canyon-AR','AR',35,140,34,0.11,24,30],['Quartz-AR','AR',30,120,40,0.10,23,29],['Helix-5','AR',40,160,38,0.09,21,28],
+ ['Falcon-Scout','DMR',15,90,18,0.25,41,56],['Titan-7','DMR',20,100,21,0.29,43,59],['Vortex-12','SHOTGUN',8,48,1.1,0.78,14,22],['Nightfall-5','SNIPER',5,40,5,1.0,110,148],['Comet-9','PISTOL',14,112,34,0.21,19,27]
+];
+const SKINS=['Desert Sand','Forest Ghost','Urban Steel','Crimson Night','Golden Nomad','Arctic Wolf','Emerald Ops','Shadow Carbon'];
+const skinColors=['#b99a6b','#496b4a','#6f7478','#8f3c3c','#c7a34c','#9bb8c4','#2f8066','#24282b'];
+const brRemotePlayers=new Map();
+let brNetLast=0;
+let state={running:false,dropPhase:false,rocketX:-120,rocketY:600,rocketSpeed:210,dropTarget:null,w:1200,h:1200,px:600,py:600,ang:0,hp:100,maxHp:100,med:3,weapon:0,ammo:30,reserve:120,alive:50,kills:0,uc:0,money:0,skin:0,zone:520,shotCd:0,damageFlash:0};
+let bots=[],loot=[],fx=[],keys={},joystick={x:0,y:0},last=0,botTimer=0;
+function money(){return Number(window.PlayerShop?.wallet?.money||0)}
+function uc(){return Number(window.PlayerShop?.wallet?.uc||0)}
+function saveUC(v){state.uc=Math.max(0,Math.floor(v));document.getElementById('brUcStart').textContent=state.uc+' UC'}
+function resize(){canvas.width=innerWidth*devicePixelRatio;canvas.height=innerHeight*devicePixelRatio;canvas.style.width=innerWidth+'px';canvas.style.height=innerHeight+'px';ctx.setTransform(devicePixelRatio,0,0,devicePixelRatio,0,0)}
+window.addEventListener('resize',resize);resize();
+function banner(t){const e=document.getElementById('brBanner');e.textContent=t;e.style.opacity=1;clearTimeout(banner.t);banner.t=setTimeout(()=>e.style.opacity=0,1600)}
+function weapon(){return WEAPONS[state.weapon]}
+function updateHud(){const w=weapon();document.getElementById('brHealthText').textContent='HP '+Math.max(0,Math.ceil(state.hp))+'/'+state.maxHp;document.getElementById('brHealthFill').style.width=Math.max(0,state.hp/state.maxHp*100)+'%';document.getElementById('brMedText').textContent='🩹 Aptechka: '+state.med;document.getElementById('brWeapon').textContent=w[0]+' • '+w[1];document.getElementById('brAmmo').textContent=state.ammo+' / '+state.reserve;document.getElementById('brAlive').textContent=state.alive}
+function beginDrop(){
+ state.dropPhase=true;state.rocketX=-120;state.rocketY=600;state.dropTarget=null;
+ document.getElementById('brDropPanel').style.display='block';document.getElementById('brDropBtn').style.display='block';document.getElementById('brDropHint').style.display='block';
+ banner('🚀 RAKETA XARITA USTIDAN UCHMOQDA');
+}
+function chooseDrop(){
+ if(!state.dropPhase)return;
+ const t=state.dropTarget||{x:Math.max(60,Math.min(1140,state.rocketX+120)),y:600};
+ state.px=t.x;state.py=t.y;state.dropPhase=false;state.ang=0;
+ document.getElementById('brDropPanel').style.display='none';document.getElementById('brDropBtn').style.display='none';document.getElementById('brDropHint').style.display='none';
+ banner('🪂 TUSHISH NUQTASI TANLANDI');
+ if(window.GameOnline)window.GameOnline.send('event',{event:{kind:'brDrop',x:state.px,y:state.py,outfit:currentOutfit().id}});
+}
+function updateBRRemotes(list){
+ const seen=new Set();
+ (list||[]).forEach(p=>{
+   if(window.GameOnline && p.id===window.GameOnline.id())return;
+   if(!p.brPhase)return;
+   seen.add(p.id);
+   brRemotePlayers.set(p.id,{x:Number(p.brX)||0,y:Number(p.brY)||0,phase:p.brPhase,alive:p.brAlive!==false,outfit:OUTFITS[(Number(p.brOutfit||1)-1)%OUTFITS.length]});
+ });
+ [...brRemotePlayers.keys()].forEach(id=>{if(!seen.has(id))brRemotePlayers.delete(id)});
+}
+function resetArena(){state={...state,running:true,dropPhase:false,rocketX:-120,rocketY:600,rocketSpeed:210,dropTarget:null,px:600,py:600,ang:0,hp:100,maxHp:100,med:3,weapon:0,ammo:WEAPONS[0][2],reserve:WEAPONS[0][3],alive:60,kills:0,zone:520,shotCd:0,damageFlash:0};state.uc=uc();state.money=money();bots=[];loot=[];fx=[];initEnvironment();
+ for(let i=0;i<49;i++){let a=Math.random()*Math.PI*2,r=90+Math.random()*430;bots.push({x:600+Math.cos(a)*r,y:600+Math.sin(a)*r,hp:100,max:100,ang:a+Math.PI,skin:Math.floor(Math.random()*SKINS.length),cd:.2+Math.random(),alive:true,speed:18+Math.random()*12})}
+ for(let i=0;i<85;i++){let a=Math.random()*Math.PI*2,r=70+Math.random()*470;loot.push({x:600+Math.cos(a)*r,y:600+Math.sin(a)*r,type:Math.random()<.18?'med':'weapon',idx:Math.floor(Math.random()*WEAPONS.length),taken:false})}
+ document.getElementById('brStartPanel').style.display='none';overlay.style.display='block';updateHud();banner('SAMARQAND BATTLE ZONASI — RAKETA BOSQICHI');beginDrop();last=performance.now();requestAnimationFrame(loop)}
+
+function ownedSet(key){try{return new Set(JSON.parse(localStorage.getItem(key)||'[1]'));}catch(e){return new Set([1]);}}
+function saveOwned(key,set){localStorage.setItem(key,JSON.stringify([...set]));}
+function renderWardrobe(){
+  const w=document.getElementById('brWardrobe'); if(!w)return;
+  const owned=ownedSet('br_owned');
+  w.innerHTML='<div style="font-weight:900;margin:5px 0 8px">🎽 BR KOLEKSIYA — 50 TA</div>'+
+    OUTFITS.map(o=>'<button class="brOutfit '+(Number(localStorage.getItem('br_outfit')||1)===o.id?'selected':'')+'" data-id="'+o.id+'"><div class="brOutfitSwatch" style="background:'+o.color+';box-shadow:inset 0 -8px '+o.accent+'"></div>'+o.name+'<br><small>'+(owned.has(o.id)?'OLINGAN':'🔒 DROP')+'</small></button>').join('');
+  w.querySelectorAll('.brOutfit').forEach(b=>b.onclick=()=>{
+    const id=+b.dataset.id;
+    if(!owned.has(id)){banner('🔒 Bu kiyim drop orqali olinadi');return;}
+    localStorage.setItem('br_outfit',String(id)); banner('🎽 '+OUTFITS[id-1].name+' tanlandi'); renderWardrobe();
+  });
+}
+function brOutfitDrop(){
+  const price=30, bal=uc();
+  if(bal<price){banner('❌ UC yetarli emas — 30 UC kerak');return;}
+  saveUC(bal-price);
+  const owned=ownedSet('br_owned');
+  const pool=OUTFITS.filter(o=>!owned.has(o.id));
+  const picked=(pool.length?pool:OUTFITS)[Math.floor(Math.random()*(pool.length?pool.length:OUTFITS.length))];
+  owned.add(picked.id);saveOwned('br_owned',owned);localStorage.setItem('br_outfit',String(picked.id));
+  renderWardrobe();banner('🎁 BR DROP: '+picked.name+' • -'+price+' UC');
+}
+function open(){overlay.style.display='block';document.getElementById('brStartPanel').style.display='flex';state.uc=uc();state.money=money();document.getElementById('brUcStart').textContent=state.uc+' UC'}
+function close(){state.running=false;overlay.style.display='none';document.getElementById('brShop').style.display='none'}
+function exchange(){const shop=document.getElementById('brShop');shop.style.display=shop.style.display==='block'?'none':'block';const packs=[[60,100000],[360,500000],[810,1000000],[1950,2500000],[4200,5000000]];shop.innerHTML='<div style="font-weight:900;margin-bottom:7px">ISH PULI → UC</div><div style="font-size:11px;color:#aaa;margin-bottom:8px">Barcha oddiy pul yagona UZS balansidan olinadi.</div>'+packs.map(p=>'<div class="brShopRow"><span>'+p[0]+' UC<br><small>'+p[1].toLocaleString('uz-UZ')+' so‘m</small></span><button data-cost="'+p[1]+'" data-uc="'+p[0]+'">ALMASHTIRISH</button></div>').join('');shop.querySelectorAll('button').forEach(b=>b.onclick=()=>{const c=+b.dataset.cost,u=+b.dataset.uc;if(window.GameSocket&&window.GameSocket.readyState===1)window.GameSocket.send(JSON.stringify({type:'shopExchangeUc',cost:c,uc:u}));else banner('Serverga ulanmagan')})}
+document.getElementById('brBtn').onclick=open;document.getElementById('brClose').onclick=close;document.getElementById('brEnter').onclick=resetArena;document.getElementById('brExchange').onclick=exchange;document.getElementById('brOutfitDropBtn').onclick=brOutfitDrop;document.getElementById('brWardrobeBtn').onclick=()=>{const w=document.getElementById('brWardrobe');w.style.display=w.style.display==='block'?'none':'block';renderWardrobe()};document.getElementById('brDropBtn').onclick=chooseDrop;
+function dist(a,b,c,d){return Math.hypot(a-c,b-d)}
+function fire(){if(!state.running||state.shotCd>0)return;let w=weapon();if(state.ammo<=0){if(state.reserve>0){state.ammo=Math.min(w[2],state.reserve);state.reserve-=state.ammo;banner('Qayta o‘qlandi')}return}state.ammo--;state.shotCd=w[5];let spread=(Math.random()-.5)*(w[1]==='SNIPER'?.025:.11);let a=state.ang+spread;let best=null,bd=Infinity;for(const b of bots)if(b.alive){let dx=b.x-state.px,dy=b.y-state.py,d=Math.hypot(dx,dy);if(d>330)continue;let da=Math.atan2(dy,dx);let diff=Math.abs(Math.atan2(Math.sin(da-a),Math.cos(da-a)));if(diff<.12&&d<bd){best=b;bd=d}}
+ if(best){let damage=w[6]+Math.random()*(w[7]-w[6]);if(w[1]==='SHOTGUN')damage*=Math.max(.35,1-bd/350);best.hp-=damage;fx.push({x:best.x,y:best.y,t:.28,type:'hit'});if(best.hp<=0){best.alive=false;state.kills++;state.alive--;fx.push({x:best.x,y:best.y,t:.55,type:'boom'});banner('ELIMINATSIYA +1')}}else{fx.push({x:state.px+Math.cos(a)*90,y:state.py+Math.sin(a)*90,t:.12,type:'muzzle'})}updateHud()}
+function heal(){if(!state.running||state.med<=0||state.hp>=state.maxHp)return;state.med--;state.hp=Math.min(state.maxHp,state.hp+55);banner('+55 HP');updateHud()}
+function switchWeapon(){if(!state.running)return;state.weapon=(state.weapon+1)%WEAPONS.length;let w=weapon();state.ammo=Math.min(w[2],state.ammo+Math.floor(Math.random()*8));state.reserve=Math.max(state.reserve,Math.floor(w[3]*.7));banner(w[0]);updateHud()}
+document.getElementById('brFire').onclick=fire;document.getElementById('brHeal').onclick=heal;document.getElementById('brSwitch').onclick=switchWeapon;
+window.addEventListener('keydown',e=>{keys[e.key.toLowerCase()]=true;if(e.key===' '){e.preventDefault();fire()}if(e.key.toLowerCase()==='q')heal();if(e.key.toLowerCase()==='e')switchWeapon()});window.addEventListener('keyup',e=>keys[e.key.toLowerCase()]=false);
+const stick=document.getElementById('brStick'),knob=document.getElementById('brKnob');function stickMove(e){const r=stick.getBoundingClientRect(),cx=r.left+r.width/2,cy=r.top+r.height/2;let x=e.clientX-cx,y=e.clientY-cy,m=Math.hypot(x,y),max=r.width*.36;if(m>max){x=x/m*max;y=y/m*max}joystick.x=x/max;joystick.y=y/max;knob.style.transform='translate('+x+'px,'+y+'px)'}function stickEnd(){joystick.x=joystick.y=0;knob.style.transform='translate(0,0)'}stick.addEventListener('pointerdown',e=>{stick.setPointerCapture(e.pointerId);stickMove(e)});stick.addEventListener('pointermove',e=>{if(stick.hasPointerCapture(e.pointerId))stickMove(e)});stick.addEventListener('pointerup',stickEnd);stick.addEventListener('pointercancel',stickEnd);
+function damagePlayer(d){state.hp-=d;state.damageFlash=.25;document.getElementById('brDamage').style.background='rgba(210,25,25,.30)';setTimeout(()=>document.getElementById('brDamage').style.background='rgba(210,25,25,0)',80);if(state.hp<=0){state.hp=0;state.running=false;banner('SIZ ELIMINATSIYA BO‘LDINGIZ');setTimeout(()=>{document.getElementById('brStartPanel').style.display='flex';document.getElementById('brStartCard').querySelector('p').textContent='Natija: '+state.kills+' eliminatsiya. Yana bir raundga tayyormisiz?';},900)}updateHud()}
+function update(dt){if(!state.running)return;updateEnvironment(dt);if(state.dropPhase){state.rocketX+=state.rocketSpeed*dt;if(state.rocketX>1320){state.rocketX=-120;}const r=document.getElementById('brDropRocket');if(r){const s=Math.min(innerWidth,state.w)/1200;r.style.left=(state.rocketX*s+innerWidth/2-state.px*s)+'px';r.style.top=(state.rocketY*s+innerHeight/2-state.py*s)+'px';r.style.transform='rotate(0deg)';}return;}state.shotCd=Math.max(0,state.shotCd-dt);let mx=(keys['d']?1:0)-(keys['a']?1:0)+joystick.x;let my=(keys['s']?1:0)-(keys['w']?1:0)+joystick.y;let len=Math.hypot(mx,my)||1;if(Math.hypot(mx,my)>.05){state.px+=mx/len*105*dt;state.py+=my/len*105*dt;if(Math.hypot(joystick.x,joystick.y)>.1)state.ang=Math.atan2(my,mx)}state.px=Math.max(35,Math.min(1165,state.px));state.py=Math.max(35,Math.min(1165,state.py));
+ // shrinking zone
+ state.zone=Math.max(145,state.zone-dt*2.0);let dzone=Math.hypot(state.px-600,state.py-600);if(dzone>state.zone)damagePlayer(dt*3.2);
+ if(window.GameOnline && window.GameOnline.isOnline() && performance.now()-brNetLast>120){
+   brNetLast=performance.now();
+   window.GameOnline.send('brState',{x:state.px,y:state.py,phase:state.dropPhase?'air':'landed',alive:state.hp>0,outfit:currentOutfit().id});
+ }
+ botTimer+=dt;for(const b of bots){if(!b.alive)continue;let d=dist(b.x,b.y,state.px,state.py);if(d<230){b.ang=Math.atan2(state.py-b.y,state.px-b.x);b.x+=Math.cos(b.ang)*b.speed*dt;b.y+=Math.sin(b.ang)*b.speed*dt;if(d<175&&Math.random()<dt*.75)damagePlayer(3+Math.random()*5)}else{b.ang+=Math.sin(performance.now()/1200+b.x)*dt*.5;b.x+=Math.cos(b.ang)*b.speed*.35*dt;b.y+=Math.sin(b.ang)*b.speed*.35*dt}b.x=Math.max(25,Math.min(1175,b.x));b.y=Math.max(25,Math.min(1175,b.y))}
+ for(const l of loot){if(l.taken)continue;if(dist(l.x,l.y,state.px,state.py)<25){l.taken=true;if(l.type==='med'){state.med++;banner('🩹 APTECHKA OLINDI')}else{state.weapon=l.idx;let w=weapon();state.ammo=w[2];state.reserve=w[3];banner('🔫 '+w[0]+' OLINDI')}updateHud()}}
+ for(const e of fx)e.t-=dt;fx=fx.filter(e=>e.t>0);if(state.alive<=1){state.running=false;banner('🏆 G‘ALABA!');setTimeout(()=>document.getElementById('brStartPanel').style.display='flex',900)}updateHud()}
+function worldToScreen(x,y){let sx=innerWidth/2+(x-state.px)*Math.min(innerWidth,state.w)/(state.zone*2.1);let sy=innerHeight/2+(y-state.py)*Math.min(innerHeight,state.h)/(state.zone*2.1);return [sx,sy]}
+function draw(){const W=innerWidth,H=innerHeight;ctx.clearRect(0,0,W,H);ctx.fillStyle='#9cc6a1';ctx.fillRect(0,0,W,H);let scale=Math.min(W,H)/(state.zone*2.1);ctx.save();ctx.translate(W/2-state.px*scale,H/2-state.py*scale);
+ drawCityBase();
+ // terrain patches
+ for(let i=0;i<24;i++){let x=(i*173)%1200,y=(i*311)%1200;ctx.fillStyle=i%3?'#83ad86':'#779d79';ctx.beginPath();ctx.arc(x,y,40+(i%5)*16,0,Math.PI*2);ctx.fill()}
+ // lake
+ ctx.fillStyle='#4e9fc0';ctx.beginPath();ctx.ellipse(320,330,170,105,.2,0,Math.PI*2);ctx.fill();ctx.strokeStyle='rgba(255,255,255,.2)';ctx.stroke();
+ // rocks
+ for(let i=0;i<42;i++){let x=(i*263)%1120+40,y=(i*149)%1120+40;ctx.fillStyle='#6e665c';ctx.beginPath();ctx.moveTo(x-10,y+7);ctx.lineTo(x-5,y-8);ctx.lineTo(x+8,y-12);ctx.lineTo(x+15,y+6);ctx.closePath();ctx.fill()}
+ // trees
+ for(let i=0;i<75;i++){let x=(i*137)%1140+30,y=(i*83)%1140+30;ctx.fillStyle='#5d4936';ctx.fillRect(x-3,y,6,18);ctx.fillStyle=i%2?'#286b3c':'#397b43';ctx.beginPath();ctx.arc(x,y-4,14,0,Math.PI*2);ctx.fill()}
+ // buildings
+ for(let i=0;i<18;i++){let x=(i*211)%1040+80,y=(i*127)%1040+80;ctx.fillStyle='#b8a78d';ctx.fillRect(x-22,y-18,44,36);ctx.fillStyle='#6f5a49';ctx.fillRect(x-8,y,16,18);ctx.fillStyle='#7fb1bd';ctx.fillRect(x-17,y-12,10,8);ctx.fillRect(x+7,y-12,10,8)}
+ drawTraffic();
+ // loot
+ for(const l of loot)if(!l.taken){ctx.fillStyle=l.type==='med'?'#e8e8e8':'#d4ad50';ctx.fillRect(l.x-7,l.y-7,14,14);ctx.fillStyle=l.type==='med'?'#c83232':'#3b3324';ctx.fillRect(l.x-2,l.y-6,4,12);}
+ // bots
+ for(const b of bots)if(b.alive){ctx.fillStyle=skinColors[b.skin];ctx.beginPath();ctx.arc(b.x,b.y-7,7,0,Math.PI*2);ctx.fill();ctx.fillStyle='#2b3540';ctx.fillRect(b.x-7,b.y,14,17);ctx.fillStyle='rgba(0,0,0,.45)';ctx.fillRect(b.x-8,b.y-16,16,3);ctx.fillStyle='#48e08b';ctx.fillRect(b.x-8,b.y-16,16*Math.max(0,b.hp/b.max),3)}
+ // online BR players
+ for(const rp of brRemotePlayers.values()) if(rp.alive && rp.phase==='landed'){
+   ctx.save();ctx.translate(rp.x,rp.y);ctx.fillStyle=rp.outfit?.color||'#3498db';ctx.beginPath();ctx.arc(0,-8,7,0,Math.PI*2);ctx.fill();ctx.fillStyle=rp.outfit?.accent||'#223';ctx.fillRect(-7,0,14,18);ctx.fillStyle='#111';ctx.fillRect(4,-3,18,4);ctx.restore();
+ }
+ // player + selected outfit
+ const outfit=currentOutfit();
+ ctx.save();ctx.translate(state.px,state.py);ctx.rotate(state.ang);ctx.fillStyle=outfit.color;ctx.fillRect(-9,0,18,20);ctx.fillStyle=outfit.accent;ctx.fillRect(-9,8,18,7);ctx.fillStyle='#d8aa86';ctx.beginPath();ctx.arc(0,-8,8,0,Math.PI*2);ctx.fill();ctx.fillStyle=outfit.accessory==='Kaska'?'#b8b8b8':outfit.accessory==='Niqob'?'#202020':'#303030';ctx.fillRect(-8,-14,16,6);ctx.fillStyle='#222';ctx.fillRect(4,-3,24,5);ctx.restore();
+ // zone
+ ctx.restore();ctx.save();ctx.strokeStyle='rgba(60,125,255,.9)';ctx.lineWidth=5;ctx.beginPath();ctx.arc(W/2+(600-state.px)*scale,H/2+(600-state.py)*scale,state.zone*scale,0,Math.PI*2);ctx.stroke();ctx.restore();
+ // aim/crosshair
+ ctx.strokeStyle='rgba(255,255,255,.75)';ctx.lineWidth=2;ctx.beginPath();ctx.moveTo(W/2-9,H/2);ctx.lineTo(W/2+9,H/2);ctx.moveTo(W/2,H/2-9);ctx.lineTo(W/2,H/2+9);ctx.stroke();
+ // effects
+ for(const e of fx){let p=worldToScreen(e.x,e.y);ctx.beginPath();ctx.arc(p[0],p[1],e.type==='boom'?24:10*(e.t*8),0,Math.PI*2);ctx.strokeStyle=e.type==='hit'?'rgba(255,90,60,.8)':'rgba(255,220,120,.9)';ctx.lineWidth=3;ctx.stroke()}
+ // vignette
+ const g=ctx.createRadialGradient(W/2,H/2,Math.min(W,H)*.2,W/2,H/2,Math.max(W,H)*.72);g.addColorStop(0,'rgba(0,0,0,0)');g.addColorStop(1,'rgba(0,0,0,.42)');ctx.fillStyle=g;ctx.fillRect(0,0,W,H);drawWeatherAndLight()}
+function loop(t){if(!state.running)return;let dt=Math.min(.035,(t-last)/1000||.016);last=t;update(dt);draw();requestAnimationFrame(loop)}
+// skin/weapon quick loot styling
+window.brArena={open,resetArena,WEAPONS,setOutfit:(id)=>localStorage.setItem('br_outfit',String(id)),OUTFITS};
+})();
+</script>\n
+<script>
+/* V19 REALISTIC WORLD VISUALS
+   Procedural geometry/material helpers for people, houses, trees, lakes and vehicles.
+*/
+(function(){
+  const R = window.RealisticWorld = {};
+  R.version = "V19";
+
+  R.materials = {
+    skin: {roughness:.72, metalness:0},
+    plaster: {roughness:.88, metalness:0},
+    glass: {roughness:.12, metalness:.15, transmission:.35},
+    water: {roughness:.06, metalness:.08},
+    foliage: {roughness:.9, metalness:0},
+    rubber: {roughness:.82, metalness:0},
+    paint: {roughness:.38, metalness:.08}
+  };
+
+  // Adds subtle environmental animation to existing canvas/WebGL demos.
+  R.environment = {
+    waterPhase: 0,
+    windPhase: 0,
+    trafficPhase: 0,
+    update(dt){
+      this.waterPhase += dt*.75;
+      this.windPhase += dt*1.2;
+      this.trafficPhase += dt*.55;
+    }
+  };
+
+  R.personProfile = {
+    headRadius:.18, torsoHeight:.58, shoulderWidth:.34,
+    legLength:.72, armLength:.58,
+    notes:"Low-poly mobile-friendly proportions with separate head/torso/limb shading."
+  };
+
+  R.houseProfile = {
+    wallHeight:2.8, roofPitch:.38, windowInset:.02,
+    balconyDepth:.8, roadSetback:4,
+    notes:"Plaster walls, roof overhang, glass windows and soft contact-shadow style."
+  };
+
+  R.treeProfile = {
+    trunkSegments:6, crownLayers:3, windStrength:.08,
+    notes:"Layered crown + tapered trunk; LOD-ready."
+  };
+
+  R.lakeProfile = {
+    waveScale:.035, reflectionStrength:.42, shorelineFoam:.16,
+    notes:"Layered water surface, animated normals/UVs and shoreline foam."
+  };
+
+  R.vehicleProfile = {
+    wheelRadius:.22, bodyHeight:.55, windowHeight:.26,
+    suspensionTravel:.06,
+    notes:"Separate wheels/windows/lights and simple suspension motion."
+  };
+
+  // Optional Three.js material helpers when THREE is present.
+  R.makeMaterials = function(){
+    if(!window.THREE) return null;
+    const T=window.THREE;
+    return {
+      skin:new T.MeshStandardMaterial({color:0xc58b68,roughness:.72,metalness:0}),
+      plaster:new T.MeshStandardMaterial({color:0xd0c4ad,roughness:.88}),
+      roof:new T.MeshStandardMaterial({color:0x4e4a43,roughness:.82}),
+      glass:new T.MeshPhysicalMaterial({color:0x7fa9bb,roughness:.12,metalness:.15,transparent:true,opacity:.72}),
+      foliage:new T.MeshStandardMaterial({color:0x3d7138,roughness:.92}),
+      trunk:new T.MeshStandardMaterial({color:0x67472d,roughness:.95}),
+      water:new T.MeshPhysicalMaterial({color:0x2b79a1,roughness:.06,metalness:.08,transparent:true,opacity:.84}),
+      rubber:new T.MeshStandardMaterial({color:0x171717,roughness:.84}),
+      paint:new T.MeshStandardMaterial({color:0x3d5264,roughness:.38,metalness:.08})
+    };
+  };
+
+  // Lightweight CSS/canvas fallback: adds richer object hints if the project is 2D.
+  R.drawProceduralWorld = function(ctx, camera){
+    if(!ctx || !camera) return;
+    ctx.save();
+    // atmospheric vignette
+    const g=ctx.createRadialGradient(camera.w/2,camera.h/2,Math.min(camera.w,camera.h)*.25,
+                                     camera.w/2,camera.h/2,Math.max(camera.w,camera.h)*.72);
+    g.addColorStop(0,"rgba(255,255,255,0)");
+    g.addColorStop(1,"rgba(0,0,0,.18)");
+    ctx.fillStyle=g; ctx.fillRect(0,0,camera.w,camera.h);
+    ctx.restore();
+  };
+
+  window.dispatchEvent(new CustomEvent("realistic-world-ready",{detail:R}));
+})();
+</script>
+
+
+<script>
+/* V20 ONLINE 60 PLAYER + LIVE WORLD SYSTEM
+   Client-side networking scaffold. A real 60-player match requires a deployed
+   WebSocket/authoritative server; this layer auto-connects when a server exists
+   and falls back to offline practice when it does not.
+*/
+(function(){
+  const O = window.OnlineBattle = {
+    version:"V20",
+    maxPlayers:60,
+    mode:"auto",
+    socket:null,
+    connected:false,
+    players:new Map(),
+    matchId:null,
+    reconnectMs:2000,
+    state:{xp:0,level:1,coins:0,streak:0,events:[]},
+    connect(url){
+      if(!("WebSocket" in window)) return this.offline("WebSocket unavailable");
+      try{
+        this.socket=new WebSocket(url);
+        this.socket.onopen=()=>{
+          this.connected=true;
+          this.socket.send(JSON.stringify({type:"join",maxPlayers:60}));
+          window.dispatchEvent(new CustomEvent("online-status",{detail:{online:true}}));
+        };
+        this.socket.onmessage=e=>this.receive(e.data);
+        this.socket.onclose=()=>{
+          this.connected=false;
+          window.dispatchEvent(new CustomEvent("online-status",{detail:{online:false}}));
+        };
+        this.socket.onerror=()=>{};
+      }catch(e){ this.offline(e.message); }
+    },
+    receive(raw){
+      let m; try{m=JSON.parse(raw)}catch{return}
+      if(m.type==="snapshot" && Array.isArray(m.players)){
+        this.players.clear();
+        m.players.slice(0,60).forEach(p=>this.players.set(p.id,p));
+      }
+      if(m.type==="match") this.matchId=m.id;
+      if(m.type==="event") this.state.events.push(m.event);
+      window.dispatchEvent(new CustomEvent("online-update",{detail:m}));
+    },
+    send(type,data){
+      if(this.socket && this.connected && this.socket.readyState===1)
+        this.socket.send(JSON.stringify({type,...data}));
+    },
+    offline(reason){
+      this.mode="offline";
+      window.dispatchEvent(new CustomEvent("online-status",{detail:{online:false,reason}}));
+    },
+    playerCount(){ return this.players.size; }
+  };
+
+  // Automatic server URL: same host/port when served; override with window.GAME_SERVER_URL.
+  // Production Render WebSocket endpoint for O'zbekistondagi Hayot.
+  // Can still be overridden by window.GAME_SERVER_URL.
+  const url = window.GAME_SERVER_URL || "wss://ozbekistondagi-hayot-server.onrender.com/ws";
+  // Connection is controlled by the V22 team lobby to avoid duplicate sockets.
+
+  // Procedural gameplay progression.
+  O.progress = {
+    addXP(n){ O.state.xp+=Math.max(0,n); O.state.level=1+Math.floor(O.state.xp/1000); },
+    addCoins(n){ O.state.coins=Math.max(0,O.state.coins+n); },
+    streak(){ O.state.streak++; },
+    resetStreak(){ O.state.streak=0; }
+  };
+
+  // Dynamic-world event scheduler; server should authoritatively broadcast in online mode.
+  O.dynamicEvents=[
+    "AIRDROP","SUPPLY_CONVOY","ARMORED_TRAIN","SIGNAL_TOWER",
+    "STORM","FOG","RAIN","FOREST_FIRE","SECRET_BUNKER","SPECIAL_CRATE"
+  ];
+  O.randomEvent=function(){
+    return O.dynamicEvents[Math.floor(Math.random()*O.dynamicEvents.length)];
+  };
+
+  // Squad helper (1–4 players).
+  O.squad={id:null,members:[],max:4,join(id){if(this.members.length<4)this.members.push(id)}};
+
+  window.dispatchEvent(new CustomEvent("online-ready",{detail:O}));
+})();
+</script>
+
+
+<style>
+#cityWardrobeBtn{position:fixed;right:14px;bottom:118px;z-index:50;display:none;padding:11px 13px;border:0;border-radius:13px;background:#e0b85c;color:#111;font-weight:1000;box-shadow:0 4px 14px #0008}
+#cityWardrobePanel{position:fixed;inset:0;z-index:20000;display:none;align-items:center;justify-content:center;background:rgba(0,0,0,.82);color:#fff;padding:18px}
+#cityWardrobeCard{width:min(560px,96vw);max-height:86vh;overflow:auto;background:#101516;border:1px solid #ffffff22;border-radius:18px;padding:14px}
+#cityWardrobeGrid{display:grid;grid-template-columns:repeat(3,1fr);gap:6px;margin-top:10px}
+.cityOutfit{border:1px solid #ffffff18;border-radius:10px;background:#182020;color:#fff;padding:8px 4px;font-size:9px;font-weight:900}
+.cityOutfit.selected{outline:2px solid #59df9a}
+.citySwatch{width:27px;height:27px;border-radius:50%;margin:0 auto 5px}
+#cityDropBtn{width:100%;padding:12px;margin-top:9px;border:0;border-radius:12px;background:#d8ad42;color:#111;font-weight:1000}
+#cityCloseBtn{padding:10px 13px;border:0;border-radius:10px;background:#303838;color:#fff;font-weight:900}
+</style>
+<button id="cityWardrobeBtn">🏙️ SHAHAR KIYIMLARI</button>
+<div id="cityWardrobePanel"><div id="cityWardrobeCard">
+  <div style="display:flex;justify-content:space-between;align-items:center"><b>🏙️ SHAHAR KIYIM DO‘KONI — 120+</b><button id="cityCloseBtn">YOPISH</button></div>
+  <div id="cityMoneyText" style="margin-top:7px;color:#f0d36b"></div>
+  <div style="font-size:11px;color:#aaa;margin-top:5px">Faqat shahar rejimida. Kiyimlar o‘yin ichida ishlab topilgan so‘mga DROP orqali tasodifiy tushadi.</div>
+  <button id="cityDropBtn">🎁 SHAHAR DROP • 20 000 SO‘M</button>
+  <div id="cityWardrobeGrid"></div>
+</div></div>
+<script>
+(function(){
+ const colors=['#355c7d','#6c5b7b','#c06c84','#2a9d8f','#457b9d','#8d6e63','#5d4037','#546e7a','#7b6d8d','#3f6b4f'];
+ const accents=['#f6bd60','#84a59d','#f28482','#90be6d','#f7ede2','#e9c46a','#a8dadc','#ffca3a','#b8c0ff','#caffbf'];
+ const accessories=['Kepka','Ko‘zoynak','Sharf','Kurtka','Sport qalpoq','Qora kepka'];
+ const CITY_OUTFITS=Array.from({length:120},(_,i)=>({id:i+1,name:'CITY '+String(i+1).padStart(3,'0'),color:colors[i%colors.length],accent:accents[(i*5)%accents.length],accessory:accessories[i%accessories.length]}));
+ window.CITY_OUTFITS=CITY_OUTFITS;
+ function money(){return Number(window.PlayerShop?.wallet?.money||0)}
+ function owned(){try{return new Set(JSON.parse(localStorage.getItem('city_owned')||'[1]'))}catch(e){return new Set([1])}}
+ function save(s){localStorage.setItem('city_owned',JSON.stringify([...s]))}
+ function selected(){return Number(localStorage.getItem('city_outfit')||1)}
+ function render(){
+   const g=document.getElementById('cityWardrobeGrid'),s=owned(); if(!g)return;
+   document.getElementById('cityMoneyText').textContent='💰 Balans: '+money().toLocaleString('uz-UZ')+' so‘m';
+   g.innerHTML=CITY_OUTFITS.map(o=>'<button class="cityOutfit '+(selected()===o.id?'selected':'')+'" data-id="'+o.id+'"><div class="citySwatch" style="background:'+o.color+';box-shadow:inset 0 -8px '+o.accent+'"></div>'+o.name+'<br><small>'+(s.has(o.id)?'OLINGAN':'🔒 DROP')+'</small></button>').join('');
+   g.querySelectorAll('.cityOutfit').forEach(b=>b.onclick=()=>{let id=+b.dataset.id;if(!s.has(id)){show('🔒 Avval drop orqali oling');return}localStorage.setItem('city_outfit',id);render();show('👕 '+CITY_OUTFITS[id-1].name+' tanlandi')});
+ }
+ function show(t){const e=document.getElementById('message');if(e){e.textContent=t;e.style.opacity='1';setTimeout(()=>e.style.opacity='0',1300)}}
+ function drop(){
+   const price=20000,b=money();if(b<price){show('❌ Yetarli so‘m yo‘q');return}
+   localStorage.setItem('asadbek_job_money',String(b-price));
+   const s=owned(),pool=CITY_OUTFITS.filter(o=>!s.has(o.id)),picked=(pool.length?pool:CITY_OUTFITS)[Math.floor(Math.random()*(pool.length?pool.length:CITY_OUTFITS.length))];
+   s.add(picked.id);save(s);localStorage.setItem('city_outfit',picked.id);render();show('🎁 SHAHAR DROP: '+picked.name+' • -20 000 so‘m');
+ }
+ function refreshVisibility(){
+   const btn=document.getElementById('cityWardrobeBtn');
+   if(!btn)return;
+   const br=document.getElementById('brOverlay'); const active=!!window.gameStarted && (!br || br.style.display!=='block');
+   const inCity=(window.worldId||1)>=1 && (window.worldId||1)<=3;
+   btn.style.display=(active&&inCity)?'block':'none';
+ }
+ window.CityWardrobe={CITY_OUTFITS,render,drop,refreshVisibility};
+ document.getElementById('cityWardrobeBtn').onclick=()=>{document.getElementById('cityWardrobePanel').style.display='flex';render()};
+ document.getElementById('cityCloseBtn').onclick=()=>document.getElementById('cityWardrobePanel').style.display='none';
+ document.getElementById('cityDropBtn').onclick=drop;
+ window.addEventListener('load',()=>{setInterval(refreshVisibility,700);});
+})();
+</script>
+
+<script>
+/* V25: DIRECTIONAL AUDIO, FOOTSTEPS, VEHICLE ALERTS, CITY/BR VEHICLES & DROPS */
+(function(){
+  const V=window.SensoryVehicleSystem={
+    version:"V25",
+    stealth:{hideEnemyPlayers:true},
+    audio:{
+      gunshot:true, footsteps:true, vehicles:true,
+      footstepRange:90, gunshotRange:220, vehicleRange:260
+    },
+    indicators:{
+      gunshotDirection:true,
+      footstepsDirection:true,
+      vehicleDirection:true,
+      vehicleIcon:true
+    },
+    collections:{
+      cityVehicles:{count:100, skins:200, dropCurrency:"CITY_COIN"},
+      brVehicles:{count:50, skins:50, dropCurrency:"UC"}
+    },
+    drops:{
+      cityVehicleSkin:{cost:40,currency:"CITY_COIN",random:true},
+      brVehicleSkin:{cost:50,currency:"UC",random:true},
+      cityClothing:{cost:20000,currency:"CITY_COIN",random:true},
+      brClothing:{cost:30,currency:"UC",random:true}
+    },
+    emit(type,data={}){
+      window.dispatchEvent(new CustomEvent("sensory-event",{detail:{type,...data}}));
+    },
+    gunshot(direction){
+      this.emit("gunshot",{direction});
+    },
+    footsteps(direction,distance){
+      this.emit("footsteps",{direction,distance});
+    },
+    vehicle(direction,distance,kind="vehicle"){
+      this.emit("vehicle",{direction,distance,kind});
+    }
+  };
+
+  /*
+   * Multiplayer rule:
+   * enemy player meshes are hidden by default.
+   * Only sensory information is exposed when the event is close enough.
+   * Server should authoritatively validate these events in production.
+   */
+  V.renderHint=function(e){
+    const d=document.createElement("div");
+    d.className="sensory-direction-hint";
+    d.textContent=e.type==="vehicle" ? "🚗" : e.type==="gunshot" ? "🔫" : "👣";
+    d.style.position="fixed";
+    d.style.left=(50+(Number(e.direction)||0)*35)+"%";
+    d.style.top="50%";
+    d.style.fontSize=e.type==="vehicle"?"34px":"24px";
+    d.style.zIndex=9999;
+    d.style.pointerEvents="none";
+    document.body.appendChild(d);
+    setTimeout(()=>d.remove(),1200);
+  };
+
+  window.addEventListener("sensory-event",e=>{
+    if(e.detail) V.renderHint(e.detail);
+  });
+})();
+</script>
+
+
+<script>
+/* V26 GLTF MODEL CATALOG + MOBILE LOD */
+window.GLTF_ASSET_CATALOG={
+  city:[
+    {id:"city_sedan",src:"models/city_sedan.gltf",skins:200},
+    {id:"city_suv",src:"models/city_suv.gltf",skins:200}
+  ],
+  battleRoyale:[
+    {id:"br_armored_scout",src:"models/br_armored_scout.gltf",skins:50},
+    {id:"br_supply_truck",src:"models/br_supply_truck.gltf",skins:50}
+  ]
+};
+window.loadGLTFVehicle=function(loader, id, onLoad){
+  const all=[...GLTF_ASSET_CATALOG.city,...GLTF_ASSET_CATALOG.battleRoyale];
+  const item=all.find(x=>x.id===id);
+  if(!item || !loader) return;
+  loader.load(item.src,onLoad,undefined,(err)=>console.error("GLTF load failed",id,err));
+};
+</script>
+
+
+<script>
+/* V28: PBR material library for ALL maps */
+window.ALL_MAPS_PBR={
+  enabled:true,
+  maps:["Toshkent","Samarqand","Andijon","PUBG_Battle_Royale","Shahar","TDM_Arena_800x500m"],
+  materialRoot:"maps/pbr/",
+  materials:{
+    grass:"grass", forest:"forest", rock:"rock", sand:"sand", mud:"mud",
+    road:"road", concrete:"concrete", water:"water", wood:"wood",
+    metal:"metal", snow:"snow", asphalt:"asphalt"
+  },
+  quality:{
+    mobile:"balanced",
+    desktop:"high",
+    anisotropy:4,
+    normalScale:1.0,
+    environmentIntensity:1.0
+  }
+};
+window.getPBRMaterialPaths=function(material){
+  const n=window.ALL_MAPS_PBR.materials[material]||material;
+  return {
+    baseColor:"maps/pbr/"+n+"_baseColor.png",
+    normal:"maps/pbr/"+n+"_normal.png",
+    roughness:"maps/pbr/"+n+"_roughness.png",
+    metallic:"maps/pbr/"+n+"_metallic.png"
+  };
+};
+</script>
+
+
+<script>
+/* V29: PLAYER CHARACTER PBR */
+window.CHARACTER_PBR={
+  enabled:true,
+  profiles:{
+    human:{
+      skin:"skin",hair:"hair",shirt:"shirt",pants:"pants",
+      boots:"boots",armor:"armor",helmet:"helmet",gloves:"gloves"
+    }
+  },
+  root:"characters/pbr/",
+  getMaterialPaths:function(name){
+    const n=name;
+    return {
+      baseColor:this.root+n+"_baseColor.png",
+      normal:this.root+n+"_normal.png",
+      roughness:this.root+n+"_roughness.png",
+      metallic:this.root+n+"_metallic.png"
+    };
+  },
+  mobile:{textureSize:256,normalScale:1,roughnessScale:1}
+};
+</script>
+
+
+<script>
+/* V30: REAL WORLD PBR MATERIAL/LOD CONFIG */
+window.WORLD_PBR_V30={
+  enabled:true,
+  root:"world_pbr/textures/",
+  ibl:true,
+  ambientOcclusion:true,
+  normalMaps:true,
+  objects:{
+    mountain:["mountain_rock","mountain_grass"],
+    lake:["lake_water"],
+    tree:["tree_bark","tree_leaf"],
+    house:["house_wall","house_roof","concrete"],
+    road:["road","asphalt"],
+    asphalt:["asphalt"],
+    soil:["soil","gravel"]
+  },
+  lod:{near:0,mid:1,far:2},
+  mobile:{textureSize:512,anisotropy:4,shadowCascades:2}
+};
+window.worldPBRPaths=function(material){
+  const r=window.WORLD_PBR_V30.root;
+  return {
+    baseColor:r+material+"_baseColor.png",
+    normal:r+material+"_normal.png",
+    roughness:r+material+"_roughness.png",
+    metallic:r+material+"_metallic.png"
+  };
+};
+</script>
+
+
+
+<style>
+#shopOpen{position:fixed;right:14px;bottom:218px;z-index:80;border:0;border-radius:13px;padding:11px 14px;background:#55d98a;color:#07110a;font-weight:1000;box-shadow:0 5px 18px #0008}
+#shopPanel{position:fixed;inset:0;z-index:51000;display:none;align-items:center;justify-content:center;background:#000c;padding:12px;color:#fff;font-family:Arial,sans-serif}
+#shopPanel.show{display:flex}.shopCard{width:min(900px,97vw);max-height:92vh;overflow:auto;background:#101718;border:1px solid #ffffff20;border-radius:22px;padding:16px}.shopHead{display:flex;justify-content:space-between;align-items:center;gap:8px}.shopWallet{display:flex;gap:8px;flex-wrap:wrap;margin:10px 0}.shopWallet span{padding:8px 10px;border-radius:10px;background:#1b2526;font-size:12px;font-weight:900}.shopTabs{display:flex;gap:6px;overflow:auto;margin:8px 0}.shopTabs button{white-space:nowrap;border:0;border-radius:10px;padding:9px 12px;background:#202a2b;color:#fff;font-weight:900}.shopList{display:grid;grid-template-columns:1fr 1fr;gap:8px}.shopItem{display:flex;gap:8px;align-items:center;padding:10px;border:1px solid #ffffff12;border-radius:14px;background:#171f20}.shopIcon{font-size:28px}.shopInfo{flex:1;min-width:0}.shopInfo b{display:block;font-size:12px}.shopInfo small{display:block;color:#8f9b9b;font-size:9px;margin-top:3px}.shopPrices{font-size:10px;margin-top:5px;color:#f5d27a;font-weight:900}.shopBuy{display:flex;flex-direction:column;gap:5px}.shopBuy button{border:0;border-radius:8px;padding:7px 8px;background:#55d98a;color:#07110a;font-weight:900;font-size:9px}.shopBuy button[data-c="uc"]{background:#7fc8ff}.shopActions{display:flex;gap:7px;margin-top:10px}.shopActions input,.shopActions select{flex:1;padding:10px;border-radius:10px;border:1px solid #ffffff18;background:#1b2526;color:#fff}.shopActions button{padding:10px;border:0;border-radius:10px;background:#d8ad42;color:#111;font-weight:900}.shopNote{color:#8f9b9b;font-size:10px;margin-top:8px}@media(max-width:650px){.shopList{grid-template-columns:1fr}}
+#shopToast{position:fixed;left:50%;bottom:28px;transform:translateX(-50%) translateY(20px);opacity:0;background:#e8c45e;color:#111;padding:10px 14px;border-radius:10px;font-weight:900;transition:.2s;z-index:60000}#shopToast.show{opacity:1;transform:translateX(-50%) translateY(0)}
+</style>
+
+<style>
+#cityEcoOpen{position:fixed;right:14px;bottom:270px;z-index:80;border:0;border-radius:13px;padding:11px 14px;background:#79b9ff;color:#08111b;font-weight:1000;box-shadow:0 5px 18px #0008}
+#cityEcoPanel{position:fixed;inset:0;z-index:52000;display:none;align-items:center;justify-content:center;background:#000c;padding:12px;color:#fff;font-family:Arial,sans-serif}
+#cityEcoPanel.show{display:flex}.ecoCard{width:min(940px,97vw);max-height:92vh;overflow:auto;background:#101718;border:1px solid #ffffff20;border-radius:22px;padding:16px}.ecoHead{display:flex;justify-content:space-between;align-items:center}.ecoNote{font-size:11px;color:#9ba8a8;margin:8px 0}.ecoGrid{display:grid;grid-template-columns:1fr 1fr;gap:12px}.ecoBox{background:#171f20;border:1px solid #ffffff12;border-radius:14px;padding:12px}.ecoBox h3{margin:0 0 9px}.ecoBox input,.ecoBox select{width:100%;box-sizing:border-box;margin:4px 0;padding:9px;border-radius:9px;border:1px solid #ffffff18;background:#202a2b;color:#fff}.ecoBox button{border:0;border-radius:9px;padding:9px 11px;background:#79b9ff;color:#08111b;font-weight:900}.ecoBiz,.ecoListing{padding:9px;border-radius:10px;background:#202a2b;margin-top:6px}.ecoBiz small,.ecoBiz span,.ecoListing small{display:block;color:#9ba8a8;font-size:10px;margin-top:3px}.ecoListing{display:grid;grid-template-columns:1fr auto auto;gap:8px;align-items:center}.ecoListing button{padding:7px;font-size:10px}.ecoHint{font-size:9px;color:#8f9b9b}@media(max-width:680px){.ecoGrid{grid-template-columns:1fr}.ecoListing{grid-template-columns:1fr}.ecoListing button{width:100%}}
+#cityEcoToast{position:fixed;left:50%;bottom:28px;transform:translateX(-50%) translateY(20px);opacity:0;background:#e8c45e;color:#111;padding:10px 14px;border-radius:10px;font-weight:900;transition:.2s;z-index:60000}#cityEcoToast.show{opacity:1;transform:translateX(-50%) translateY(0)}
+</style>
+<button id="cityEcoOpen">🏪 SHAHAR BIZNESI</button>
+<div id="cityEcoPanel">
+ <div class="ecoCard">
+  <div class="ecoHead"><h2>🏙️ SHAHAR IQTISODIYOTI</h2><button id="cityEcoClose" class="profileBtn">✕</button></div>
+  <div class="ecoNote">Faqat Toshkent, Samarqand va Andijon shahar xaritalari. Har bir biznes o‘zi yaratilgan shaharga tegishli.<br>🏪 Do‘kon ochish: 500 000 so‘m • 🏷️ Shaxsiy brend: 1 500 000 so‘m</div>
+  <div class="ecoGrid">
+   <div class="ecoBox">
+    <h3>🏪 Biznes / 🏷️ Shaxsiy brend yaratish</h3>
+    <select id="ecoType"><option value="shop">🏪 Do‘kon</option><option value="brand">🏷️ Shaxsiy brend</option></select>
+    <input id="ecoName" placeholder="Biznes nomi">
+    <input id="ecoBrand" placeholder="Brend nomi">
+    <button id="ecoCreate">YARATISH</button>
+    <div id="ecoBusinessList"></div>
+   </div>
+   <div class="ecoBox">
+    <h3>📦 Mahsulot qo‘shish</h3>
+    <input id="ecoItem" placeholder="Mahsulot ID (masalan outfit_premium)">
+    <input id="ecoPrice" type="number" min="100" placeholder="Sotuv narxi (so‘m)">
+    <input id="ecoStock" type="number" min="1" placeholder="Boshlang‘ich ombor">
+    <button id="ecoAdd">MAHSULOTNI QO‘SHISH</button>
+    <div id="ecoDashboard" class="ecoNote"></div>
+   </div>
+  </div>
+  <div class="ecoBox" style="margin-top:12px"><h3>🛒 Shahar bozori</h3><div id="ecoMarketList"></div></div>
+  <div class="ecoHint">Iqtisodiyot server tomonidan boshqariladi: xarid puli sotuvchiga savdo sifatida yoziladi, ombor kamayadi, savdo tarixi saqlanadi. UC o‘yinchilar o‘rtasida ko‘chirilmaydi.</div>
+ </div>
+</div><div id="cityEcoToast"></div>
+<button id="shopOpen">🛒 DO‘KON / UY / MASHINA</button>
+<div id="shopPanel"><div class="shopCard"><div class="shopHead"><h2>🛍 O‘YIN ICHIDAGI DO‘KON</h2><button id="shopClose" class="profileBtn">✕</button></div>
+<div class="shopWallet"><span>💰 <b id="shopMoney">0</b> so‘m</span><span>🔷 <b id="shopUc">0</b> UC</span><span>💧 Suv: <b id="shopWater">0</b></span><span>🍲 Yegulik: <b id="shopFood">0</b></span><span>🏠 Uy: <b id="shopHouseCount">0</b></span><span>🚗 Mashina: <b id="shopVehicleCount">0</b></span></div>
+<div class="shopTabs"><button data-shop-cat="outfit">👕 Kiyimlar</button><button data-shop-cat="carSkin">🚘 Mashina skinlari</button><button data-shop-cat="vehicle">🚗 Mashinalar</button><button data-shop-cat="house">🏠 Uylar</button><button data-shop-cat="consumable">💧 Suv / 🍲 Yegulik</button></div>
+<div id="shopList" class="shopList"></div>
+<div class="shopActions"><button id="shopPlaceHouse">🏠 SHU XARITADAGI UYIM</button><button id="shopRentPay">🏠 IJARANI TO‘LASH</button><button id="shopSkinApply">🚘 SKIN QO‘LLASH</button></div>
+<div class="shopNote">🏠 Uy boshqa xaritaga ko‘chirilmaydi: uy qaysi shahar xaritasida sotib olinsa, o‘sha shaharga tegishli bo‘ladi. Uy sotib olish uchun aynan Toshkent, Samarqand yoki Andijon xaritasida bo‘ling.</div></div></div><div id="shopToast"></div>
+
+<style>
+#govOpen{position:fixed;right:14px;bottom:322px;z-index:80;border:0;border-radius:13px;padding:11px 14px;background:#b77cff;color:#13091d;font-weight:1000;box-shadow:0 5px 18px #0008}
+#govPanel{position:fixed;inset:0;z-index:53000;display:none;align-items:center;justify-content:center;background:#000d;padding:12px;color:#fff;font-family:Arial,sans-serif}
+#govPanel.show{display:flex}.govCard{width:min(980px,97vw);max-height:92vh;overflow:auto;background:#111719;border:1px solid #ffffff20;border-radius:22px;padding:16px}.govGrid{display:grid;grid-template-columns:1fr 1fr;gap:12px}.govBox{background:#1a2324;border:1px solid #ffffff12;border-radius:14px;padding:12px}.govCandidate{display:flex;justify-content:space-between;gap:8px;align-items:center;padding:9px;margin-top:6px;border-radius:10px;background:#202a2b}.govCandidate small,.leisureCard small{display:block;color:#9ba8a8;font-size:10px;margin-top:3px}.govCandidate button,.leisureCard button{border:0;border-radius:8px;padding:7px 9px;background:#b77cff;color:#13091d;font-weight:900}.govField{width:100%;box-sizing:border-box;margin:4px 0;padding:9px;border-radius:9px;border:1px solid #ffffff18;background:#202a2b;color:#fff}.legalRow{padding:8px;border-radius:9px;background:#202a2b;margin-top:6px}.legalRow b{display:block}.legalRow span{display:block;color:#b7c1c1;font-size:10px;margin-top:3px}.leisureGrid{display:grid;grid-template-columns:repeat(4,1fr);gap:7px}.leisureCard{padding:9px;border-radius:10px;background:#202a2b}.leisureCard strong{display:block;color:#f5d27a;margin:5px 0;font-size:11px}@media(max-width:700px){.govGrid{grid-template-columns:1fr}.leisureGrid{grid-template-columns:1fr 1fr}}
+</style>
+<button id="govOpen">🏛️ SHAHAR BOSHQARUVI</button>
+<div id="govPanel"><div class="govCard"><div style="display:flex;justify-content:space-between;align-items:center"><h2>🏛️ SHAHAR HAYOTI — PREZIDENTLIK</h2><button id="govClose" class="profileBtn">✕</button></div>
+<div class="ecoNote">Bu “Shahar Prezidenti” — faqat o‘yin ichidagi xayoliy lavozim. U O‘zbekiston Respublikasining haqiqiy davlat lavozimi emas.</div>
+<div class="govGrid"><div class="govBox"><h3>🗳️ <span id="govCity">Shahar</span> saylovi</h3><div>Budjet: <b id="govBudget">0 so‘m</b> • Soliq: <b id="govTax">5%</b></div><textarea id="govManifesto" class="govField" rows="3" placeholder="Saylov dasturingiz"></textarea><button id="govCandidate" class="profileBtn" style="background:#b77cff">NOMZOD BO‘LISH • 1 000 000 SO‘M</button><button id="govRefresh" class="profileBtn">YANGILASH</button><div id="govCandidates"></div></div>
+<div class="govBox"><h3>⚙️ Prezident boshqaruvi</h3><input id="govTaxInput" class="govField" type="number" min="0" max="15" placeholder="Soliq % (0–15)"><button id="govTaxBtn" class="profileBtn" style="background:#b77cff">SOLIQNI BELGILASH</button><input id="govBudgetInput" class="govField" type="number" min="0" placeholder="Budjet sarfi (so‘m)"><input id="govBudgetReason" class="govField" placeholder="Loyiha nomi"><button id="govBudgetBtn" class="profileBtn" style="background:#b77cff">BUDJETDAN SARFLASH</button><p class="ecoHint">Shahar budjeti o‘yin ichidagi savdolardan olinadigan soliq va boshqa shahar tushumlari bilan to‘ldiriladi.</p></div></div>
+<div class="govBox" style="margin-top:12px"><h3>🌴 DAM OLISH JOYLARI — PULLIK</h3><div id="leisureList" class="leisureGrid"></div></div>
+<div class="govBox" style="margin-top:12px"><h3>📜 KONSTITUTSIYAVIY TAMOYILLAR VA O‘YIN QONUNLARI</h3><div id="legalList"></div><p class="ecoHint">O‘yindagi huquqiy mexanika umumiy konstitutsiyaviy tamoyillar asosida simulyatsiya qilinadi. Rasmiy amaldagi matn uchun LexUZ manbasidan foydalaniladi.</p></div>
+</div></div>
+
+<style>
+#realLifeOpen{position:fixed;right:14px;bottom:382px;z-index:80;border:0;border-radius:13px;padding:11px 14px;background:#74d7a5;color:#06150e;font-weight:1000;box-shadow:0 5px 18px #0008}
+#realLifePanel{position:fixed;inset:0;z-index:52000;display:none;align-items:center;justify-content:center;background:#000d;padding:12px;color:#fff;font-family:Arial,sans-serif}
+#realLifePanel.show{display:flex}.realLifeCard{width:min(620px,97vw);max-height:92vh;overflow:auto;background:#101819;border:1px solid #ffffff20;border-radius:22px;padding:16px}.rlBar{display:grid;grid-template-columns:110px 45px 1fr;gap:7px;align-items:center;margin:8px 0;font-size:12px}.rlBar i{height:9px;border-radius:9px;background:#263233;overflow:hidden}.rlBar em{display:block;height:100%;background:#73d6a5}.rlMeta{margin-top:12px;padding:10px;background:#1b2526;border-radius:10px;font-size:12px}.rlActions{display:grid;grid-template-columns:repeat(2,1fr);gap:7px;margin-top:12px}.rlActions button{padding:11px;border:0;border-radius:10px;background:#d8ad42;font-weight:900}@media(max-width:600px){.rlActions{grid-template-columns:1fr}}
+</style>
+<button id="realLifeOpen">🧍 REAL HAYOT</button>
+<div id="realLifePanel"><div class="realLifeCard">
+<div style="display:flex;justify-content:space-between;align-items:center"><h2>🧍 KUNDALIK HAYOT</h2><button id="realLifeClose" class="profileBtn">✕</button></div>
+<p style="color:#aab5b5;font-size:11px;margin:6px 0 12px">Shahar xaritasida vaqt o‘tishi bilan ehtiyojlar, avtomobil, kommunal xarajatlar va kundalik holat o‘zgaradi.</p>
+<div id="realLifeStats"></div>
+<div class="rlActions">
+<button data-real-action="eat">🍲 Ovqat • 8 000 so‘m</button><button data-real-action="drink">💧 Suv • 2 500 so‘m</button>
+<button data-real-action="rest">🛋️ Dam olish</button><button data-real-action="shower">🚿 Dush • 5 000 so‘m</button>
+<button data-real-action="fuel">⛽ Yoqilg‘i • 12 000 so‘m</button><button data-real-action="repair">🔧 Ta’mir • 35 000 so‘m</button>
+<button data-real-action="utilities">🧾 Kommunal to‘lov</button><button onclick="window.RealLifeDetail.refresh()">🔄 Yangilash</button>
+</div></div></div>
+<style>
+#profileOpen{position:fixed;right:14px;bottom:166px;z-index:80;border:0;border-radius:13px;padding:11px 14px;background:#d8ad42;color:#111;font-weight:1000;box-shadow:0 5px 18px #0008}
+#profilePanel{position:fixed;inset:0;z-index:50000;display:none;align-items:center;justify-content:center;background:#000b;padding:14px;color:#fff;font-family:Arial,sans-serif}
+#profilePanel.show{display:flex}.profileCard{width:min(720px,97vw);max-height:92vh;overflow:auto;background:#11191a;border:1px solid #ffffff20;border-radius:20px;padding:16px}.profileGrid{display:grid;grid-template-columns:1fr 1fr;gap:9px}.profileField{display:flex;flex-direction:column;gap:5px}.profileField input,.profileField select,#profileSearchInput{padding:10px;border-radius:10px;border:1px solid #ffffff22;background:#202a2b;color:#fff}.profileBtn{padding:10px 12px;border:0;border-radius:10px;font-weight:900}.profileResult{display:flex;justify-content:space-between;align-items:center;gap:10px;padding:9px;border-radius:10px;background:#1b2425;margin-top:6px}.profileResult small,#profileMe small{display:block;opacity:.72}.profileResult button{border:0;border-radius:8px;padding:7px;font-weight:900}.profileSection{margin-top:14px;padding-top:10px;border-top:1px solid #ffffff15}#profileToast{position:fixed;left:50%;bottom:28px;transform:translateX(-50%) translateY(20px);opacity:0;background:#e8c45e;color:#111;padding:10px 14px;border-radius:10px;font-weight:900;transition:.2s;z-index:60000}#profileToast.show{opacity:1;transform:translateX(-50%) translateY(0)}
+@media(max-width:600px){.profileGrid{grid-template-columns:1fr}}
+</style>
+<button id="profileOpen">👤 PROFIL / DO‘STLAR</button>
+<div id="profilePanel"><div class="profileCard"><div style="display:flex;justify-content:space-between;align-items:center"><h2>👤 O‘YINCHI PROFILI</h2><button id="profileClose" class="profileBtn">✕</button></div>
+<div id="profileMe" style="padding:10px;border-radius:12px;background:#1b2425;margin-bottom:10px"><small>Profil hali yaratilmagan.</small></div>
+<div class="profileGrid"><label class="profileField">O‘yinchi nomi<input id="profileName" maxlength="18" placeholder="Masalan: Asadbek"></label><label class="profileField">Jinsi<select id="profileGender"><option value="male">Erkak</option><option value="female">Ayol</option></select></label><label class="profileField">Ko‘z rangi<select id="profileEye"><option>brown</option><option>black</option><option>blue</option><option>green</option><option>hazel</option><option>gray</option></select></label><label class="profileField">Soch turmagi<select id="profileHair"><option value="1">Soch #1</option><option value="2">Soch #2</option><option value="3">Soch #3</option><option value="4">Soch #4</option><option value="5">Soch #5</option><option value="6">Soch #6</option><option value="7">Soch #7</option><option value="8">Soch #8</option><option value="9">Soch #9</option><option value="10">Soch #10</option></select></label><label class="profileField">Ko‘rinish / yuz<select id="profileLook"><option value="1">Ko‘rinish #1</option><option value="2">Ko‘rinish #2</option><option value="3">Ko‘rinish #3</option><option value="4">Ko‘rinish #4</option><option value="5">Ko‘rinish #5</option><option value="6">Ko‘rinish #6</option><option value="7">Ko‘rinish #7</option><option value="8">Ko‘rinish #8</option><option value="9">Ko‘rinish #9</option><option value="10">Ko‘rinish #10</option></select></label><div style="display:flex;align-items:end"><button id="profileSave" class="profileBtn" style="width:100%;background:#d8ad42">💾 SAQLASH</button></div></div>
+<div class="profileSection"><b>🔎 ONLINE O‘YINCHI QIDIRUV</b><div style="display:flex;gap:6px;margin-top:7px"><input id="profileSearchInput" style="flex:1" placeholder="Nom yoki ID kiriting"><button id="profileSearchBtn" class="profileBtn">QIDIRISH</button></div><div id="profileResults"></div></div>
+<div class="profileSection"><b>🤝 DO‘STLIK TAKLIFLARI</b><div id="profileRequests"></div></div>
+<p style="opacity:.6;font-size:11px">Nomdagi barcha bo‘sh joylar avtomatik olib tashlanadi: “ a b ” → “ab”. Nom bir marta band qilinsa, boshqa profil uni egallay olmaydi. Profil, qidiruv va do‘stlik tizimi barcha xaritalar uchun umumiy.</p></div></div><div id="profileToast"></div>
+
+<style>
+#characterDetailOpen{position:fixed;right:14px;bottom:332px;z-index:80;border:0;border-radius:13px;padding:11px 14px;background:#79b7ff;color:#07111f;font-weight:1000;box-shadow:0 5px 18px #0008}
+#characterDetailPanel{position:fixed;inset:0;z-index:53000;display:none;align-items:center;justify-content:center;background:#000d;padding:12px;color:#fff;font-family:Arial,sans-serif}
+#characterDetailPanel.show{display:flex}.characterDetailCard{width:min(620px,97vw);max-height:92vh;overflow:auto;background:#101719;border:1px solid #ffffff20;border-radius:22px;padding:16px}.cdGrid{display:grid;grid-template-columns:1fr 1fr;gap:8px;margin-top:10px}.cdGrid div{background:#1b2527;border-radius:10px;padding:10px;font-size:11px;color:#aab7b8}.cdGrid b{display:block;color:#fff;font-size:14px;margin-top:3px}.cdTags{display:flex;flex-wrap:wrap;gap:7px;margin-top:12px}.cdTags span{background:#202c2e;border:1px solid #ffffff12;padding:7px 9px;border-radius:10px;font-size:10px}@media(max-width:600px){.cdGrid{grid-template-columns:1fr}}
+</style>
+<button id="characterDetailOpen">🧍 FIGURA / FIZIKA</button>
+<div id="characterDetailPanel"><div class="characterDetailCard">
+<div style="display:flex;justify-content:space-between;align-items:center"><h2>🧍 REALISTIK FIGURA VA FIZIKA</h2><button id="characterDetailClose" class="profileBtn">✕</button></div>
+<p style="color:#aab5b5;font-size:11px">O‘yinchi figurasi uchun massasi, bo‘yi, kollayderi va harakat fizikasi server tomonidan hisoblanadi.</p>
+<div id="characterDetailStats"></div>
+</div></div>
+
+<script src="./client/profile/PlayerProfile.js"></script>
+<script src="./client/shop/PlayerShop.js"></script>
+<script src="./client/tdm/TdmArena.js"></script>
+<script src="./client/tdm/TdmRespawn.js"></script>
+<script src="./client/tdm/TdmHud.js"></script>
+<script src="./client/tdm/TdmMatch.js"></script>
+<script src="./client/tdm/TdmParty.js"></script>
+<script src="client/economy/CityEconomy.js"></script>
+<script src="client/city/Governance.js"></script>
+<script src="client/city/Leisure.js"></script>
+<script src="client/city/RealLifeDetail.js"></script>
+<script src="client/character/CharacterDetail.js"></script>
+</body>
+</html>

@@ -1,0 +1,15 @@
+V24 - Kiyim va drop tizimi
+
+SHAHAR:
+- 120 ta alohida shahar kiyimi.
+- Faqat shahar rejimida "SHAHAR KIYIMLARI" menyusi.
+- 20 000 so'm o'yin ichida ishlab topilgan pul evaziga random DROP.
+- Kiyimlar local qurilmada saqlanadi.
+
+BATTLE ROYALE:
+- 50 ta alohida BR kiyimi.
+- 30 UC evaziga random DROP.
+- UC faqat o'yin ichidagi almashuv tizimidan olinadi.
+- Tanlangan kiyim BR multiplayer holatida outfit ID sifatida uzatiladi.
+
+Eslatma: real pul to'lovi qo'shilmagan; barcha valyuta o'yin ichidagi virtual valyutadir.

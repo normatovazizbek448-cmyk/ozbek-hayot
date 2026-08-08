@@ -1,0 +1,11 @@
+OZBEKISTONDAGI HAYOT — REALISTIC CHARACTER PHYSICS
+
+1. Figuraga massaga asoslangan capsule collider beriladi.
+2. Gravity 9.81 m/s², yer ishqalanishi, havo qarshiligi, tezlanish va tormozlanish hisoblanadi.
+3. Sakrash uchun boshlang‘ich vertikal tezlik va yer bilan to‘qnashuv restitution ishlatiladi.
+4. Bir jamoa o‘yinchilari kapsula to‘qnashuvi orqali bir-birining ichidan o‘tib ketmaydi.
+5. TDM 800x500m chegarasi serverda qat’iy saqlanadi.
+6. Client x/y/z yuborishi mumkin, lekin physics input yuborilganda server integratsiya qilib yakuniy pozitsiyani o‘zi belgilaydi.
+7. Character profile: male/female, height, mass, shoulder, hip, head, foot o‘lchamlari.
+8. Skeletal rig, foot IK, recoil va ragdoll-ready uchun pipeline metadata qo‘shildi.
+9. Bu lightweight deterministik physics qatlamidir; to‘liq rigid-body/vehicle solver emas.

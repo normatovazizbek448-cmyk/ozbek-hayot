@@ -1,0 +1,18 @@
+V29 — O‘YINCHI MODELLARI UCHUN PBR
+
+Odam/qahramon materiallari:
+- Skin
+- Hair
+- Shirt
+- Pants
+- Boots
+- Armor
+- Helmet
+- Gloves
+
+Har birida Base Color, Normal, Roughness va Metallic materiallari mavjud.
+Shahar va Battle Royale xaritalaridagi o‘yinchilar uchun umumiy PBR pipeline.
+
+Bu paket PBR material qatlamini tayyorlaydi. Haqiqiy yuqori detal 3D odam modeli,
+skeletal rig, facial animation va 100+ kiyimning individual UV/texture assetlari
+alohida model/asset bosqichida qo‘shiladi.
