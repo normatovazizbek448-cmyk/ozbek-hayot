@@ -7,7 +7,7 @@ on:
   workflow_dispatch:
     inputs:
       release_tag:
-        description: 'Release tag, masalan v1.18.0'
+        description: 'Release tag'
         required: true
         default: 'v1.18.0'
 
@@ -69,11 +69,10 @@ jobs:
           cp "${{ steps.apk.outputs.path }}" \
              "O'zbek-Hayot-${{ steps.release.outputs.tag }}.apk"
 
-      - name: Create or update GitHub Release
+      - name: Create GitHub Release
         uses: softprops/action-gh-release@v2
         with:
           tag_name: ${{ steps.release.outputs.tag }}
           name: O'zbek Hayot ${{ steps.release.outputs.tag }}
           files: "O'zbek-Hayot-${{ steps.release.outputs.tag }}.apk"
           generate_release_notes: true
-          overwrite_files: true
